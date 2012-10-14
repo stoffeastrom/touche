@@ -395,7 +395,7 @@
 				}
 			}
 		}));
-		return G;
+		return T;
 	};
 
 	/**
@@ -534,7 +534,7 @@
 				}
 			}
 		}));
-		return G;
+		return T;
 	};
 
 	T.rotate = function(elem, gesture) {
@@ -618,6 +618,6 @@
 				}
 			}
 		}));
-		return G;
+		return T;
 	};
 })();
