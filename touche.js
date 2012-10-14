@@ -159,7 +159,7 @@
 	T.GestureController = function(element) {
 		this.element = element;
 		this.gestures = [];
-		this.sortedTouche = [];
+		this.sortedGestures = [];
 		this.data = {};
 		this.data.points = [];
 	};
@@ -187,7 +187,7 @@
 	};
 
 	T.GestureController.prototype.trigger = function(action, event, data) {
-		var key, gesture, gestures = this.sortedTouche;
+		var key, gesture, gestures = this.sortedGestures;
 
 		for(key in gestures) {
 			if(gestures.hasOwnProperty(key) && T.utils.isObject(gestures[key])) {
@@ -201,7 +201,7 @@
 
 	T.GestureController.prototype.addGesture = function(gesture) {
 		this.gestures.push(gesture);
-		this.sortTouche();
+		this.sortGestures();
 
 		if(this.gestures.length === 1) {
 			this.activate();
@@ -212,14 +212,14 @@
 		this.gestures = this.gestures.filter(function(obj) {
 			return obj !== gesture;
 		});
-		this.sortTouche();
+		this.sortGestures();
 
 		if(this.gestures.length === 0) {
 			this.deactivate();
 		}
 	};
 
-	T.GestureController.prototype.cancelTouche = function(type) {
+	T.GestureController.prototype.cancelGestures = function(type) {
 		this.gestures.filter(function(obj) {
 			return obj.type === type;
 		}).forEach(function(gesture) {
@@ -228,7 +228,7 @@
 		return this;
 	};
 
-	T.GestureController.prototype.cancelToucheWithTouches = function(type, touches) {
+	T.GestureController.prototype.cancelGesturesWithTouches = function(type, touches) {
 		this.gestures.filter(function(obj) {
 			return obj.type === type && obj.options.touches === touches;
 		}).forEach(function(gesture) {
@@ -237,7 +237,7 @@
 		return this;
 	};
 
-	T.GestureController.prototype.sortTouche = function(type) {
+	T.GestureController.prototype.sortGestures = function(type) {
 		var sorted = [],
 			key;
 
@@ -253,7 +253,7 @@
 			return g1.key - g2.key;
 		});
 
-		this.sortedTouche = sorted;
+		this.sortedGestures = sorted;
 	};
 
 	T.GestureController.prototype.getGesture = function(type) {
@@ -272,11 +272,11 @@
 		switch(event.type) {
 		case events.start:
 			this.bindDoc(true);
-			this.setPoints(event)
+			this.setPoints(event);
 			this.trigger('start', event, this.data);
 			break;
 		case events.move:
-			this.setPoints(event)
+			this.setPoints(event);
 			this.trigger('update', event, this.data);
 			break;
 		case events.end:
@@ -364,7 +364,7 @@
 				countTouches = 0;
 				countTouches = event.touches && event.touches.length > countTouches ? event.touches.length : 1;
 				if(countTouches > 0 && countTouches > touches) {
-					inst.context.cancelToucheWithTouches('tap', touches);
+					inst.context.cancelGesturesWithTouches('tap', touches);
 				}
 
 				if(preventDefault) {
@@ -374,7 +374,7 @@
 			update: function(event, data) {
 				countTouches = event.touches && event.touches.length > countTouches ? event.touches.length : countTouches;
 				if(countTouches > 0 && countTouches > touches) {
-					inst.context.cancelToucheWithTouches('tap', touches);
+					inst.context.cancelGesturesWithTouches('tap', touches);
 				}
 				/*
 				 * Maybe handle in/out
@@ -491,7 +491,7 @@
 				countTouches = 0;
 				countTouches = event.touches && event.touches.length > countTouches ? event.touches.length : 1;
 				if(countTouches !== touches) {
-					inst.context.cancelTouche('swipe');
+					inst.context.cancelGestures('swipe');
 					return;
 				}
 
@@ -505,14 +505,14 @@
 			update: function(event, data) {
 				countTouches = event.touches && event.touches.length > countTouches ? event.touches.length : 1;
 				if(countTouches !== touches) {
-					inst.context.cancelTouche('swipe');
+					inst.context.cancelGestures('swipe');
 					return;
 				}
 
 				data.swipe = this.getSwipe(data.points[0]);
 
 				if(!this.swipestartFired && this.swipe.startPoint.distanceTo(this.swipe.currentPoint) >= radiusThreshold) {
-					inst.context.cancelTouche('tap').cancelTouche('rotate');
+					inst.context.cancelGestures('tap').cancelGestures('rotate');
 					this.swipestartFired = true;
 					gesture.start.call(this, event, data);
 				} else if(this.swipestartFired) {
@@ -567,7 +567,7 @@
 				countTouches = 0;
 				countTouches = event.touches && event.touches.length > countTouches ? event.touches.length : 1;
 				if(countTouches > 0 && countTouches > touches) {
-					inst.context.cancelTouche('rotate');
+					inst.context.cancelGestures('rotate');
 					return;
 				}
 
@@ -581,7 +581,7 @@
 			update: function(event, data) {
 				countTouches = event.touches && event.touches.length > countTouches ? event.touches.length : countTouches;
 				if(countTouches > 0 && countTouches > touches) {
-					inst.context.cancelTouche('rotate');
+					inst.context.cancelGestures('rotate');
 					return;
 				} else if(countTouches === touches) {
 					if(!this.rotate.start.point2) {
@@ -596,7 +596,7 @@
 
 						if(!this.rotationstartFired && rotation >= rotationThreshold) {
 							this.rotationstartFired = true;
-							inst.context.cancelTouche('tap').cancelTouche('swipe');
+							inst.context.cancelGestures('tap').cancelGestures('swipe');
 							gesture.start.call(this, event, data);
 						} else if(this.rotationstartFired) {
 							gesture.update.call(this, event, data);
