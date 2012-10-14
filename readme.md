@@ -4,13 +4,13 @@ This is a little lightweight gesture library supporting desktop and touch device
 
 The api looks like this:
 
-	Gestures.tap(element, {
+	Touche.tap(element, {
 		end: function(e, data) {
 			console.log("tap");
 		}
 	});
 
-	Gestures.tap(element, {
+	Touche.tap(element, {
 		options: {
 			areaThreshold: 5,
 			precedence: 5,
@@ -21,7 +21,7 @@ The api looks like this:
 		}
 	});
 
-	Gestures.doubletap(element, {
+	Touche.doubletap(element, {
 		options: {
 			timeThreshold: 600
 		},
@@ -30,7 +30,7 @@ The api looks like this:
 		}
 	});
 
-	Gestures.swipe(element, {
+	Touche.swipe(element, {
 		options: {
 			radiusThreshold: 12
 		},
@@ -45,7 +45,7 @@ The api looks like this:
 		}
 	});
 
-	Gestures.rotate(element, {
+	Touche.rotate(element, {
 		options: {
 			rotationThreshold: 10
 		},
