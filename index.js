@@ -11,6 +11,9 @@ function createTouche() {
 		},*/
 		end: function(e, data) {
 			console.log("tap");
+		},
+		cancel: function() {
+			console.log("tap cancelled");
 		}
 	});
 
@@ -22,6 +25,9 @@ function createTouche() {
 		},
 		end: function(e, data) {
 			console.log("2-finger tap");
+		},
+		cancel: function() {
+			console.log("2-finger tap cancelled");
 		}
 	});
 
@@ -31,6 +37,9 @@ function createTouche() {
 		},
 		end: function() {
 			console.log("double tap");
+		},
+		cancel: function() {
+			console.log("double tap cancelled");
 		}
 	});
 
@@ -46,6 +55,9 @@ function createTouche() {
 		},
 		end: function(e, data) {
 			console.log("swipe1", data);
+		},
+		cancel: function() {
+			console.log("swipe cancelled");
 		}
 	});
 
@@ -61,6 +73,9 @@ function createTouche() {
 		},
 		end: function(e, data) {
 			console.log("rotate");
+		},
+		cancel: function() {
+			console.log("rotate cancelled");
 		}
 	});
 }

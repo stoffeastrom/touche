@@ -227,6 +227,7 @@
 			return obj.type === type;
 		}).forEach(function(gesture) {
 			gesture.cancelled = true;
+			gesture.cancel.call(gesture);
 		});
 		return this;
 	};
@@ -236,6 +237,7 @@
 			return obj.type === type && obj.options.touches === touches;
 		}).forEach(function(gesture) {
 			gesture.cancelled = true;
+			gesture.cancel.call(gesture);
 		});
 		return this;
 	};
@@ -396,6 +398,9 @@
 				if(preventDefault) {
 					event.preventDefault();
 				}
+			},
+			cancel: function() {
+				gesture.cancel.call(gesture);
 			}
 		}));
 		return T;
@@ -445,6 +450,9 @@
 				if(preventDefault) {
 					event.preventDefault();
 				}
+			},
+			cancel: function() {
+				gesture.cancel.call(gesture);
 			}
 		});
 	};
@@ -535,6 +543,9 @@
 				if(preventDefault) {
 					event.preventDefault();
 				}
+			},
+			cancel: function() {
+				gesture.cancel.call(gesture);
 			}
 		}));
 		return T;
@@ -619,6 +630,9 @@
 				if(preventDefault) {
 					event.preventDefault();
 				}
+			},
+			cancel: function() {
+				gesture.cancel.call(gesture);
 			}
 		}));
 		return T;
