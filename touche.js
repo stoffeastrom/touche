@@ -1,5 +1,5 @@
 (function() {
-	var G = window.Gestures = {},
+	var T = window.Touche = {},
 		abs = Math.abs,
 		sqrt = Math.sqrt,
 		pow = Math.pow,
@@ -17,7 +17,7 @@
 			end: touch ? 'touchend' : 'mouseup'
 		};
 
-	G.utils = {
+	T.utils = {
 		logger: function(event, touchList) {
 			if(!event.touches) return;
 			touchList = touchList || 'touches';
@@ -84,12 +84,12 @@
 	 * @param {Number} x
 	 * @param {Number} y
 	 */
-	G.Point = function(x, y) {
+	T.Point = function(x, y) {
 		this.x = x;
 		this.y = y;
 	};
 
-	G.Point.prototype.distanceTo = function(point) {
+	T.Point.prototype.distanceTo = function(point) {
 		var xdist = abs(this.x - point.x),
 			ydist = abs(this.y - point.y),
 			dist = sqrt(pow(xdist, 2) + pow(ydist, 2));
@@ -106,14 +106,14 @@
 	 * @param {Number} width
 	 * @param {Number} height
 	 */
-	G.Rect = function(x, y, width, height) {
+	T.Rect = function(x, y, width, height) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
 	};
 
-	G.Rect.prototype.pointInside = function(point, threshold) {
+	T.Rect.prototype.pointInside = function(point, threshold) {
 		threshold = threshold || 0;
 		var minX = this.x - threshold,
 			minY = this.y - threshold,
@@ -123,8 +123,8 @@
 		return point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY;
 	};
 
-	G.getRect = function(target) {
-		return new G.Rect(target.offsetLeft, target.offsetTop, target.offsetWidth, target.offsetHeight);
+	T.getRect = function(target) {
+		return new T.Rect(target.offsetLeft, target.offsetTop, target.offsetWidth, target.offsetHeight);
 	};
 
 	/**
@@ -132,22 +132,22 @@
 	 * @name Cache
 	 * @class
 	 */
-	G.Cache = function() {
+	T.Cache = function() {
 		this.data = {};
 	};
 
-	G.Cache.prototype.add = function(elem, context) {
+	T.Cache.prototype.add = function(elem, context) {
 		this.data[elem] = this.data[elem] || {};
 		this.data[elem].context = this.data[elem].context || context;
 
 		return this.data[elem];
 	};
 
-	G.Cache.prototype.get = function(elem) {
-		return this.data[elem] || G.cache.add(elem, new G.GestureController(elem));
+	T.Cache.prototype.get = function(elem) {
+		return this.data[elem] || T.cache.add(elem, new T.GestureController(elem));
 	};
 
-	G.cache = new G.Cache();
+	T.cache = new T.Cache();
 
 
 	/**
@@ -156,70 +156,70 @@
 	 * @class
 	 * @param {DOMElement} element
 	 */
-	G.GestureController = function(element) {
+	T.GestureController = function(element) {
 		this.element = element;
 		this.gestures = [];
-		this.sortedGestures = [];
+		this.sortedTouche = [];
 		this.data = {};
 		this.data.points = [];
 	};
 
-	G.GestureController.prototype.activate = function() {
+	T.GestureController.prototype.activate = function() {
 		this.on(this.element, events.start);
 	};
-	G.GestureController.prototype.deactivate = function() {
+	T.GestureController.prototype.deactivate = function() {
 		this.off(this.element, events.start);
 		this.bindDoc(false);
 	};
 
-	G.GestureController.prototype.on = function(element, event) {
+	T.GestureController.prototype.on = function(element, event) {
 		element.addEventListener(event, this, false);
 	};
 
-	G.GestureController.prototype.off = function(element, event) {
+	T.GestureController.prototype.off = function(element, event) {
 		element.removeEventListener(event, this, false);
 	};
 
-	G.GestureController.prototype.reset = function() {
+	T.GestureController.prototype.reset = function() {
 		this.gestures.forEach(function(gesture) {
 			gesture.cancelled = false;
 		});
 	};
 
-	G.GestureController.prototype.trigger = function(action, event, data) {
-		var key, gesture, gestures = this.sortedGestures;
+	T.GestureController.prototype.trigger = function(action, event, data) {
+		var key, gesture, gestures = this.sortedTouche;
 
 		for(key in gestures) {
-			if(gestures.hasOwnProperty(key) && G.utils.isObject(gestures[key])) {
+			if(gestures.hasOwnProperty(key) && T.utils.isObject(gestures[key])) {
 				gesture = gestures[key].context;
-				if(G.utils.isFunction(gesture[action]) && !gesture.cancelled) {
+				if(T.utils.isFunction(gesture[action]) && !gesture.cancelled) {
 					gesture[action].call(gesture, event, data);
 				}
 			}
 		}
 	};
 
-	G.GestureController.prototype.addGesture = function(gesture) {
+	T.GestureController.prototype.addGesture = function(gesture) {
 		this.gestures.push(gesture);
-		this.sortGestures();
+		this.sortTouche();
 
 		if(this.gestures.length === 1) {
 			this.activate();
 		}
 	};
 
-	G.GestureController.prototype.removeGesture = function(type, gesture) {
+	T.GestureController.prototype.removeGesture = function(type, gesture) {
 		this.gestures = this.gestures.filter(function(obj) {
 			return obj !== gesture;
 		});
-		this.sortGestures();
+		this.sortTouche();
 
 		if(this.gestures.length === 0) {
 			this.deactivate();
 		}
 	};
 
-	G.GestureController.prototype.cancelGestures = function(type) {
+	T.GestureController.prototype.cancelTouche = function(type) {
 		this.gestures.filter(function(obj) {
 			return obj.type === type;
 		}).forEach(function(gesture) {
@@ -228,7 +228,7 @@
 		return this;
 	};
 
-	G.GestureController.prototype.cancelGesturesWithTouches = function(type, touches) {
+	T.GestureController.prototype.cancelToucheWithTouches = function(type, touches) {
 		this.gestures.filter(function(obj) {
 			return obj.type === type && obj.options.touches === touches;
 		}).forEach(function(gesture) {
@@ -237,7 +237,7 @@
 		return this;
 	};
 
-	G.GestureController.prototype.sortGestures = function(type) {
+	T.GestureController.prototype.sortTouche = function(type) {
 		var sorted = [],
 			key;
 
@@ -253,21 +253,21 @@
 			return g1.key - g2.key;
 		});
 
-		this.sortedGestures = sorted;
+		this.sortedTouche = sorted;
 	};
 
-	G.GestureController.prototype.getGesture = function(type) {
+	T.GestureController.prototype.getGesture = function(type) {
 		return this.gestures.filter(function(obj) {
 			return obj.type === type;
 		});
 	};
 
-	G.GestureController.prototype.bindDoc = function(on) {
+	T.GestureController.prototype.bindDoc = function(on) {
 		this[on ? 'on' : 'off'](doc, events.move);
 		this[on ? 'on' : 'off'](doc, events.end);
 	};
 
-	G.GestureController.prototype.handleEvent = function(event) {
+	T.GestureController.prototype.handleEvent = function(event) {
 		//console.log(this, event.type, event);
 		switch(event.type) {
 		case events.start:
@@ -288,7 +288,7 @@
 		}
 	};
 
-	G.GestureController.prototype.setPoints = function(event, touchList) {
+	T.GestureController.prototype.setPoints = function(event, touchList) {
 		touchList = touchList || 'touches';
 
 		var i, len, touches;
@@ -298,11 +298,11 @@
 			len = touches.length;
 			for(i = 0; i < len; ++i) {
 				this.data.points.length = len;
-				this.data.points[i] = new G.Point(touches[i].pageX, touches[i].pageY);
+				this.data.points[i] = new T.Point(touches[i].pageX, touches[i].pageY);
 			}
 		} else {
 			this.data.points.length = 1;
-			this.data.points[0] = new G.Point(event.pageX, event.pageY);
+			this.data.points[0] = new T.Point(event.pageX, event.pageY);
 		}
 	};
 
@@ -314,22 +314,22 @@
 	 * @param {String} type
 	 * @param {Object} gesture
 	 */
-	G.Gesture = function(elem, type) {
+	T.Gesture = function(elem, type) {
 		this.elem = elem;
-		this.rect = G.getRect(elem);
+		this.rect = T.getRect(elem);
 		this.type = type;
 		this.cancelled = false;
 		//this.countTouches = 0;
 	};
 
-	G.gesture = function(elem, type, gesture) {
-		var g = new G.Gesture(elem, type);
+	T.gesture = function(elem, type, gesture) {
+		var g = new T.Gesture(elem, type);
 		g.start = function() {};
 		g.update = function() {};
 		g.end = function() {};
 		g.cancel = function() {};
 		g.sortKey = gesture.options.precedence || getSortKey();
-		G.utils.extend(g, gesture);
+		T.utils.extend(g, gesture);
 		return g;
 	};
 
@@ -340,8 +340,8 @@
 	 * @param {DOMElement} elem
 	 * @param {Object} Data to set up the gesture
 	 */
-	G.tap = function(elem, gesture) {
-		gesture = G.utils.extend({
+	T.tap = function(elem, gesture) {
+		gesture = T.utils.extend({
 			options: {
 				areaThreshold: 5,
 				precedence: 5,
@@ -353,18 +353,18 @@
 			end: function() {}
 		}, gesture);
 
-		var inst = G.cache.get(elem),
+		var inst = T.cache.get(elem),
 			touches = gesture.options.touches,
 			preventDefault = gesture.options.preventDefault,
 			countTouches;
 
-		inst.context.addGesture(G.gesture(elem, 'tap', {
+		inst.context.addGesture(T.gesture(elem, 'tap', {
 			options: gesture.options,
 			start: function(event, data) {
 				countTouches = 0;
 				countTouches = event.touches && event.touches.length > countTouches ? event.touches.length : 1;
 				if(countTouches > 0 && countTouches > touches) {
-					inst.context.cancelGesturesWithTouches('tap', touches);
+					inst.context.cancelToucheWithTouches('tap', touches);
 				}
 
 				if(preventDefault) {
@@ -374,7 +374,7 @@
 			update: function(event, data) {
 				countTouches = event.touches && event.touches.length > countTouches ? event.touches.length : countTouches;
 				if(countTouches > 0 && countTouches > touches) {
-					inst.context.cancelGesturesWithTouches('tap', touches);
+					inst.context.cancelToucheWithTouches('tap', touches);
 				}
 				/*
 				 * Maybe handle in/out
@@ -405,8 +405,8 @@
 	 * @param {DOMElement} elem
 	 * @param {Object} Data to set up the gesture
 	 */
-	G.doubletap = function(elem, gesture) {
-		gesture = G.utils.extend({
+	T.doubletap = function(elem, gesture) {
+		gesture = T.utils.extend({
 			options: {
 				areaThreshold: 5,
 				timeThreshold: 500,
@@ -422,7 +422,7 @@
 			startTime, endTime, timeThreshold = gesture.options.timeThreshold,
 			timerId, preventDefault = gesture.options.preventDefault;
 
-		return G.tap(elem, {
+		return T.tap(elem, {
 			end: function(event, data) {
 				++count;
 				if(count === 1) {
@@ -453,8 +453,8 @@
 	 * @param {DOMElement} elem
 	 * @param {Object} Data to set up the gesture
 	 */
-	G.swipe = function(elem, gesture) {
-		gesture = G.utils.extend({
+	T.swipe = function(elem, gesture) {
+		gesture = T.utils.extend({
 			options: {
 				radiusThreshold: 12,
 				preventDefault: true
@@ -464,21 +464,21 @@
 			end: function() {}
 		}, gesture);
 
-		var inst = G.cache.get(elem),
+		var inst = T.cache.get(elem),
 			radiusThreshold = gesture.options.radiusThreshold,
 			preventDefault = gesture.options.preventDefault,
 			countTouches, touches = 1;
 
-		inst.context.addGesture(G.gesture(elem, 'swipe', {
+		inst.context.addGesture(T.gesture(elem, 'swipe', {
 			options: gesture.options,
 			getSwipe: function(point) {
 				this.swipe.currentPoint = point;
 				this.swipe.currentTime = +new Date();
 				this.swipe.deltaX = this.swipe.currentPoint.x - this.swipe.startPoint.x;
 				this.swipe.deltaY = this.swipe.currentPoint.y - this.swipe.startPoint.y;
-				this.swipe.velocity = G.utils.getVelocity(this.swipe.startPoint, this.swipe.currentPoint, this.swipe.startTime, this.swipe.currentTime);
-				this.swipe.angle = G.utils.getAngle(this.swipe.startPoint, this.swipe.currentPoint);
-				this.swipe.direction = G.utils.getDirection(this.swipe.angle);
+				this.swipe.velocity = T.utils.getVelocity(this.swipe.startPoint, this.swipe.currentPoint, this.swipe.startTime, this.swipe.currentTime);
+				this.swipe.angle = T.utils.getAngle(this.swipe.startPoint, this.swipe.currentPoint);
+				this.swipe.direction = T.utils.getDirection(this.swipe.angle);
 				this.swipe.elementDistance = this.swipe.direction === 'left' || this.swipe.direction === 'right' ? this.rect.width : this.rect.height;
 				this.swipe.distance = this.swipe.direction === 'left' || this.swipe.direction === 'right' ? abs(this.swipe.deltaX) : abs(this.swipe.deltaY);
 				this.swipe.percentage = this.swipe.distance / this.swipe.elementDistance * 100;
@@ -491,7 +491,7 @@
 				countTouches = 0;
 				countTouches = event.touches && event.touches.length > countTouches ? event.touches.length : 1;
 				if(countTouches !== touches) {
-					inst.context.cancelGestures('swipe');
+					inst.context.cancelTouche('swipe');
 					return;
 				}
 
@@ -505,14 +505,14 @@
 			update: function(event, data) {
 				countTouches = event.touches && event.touches.length > countTouches ? event.touches.length : 1;
 				if(countTouches !== touches) {
-					inst.context.cancelGestures('swipe');
+					inst.context.cancelTouche('swipe');
 					return;
 				}
 
 				data.swipe = this.getSwipe(data.points[0]);
 
 				if(!this.swipestartFired && this.swipe.startPoint.distanceTo(this.swipe.currentPoint) >= radiusThreshold) {
-					inst.context.cancelGestures('tap').cancelGestures('rotate');
+					inst.context.cancelTouche('tap').cancelTouche('rotate');
 					this.swipestartFired = true;
 					gesture.start.call(this, event, data);
 				} else if(this.swipestartFired) {
@@ -537,8 +537,8 @@
 		return G;
 	};
 
-	G.rotate = function(elem, gesture) {
-		gesture = G.utils.extend({
+	T.rotate = function(elem, gesture) {
+		gesture = T.utils.extend({
 			options: {
 				rotationThreshold: 12,
 				preventDefault: true
@@ -548,14 +548,14 @@
 			end: function() {}
 		}, gesture);
 
-		var inst = G.cache.get(elem),
+		var inst = T.cache.get(elem),
 			touches = 2,
 			preventDefault = gesture.options.preventDefault,
 			rotationThreshold = gesture.options.rotationThreshold,
 			startAngle, currentAngle,
 			rotation, countTouches;
 
-		inst.context.addGesture(G.gesture(elem, 'rotate', {
+		inst.context.addGesture(T.gesture(elem, 'rotate', {
 			options: gesture.options,
 			start: function(event, data) {
 				this.rotate = {
@@ -567,7 +567,7 @@
 				countTouches = 0;
 				countTouches = event.touches && event.touches.length > countTouches ? event.touches.length : 1;
 				if(countTouches > 0 && countTouches > touches) {
-					inst.context.cancelGestures('rotate');
+					inst.context.cancelTouche('rotate');
 					return;
 				}
 
@@ -581,7 +581,7 @@
 			update: function(event, data) {
 				countTouches = event.touches && event.touches.length > countTouches ? event.touches.length : countTouches;
 				if(countTouches > 0 && countTouches > touches) {
-					inst.context.cancelGestures('rotate');
+					inst.context.cancelTouche('rotate');
 					return;
 				} else if(countTouches === touches) {
 					if(!this.rotate.start.point2) {
@@ -589,14 +589,14 @@
 					} else {
 						this.rotate.current.point1 = data.points[0];
 						this.rotate.current.point2 = data.points[1];
-						startAngle = G.utils.getDeltaAngle(this.rotate.start.point2, this.rotate.start.point1);
-						currentAngle = G.utils.getDeltaAngle(this.rotate.current.point2, this.rotate.current.point1);
+						startAngle = T.utils.getDeltaAngle(this.rotate.start.point2, this.rotate.start.point1);
+						currentAngle = T.utils.getDeltaAngle(this.rotate.current.point2, this.rotate.current.point1);
 						rotation = currentAngle - startAngle;
 						data.rotation = rotation;
 
 						if(!this.rotationstartFired && rotation >= rotationThreshold) {
 							this.rotationstartFired = true;
-							inst.context.cancelGestures('tap').cancelGestures('swipe');
+							inst.context.cancelTouche('tap').cancelTouche('swipe');
 							gesture.start.call(this, event, data);
 						} else if(this.rotationstartFired) {
 							gesture.update.call(this, event, data);
