@@ -1,4 +1,6 @@
 (function() {
+	'use strict';
+
 	var T = window.Touche = {},
 		abs = Math.abs,
 		sqrt = Math.sqrt,
@@ -30,7 +32,6 @@
 			for(i = 0; i < len; ++i) {
 				str += " x:" + event.touches[i].pageX + " y:" + event.touches[i].pageY;
 			}
-			console.log(str);
 		},
 		isFunction: function(f) {
 			return Object.prototype.toString.call(f) === '[object Function]';
