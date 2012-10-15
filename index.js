@@ -81,7 +81,7 @@ function createTouche() {
 
 	Touche.pinch(element, {
 		options: {
-			pinchThreshold: 10
+			pinchThreshold: 12
 		},
 		start: function(e, data) {
 			console.log("pinchstart", data.scale);
