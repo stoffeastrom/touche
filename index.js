@@ -63,7 +63,7 @@ function createTouche() {
 
 	Touche.rotate(element, {
 		options: {
-			rotationThreshold: 10
+			rotationThreshold: 18
 		},
 		start: function(e, data) {
 			console.log("rotatestart", data.rotation);
@@ -76,6 +76,24 @@ function createTouche() {
 		},
 		cancel: function() {
 			console.log("rotate cancelled");
+		}
+	});
+
+	Touche.pinch(element, {
+		options: {
+			pinchThreshold: 10
+		},
+		start: function(e, data) {
+			console.log("pinchstart", data.scale);
+		},
+		update: function(e, data) {
+			console.log("pinchupdate", data.scale);
+		},
+		end: function(e, data) {
+			console.log("pinch");
+		},
+		cancel: function() {
+			console.log("pinch cancelled");
 		}
 	});
 }
