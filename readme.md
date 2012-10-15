@@ -5,8 +5,15 @@ This is a little lightweight gesture library supporting desktop and touch device
 The api looks like this:
 ```js
 Touche.tap(element, {
+	options: {
+		areaThreshold: 5,
+		precedence: 5
+	},
 	end: function(e, data) {
 		console.log("tap");
+	},
+	cancel: function() {
+		console.log("tap cancelled");
 	}
 });
 
@@ -18,6 +25,9 @@ Touche.tap(element, {
 	},
 	end: function(e, data) {
 		console.log("2-finger tap");
+	},
+	cancel: function() {
+		console.log("2-finger tap cancelled");
 	}
 });
 
@@ -27,12 +37,15 @@ Touche.doubletap(element, {
 	},
 	end: function() {
 		console.log("double tap");
+	},
+	cancel: function() {
+		console.log("double tap cancelled");
 	}
 });
 
 Touche.swipe(element, {
 	options: {
-		radiusThreshold: 12
+		radiusThreshold: 24
 	},
 	start: function(e, data) {
 		console.log("swipestart1", data);
@@ -42,12 +55,15 @@ Touche.swipe(element, {
 	},
 	end: function(e, data) {
 		console.log("swipe1", data);
+	},
+	cancel: function() {
+		console.log("swipe cancelled");
 	}
 });
 
 Touche.rotate(element, {
 	options: {
-		rotationThreshold: 10
+		rotationThreshold: 18
 	},
 	start: function(e, data) {
 		console.log("rotatestart", data.rotation);
@@ -57,6 +73,27 @@ Touche.rotate(element, {
 	},
 	end: function(e, data) {
 		console.log("rotate");
+	},
+	cancel: function() {
+		console.log("rotate cancelled");
+	}
+});
+
+Touche.pinch(element, {
+	options: {
+		pinchThreshold: 10
+	},
+	start: function(e, data) {
+		console.log("pinchstart", data.scale);
+	},
+	update: function(e, data) {
+		console.log("pinchupdate", data.scale);
+	},
+	end: function(e, data) {
+		console.log("pinch");
+	},
+	cancel: function() {
+		console.log("pinch cancelled");
 	}
 });
 ```
