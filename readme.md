@@ -48,13 +48,13 @@ Touche.swipe(element, {
 		radiusThreshold: 24
 	},
 	start: function(e, data) {
-		console.log("swipestart1", data);
+		console.log("swipestart", data);
 	},
 	update: function(e, data) {
-		console.log("swipeupdate1", data);
+		console.log("swipeupdate", data);
 	},
 	end: function(e, data) {
-		console.log("swipe1", data);
+		console.log("swipe", data);
 	},
 	cancel: function() {
 		console.log("swipe cancelled");

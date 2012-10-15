@@ -5,10 +5,10 @@ function createTouche() {
 		element = doc.getElementById('container');
 
 	Touche.tap(element, {
-		/*options: {
+		options: {
 			areaThreshold: 5,
 			precedence: 5
-		},*/
+		},
 		end: function(e, data) {
 			console.log("tap");
 		},
