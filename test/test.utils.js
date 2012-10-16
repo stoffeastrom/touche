@@ -16,9 +16,11 @@ describe('Utils', function() {
 
 	describe('#isArray', function() {
 		var isArr = Touche.utils.isArray;
+
 		it('should return true when value is an array', function() {
 			expect(isArr([])).to.be(true);
 		});
+
 		it('should return false when value is something else', function() {
 			expect(isArr({})).to.be(false);
 			expect(isArr(arguments)).to.be(false);
@@ -33,6 +35,7 @@ describe('Utils', function() {
 
 	describe('#isObject', function() {
 		var isObj = Touche.utils.isObject;
+
 		it('should return true when value is a plain object', function() {
 			expect(isObj({})).to.be(true);
 		});
