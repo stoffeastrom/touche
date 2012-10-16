@@ -108,8 +108,7 @@ $ git submodule update --recursive
 $ npm install -g phantomjs
 $ cd test/mocha/mocha-phantomjs
 $ npm install
-// back to test/ folder
-$ cd ../../
+$ cd ../../cli
 // *nix:
 $ sh run-tests.sh
 // windows:

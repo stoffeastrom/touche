@@ -1,2 +1,2 @@
 #!/bin/bash
-phantomjs mocha/mocha-phantomjs/lib/mocha-phantomjs.coffee index.html
+phantomjs ../mocha/mocha-phantomjs/lib/mocha-phantomjs.coffee ../index.html
