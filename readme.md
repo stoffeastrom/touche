@@ -97,3 +97,20 @@ Touche.pinch(element, {
 	}
 });
 ```
+
+## How to run the test
+
+You can run the test by either running them in the browser (by opening `test.index.html`) or by command line.
+To set up running them from command line, read below.
+
+```
+$ git submodule foreach git pull
+$ npm install -g phantomjs
+$ cd test/mocha/mocha-phantomjs
+$ npm install
+$ cd ../../cli
+// *nix:
+$ sh run-tests.sh
+// windows:
+$ run-tests.bat
+```
