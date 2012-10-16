@@ -2,11 +2,11 @@ describe('Utils', function() {
 	describe('#isFunction', function() {
 		var isFn = Touche.utils.isFunction;
 
-		it('should return true when value is function', function(){
+		it('should return `true` when value is function', function(){
 			expect(isFn(function(){})).to.be(true);
 		});
 
-		it('should return false when value is something else', function(){
+		it('should return `false` when value is something else', function(){
 			expect(isFn({})).to.be(false);
 			expect(isFn([])).to.be(false);
 			expect(isFn("")).to.be(false);
@@ -17,11 +17,11 @@ describe('Utils', function() {
 	describe('#isArray', function() {
 		var isArr = Touche.utils.isArray;
 
-		it('should return true when value is an array', function() {
+		it('should return `true` when value is an array', function() {
 			expect(isArr([])).to.be(true);
 		});
 
-		it('should return false when value is something else', function() {
+		it('should return `false` when value is something else', function() {
 			expect(isArr({})).to.be(false);
 			expect(isArr(arguments)).to.be(false);
 			expect(isArr(function(){})).to.be(false);
@@ -36,11 +36,11 @@ describe('Utils', function() {
 	describe('#isObject', function() {
 		var isObj = Touche.utils.isObject;
 
-		it('should return true when value is a plain object', function() {
+		it('should return `true` when value is a plain object', function() {
 			expect(isObj({})).to.be(true);
 		});
 
-		it('should return false when value is something else', function() {
+		it('should return `false` when value is something else', function() {
 			expect(isObj([])).to.be(false);
 			expect(isObj(function(){})).to.be(false);
 			expect(isObj("")).to.be(false);

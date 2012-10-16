@@ -4538,7 +4538,10 @@ exports.escape = function(html){
     .replace(/&/g, '&amp;')
     .replace(/"/g, '&quot;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/>/g, '&gt;')
+    .replace(/`(.+?)`/g, function(m, m1) {
+      return '<code>' + m1 + '</code>';
+    });
 };
 
 /**
