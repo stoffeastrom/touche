@@ -104,7 +104,7 @@ You can run the test by either running them in the browser (by opening `test.ind
 To set up running them from command line, read below.
 
 ```
-$ git submodule update --recursive
+$ git submodule foreach git pull
 $ npm install -g phantomjs
 $ cd test/mocha/mocha-phantomjs
 $ npm install
