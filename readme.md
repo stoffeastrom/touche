@@ -97,8 +97,7 @@ Touche.rotate(element, {
 
 Touche.pinch(element, {
 	options: {
-		pinchThreshold: 10,
-		angleThreshold: 18
+		pinchThreshold: 10
 	},
 	start: function(e, data) {
 		console.log("pinchstart", data.scale);
