@@ -43,6 +43,22 @@ function createTouche() {
 		}
 	});
 
+	Touche.longtap(element, {
+		options: {
+			timeThreshold: 800,
+			interval: 20
+		},
+		update: function(event, data) {
+			console.log("long tap", data.percentage);
+		},
+		end: function() {
+			console.log("long tap");
+		},
+		cancel: function() {
+			console.log("long tap cancelled");
+		}
+	});
+
 	Touche.swipe(element, {
 		options: {
 			radiusThreshold: 24
