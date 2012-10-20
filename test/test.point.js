@@ -4,11 +4,11 @@ describe('Point', function() {
 		p2 = new Touche.Point(6, 20);
 
 	describe('#Constructor', function() {
-		it("should set correct x", function() {
+		it("should set correct `x`", function() {
 			expect(p1.x).to.be(4);
 		});
 
-		it("should set correct y", function() {
+		it("should set correct `y`", function() {
 			expect(p1.y).to.be(10);
 		});
 	});
