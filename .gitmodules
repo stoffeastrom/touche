@@ -1,3 +1,0 @@
-[submodule "test/mocha/mocha-phantomjs"]
-	path = test/mocha/mocha-phantomjs
-	url = https://github.com/metaskills/mocha-phantomjs.git

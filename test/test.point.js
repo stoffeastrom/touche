@@ -1,3 +1,4 @@
+/*global describe, Touche, expect, it*/
 describe('Point', function() {
 	var p1 = new Touche.Point(4, 10),
 		p2 = new Touche.Point(6, 20);

@@ -114,19 +114,24 @@ Touche.pinch(element, {
 });
 ```
 
-## How to run the test
+## Setting up the build environment
 
-You can run the test by either running them in the browser (by opening `test.index.html`) or by command line.
-To set up running them from command line, read below.
+Touché is using grunt.js to build (concatenate + minify) and running tests. Below is instructions on how to properly set up this project.
 
 ```
-$ git submodule foreach git pull
+$ cd touche
+$ npm install -g grunt
 $ npm install -g phantomjs
-$ cd test/mocha/mocha-phantomjs
-$ npm install
-$ cd ../../cli
-// *nix:
-$ sh run-tests.sh
-// windows:
-$ run-tests.bat
+$ npm install grunt-mocha
+```
+
+After installing, you can run a few different tasks using grunt:
+
+```
+// lint all test + lib files
+$ grunt lint
+// run the test suite
+$ grunt mocha
+// default: runs lint, mocha, concat, min
+$ grunt
 ```

@@ -164,3 +164,6 @@ pip-log.txt
 
 # web server
 server/
+
+# node modules
+node_modules/

@@ -1,3 +1,4 @@
+/*global describe, Touche, expect, it*/
 describe('Rect', function() {
 	var r = new Touche.Rect(4, 8, 100, 50),
 		p1 = new Touche.Point(30, 40),

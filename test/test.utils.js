@@ -1,3 +1,4 @@
+/*global describe, Touche, expect, it*/
 describe('Utils', function() {
 	describe('#isFunction', function() {
 		var isFn = Touche.utils.isFunction;
