@@ -1,0 +1,18 @@
+{
+	"folders":[{
+		"path": "./",
+		"folder_exclude_patterns": ["node_modules"],
+		"file_exclude_patterns": [".*", "*.sublime-project"]
+	}],
+    "settings": {
+        "tab_size": 4
+    },
+    "build_systems": [{
+    	"name": "Touché",
+		"cmd": ["/usr/local/share/npm/bin/grunt", "--no-color"],
+		"working_dir": "${project_path:${folder}}",
+		"windows": {
+			"cmd": ["PATH_TO_GRUNT_ON_WINDOWS", "--no-color"]
+		}
+	}]
+}
