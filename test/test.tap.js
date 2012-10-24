@@ -4,6 +4,9 @@ describe('Gesture', function () {
 
 	describe('#Tap', function () {
 		var el = document.createElement('div');
+		el.style.position = "absolute";
+		el.style.top = "0px";
+		el.style.left = "0px";
 		el.style.width = "100px";
 		el.style.height = "100px";
 		body.appendChild(el);
@@ -43,7 +46,5 @@ describe('Gesture', function () {
 		});
 
 		Touche.cache.get(el).context.removeGestures('tap');*/
-
-		body.removeChild(el);
 	});
 });

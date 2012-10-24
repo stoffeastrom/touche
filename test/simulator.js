@@ -72,11 +72,11 @@
 			 * This will handle all the logic to simulate a gesture
 			 */
 			var createEvent = this._createEvent,
-				event,
-				events = {
-				mouse: ['down', 'move', 'up'],
-				touch: ['start', 'move', 'end']
-			},
+					event,
+					events = {
+					mouse: ['down', 'move', 'up'],
+					touch: ['start', 'move', 'end']
+				},
 				rect = T.getRect(target),
 				centerPoint = new T.Point((rect.x + rect.width) / 2, (rect.y + rect.height) / 2);
 
@@ -84,6 +84,7 @@
 
 			events[prefix].forEach(function(suffix) {
 				event = createEvent(prefix + suffix, touchList, points);
+				//console.log(centerPoint, rect, target);
 				T.simulate._dispatchEvent(target, event);
 			});
 		}
