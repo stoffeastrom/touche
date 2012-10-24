@@ -1,7 +1,7 @@
 (function () {
 	'use strict';
 
-	var T = window.Touche || {};
+	var T = window.Touche;
 
 	T.simulate = {
 		_createTouchEvent: function (type, touchList, points) {
@@ -54,20 +54,39 @@
 			return event;
 		},
 		_createEvent: function (type, touchList, points) {
-			if(type.indexOf('touch') === 0) {
-				return this._createTouchEvent(type, touchList, points);
+			if (type.indexOf('touch') === 0) {
+				return T.simulate._createTouchEvent(type, touchList, points);
 			} else {
-				return this._createMouseEvent(type, touchList, points);
+				return T.simulate._createMouseEvent(type, touchList, points);
 			}
 		},
 		_dispatchEvent: function (elem, event) {
 			elem.dispatchEvent(event);
 			return event;
 		},
-		simulateGesture: function(target, points) {
+		gesture: function (target, points, prefix, touchList) {
+			target = target || window.document.body;
+			prefix = prefix || 'mouse';
+			touchList =  touchList || 'touches';
 			/*
-			* This will handle all the logic to simulate a gesture
-			*/
+			 * This will handle all the logic to simulate a gesture
+			 */
+			var createEvent = this._createEvent,
+				event,
+				events = {
+				mouse: ['down', 'move', 'up'],
+				touch: ['start', 'move', 'end']
+			},
+				rect = T.getRect(target),
+				centerPoint = new T.Point((rect.x + rect.width) / 2, (rect.y + rect.height) / 2);
+
+			points = points || [centerPoint];
+
+			events[prefix].forEach(function(suffix) {
+				event = createEvent(prefix + suffix, touchList, points);
+				console.log(target, event, prefix, suffix, touchList, points);
+				T.simulate._dispatchEvent(target, event);
+			});
 		}
 	};
 })();
