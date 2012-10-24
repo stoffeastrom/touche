@@ -84,7 +84,6 @@
 
 			events[prefix].forEach(function(suffix) {
 				event = createEvent(prefix + suffix, touchList, points);
-				console.log(target, event, prefix, suffix, touchList, points);
 				T.simulate._dispatchEvent(target, event);
 			});
 		}
