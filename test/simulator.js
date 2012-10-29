@@ -15,7 +15,8 @@
 			event.ctrlKey = false;
 			event.shiftKey = false;
 			event.metaKey = false;
-			event[touchList] = [];
+			event.touches = [];
+			event.changedTouches = [];
 			points.forEach(function (point) {
 				event[touchList].push({
 					pageX: point.x,
@@ -66,7 +67,7 @@
 		},
 		gesture: function (target, points, prefix, touchList) {
 			target = target || window.document.body;
-			prefix = prefix || 'mouse';
+			prefix = prefix || ('ontouchstart' in window) ? 'touch' : 'mouse';
 			touchList =  touchList || 'touches';
 			/*
 			 * This will handle all the logic to simulate a gesture
@@ -84,7 +85,6 @@
 
 			events[prefix].forEach(function(suffix) {
 				event = createEvent(prefix + suffix, touchList, points);
-				//console.log(target, event, prefix, suffix, touchList, points);
 				T.simulate._dispatchEvent(target, event);
 			});
 		}
