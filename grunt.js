@@ -19,7 +19,8 @@ module.exports = function(grunt) {
 		mocha: {
 			all: {
 				src: ['test/index.html'],
-				run: true
+				run: true,
+				ignoreLeaks: false
 			}
 		},
 		concat: {

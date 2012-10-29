@@ -17,6 +17,6 @@
 		<script src="test.point.js"></script>
 		<script src="test.rect.js"></script>
 		<script src="test.tap.js"></script>
-		<script>mocha.run();</script>
+		<script>if (!window._phantom) mocha.run();</script>
 	</body>
 </html>
