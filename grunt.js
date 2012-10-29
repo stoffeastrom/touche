@@ -1,4 +1,6 @@
-/*global module:false*/
+/*global require, module*/
+var cp = require('child_process');
+
 module.exports = function(grunt) {
 
 	// Project configuration.
@@ -62,6 +64,15 @@ module.exports = function(grunt) {
 
 	grunt.loadNpmTasks('grunt-mocha');
 
+	// Documentation generation, requires "jsdoc" to be in path
+	grunt.registerTask('docs', 'Generate documentation', function() {
+		var done = this.async();
+		grunt.log.writeln('Generating documentation to docs/...');
+		cp.exec('jsdoc -d docs lib/', function() {
+			done();
+		});
+	});
+
 	// Default task.
-	grunt.registerTask('default', 'lint mocha concat min');
+	grunt.registerTask('default', 'lint mocha docs concat min');
 };

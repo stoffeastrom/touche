@@ -1,0 +1,16 @@
+{
+	"name": "touché",
+	"version": "0.1.0pre",
+	"description": "Gestures library for desktop and touch devices",
+	"author": {
+		"name": "Christoffer Åström"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/stoffeastrom/touche"
+	},
+	"dependencies": {
+		"grunt": "0.3.x",
+		"grunt-mocha": "0.1.x"
+	}
+}

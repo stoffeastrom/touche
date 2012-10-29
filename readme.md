@@ -122,7 +122,7 @@ Touché is using grunt.js to build (concatenate + minify) and running tests. Bel
 $ cd touche
 $ npm install -g grunt
 $ npm install -g phantomjs
-$ npm install grunt-mocha
+$ npm install
 ```
 
 After installing, you can run a few different tasks using grunt:
@@ -132,6 +132,8 @@ After installing, you can run a few different tasks using grunt:
 $ grunt lint
 // run the test suite
 $ grunt mocha
+// generate documentation, requires "jsdoc" to be in path
+$ grunt doc
 // default: runs lint, mocha, concat, min
 $ grunt
 ```
