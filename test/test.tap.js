@@ -1,10 +1,10 @@
-/*global describe, Touche, expect, it, beforeEach*/
+/*global describe, Touche, expect, it, before, beforeEach, after*/
 describe('Gesture', function () {
 	var body = document.body;
 
 	describe('#Tap', function () {
 		var el;
-		
+
 		before(function() {
 			el = document.createElement('div');
 			el.style.position = "absolute";
