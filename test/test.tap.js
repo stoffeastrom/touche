@@ -13,7 +13,7 @@ describe('Gesture', function () {
 			el.style.width = "100px";
 			el.style.height = "100px";
 			body.appendChild(el);
-		})
+		});
 
 		beforeEach(function () {
 			var context = this;
