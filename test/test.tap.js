@@ -27,24 +27,21 @@ describe('Gesture', function () {
 				}
 			};
 			Touche.tap(el, context.gesture);
-			Touche.simulate.gesture(el);
 		});
 
 		it('should get called when tapping in center point', function () {
+			Touche.simulate.gesture(el);
 			expect(this.called).to.be(true);
 		});
 
 		it('should not be cancelled when tapping in center point', function () {
+			Touche.simulate.gesture(el);
 			expect(this.cancelled).to.be(false);
 		});
 
-		/*point = new Touche.Point(elRect.x - 20, elRect.y);
-		Touche.simulate.gesture(el, [point]);
-
 		it('should be cancelled when tapping outside element and areaThreshold', function() {
-			expect(cancelled).to.be(true);
+			Touche.simulate.gesture(el, [new Touche.Point(200,200)]);
+			expect(this.cancelled).to.be(true);
 		});
-
-		Touche.cache.get(el).context.removeGestures('tap');*/
 	});
 });
