@@ -2,11 +2,11 @@
 describe('Gesture', function () {
 	var body = document.body;
 
-	describe('#Tap', function () {
+	describe('#DoubleTap', function () {
 		var el;
 
 		before(function() {
-			console.log("tap before");
+			console.log("before");
 			el = document.createElement('div');
 			el.style.position = "absolute";
 			el.style.top = "0px";
@@ -17,13 +17,14 @@ describe('Gesture', function () {
 		});
 
 		beforeEach(function () {
-			console.log("tap beforeEach");
+			console.log("beforeEach");
 			var context = this;
 			context.called = false;
 			context.cancelled = false;
 			context.gesture = {
 				options: {
-					areaThreshold: 5
+					areaThreshold: 5,
+					timeThreshold: 10000
 				},
 				end: function () {
 					context.called = true;
@@ -32,22 +33,18 @@ describe('Gesture', function () {
 					context.cancelled = true;
 				}
 			};
-			Touche.tap(el, context.gesture);
+			Touche.doubletap(el, context.gesture);
 		});
 
 		it('should get called when tapping in center point', function () {
+			Touche.simulate.gesture(el);
 			Touche.simulate.gesture(el);
 			expect(this.called).to.be(true);
 			expect(this.cancelled).to.be(false);
 		});
 
-		it('should be cancelled when tapping outside element and areaThreshold', function() {
-			Touche.simulate.gesture(el, [new Touche.Point(200,200)]);
-			expect(this.cancelled).to.be(true);
-		});
-
 		after(function() {
-			console.log("tap after")
+			console.log("after");
 			body.removeChild(el);
 		});
 	});
