@@ -6,7 +6,6 @@ describe('Gesture', function () {
 		var el;
 
 		before(function() {
-			console.log("before");
 			el = document.createElement('div');
 			el.style.position = "absolute";
 			el.style.top = "0px";
@@ -17,7 +16,6 @@ describe('Gesture', function () {
 		});
 
 		beforeEach(function () {
-			console.log("beforeEach");
 			var context = this;
 			context.called = false;
 			context.cancelled = false;
@@ -44,7 +42,7 @@ describe('Gesture', function () {
 		});
 
 		after(function() {
-			console.log("after");
+			Touche.cache.get(el).context.removeGestures('tap');
 			body.removeChild(el);
 		});
 	});
