@@ -22,7 +22,7 @@ describe('Gesture', function () {
 			context.gesture = {
 				options: {
 					areaThreshold: 5,
-					timeThreshold: 10000
+					timeThreshold: 1000
 				},
 				end: function () {
 					context.called = true;
@@ -39,6 +39,15 @@ describe('Gesture', function () {
 			Touche.simulate.gesture(el);
 			expect(this.called).to.be(true);
 			expect(this.cancelled).to.be(false);
+		});
+
+		it('should be cancelled when not inside time threshold', function () {
+			Touche.simulate.gesture(el);
+			setTimeout(function() {
+				Touche.simulate.gesture(el);
+				expect(this.called).to.be(true);
+				expect(this.cancelled).to.be(false);
+			}, 2000)
 		});
 
 		after(function() {
