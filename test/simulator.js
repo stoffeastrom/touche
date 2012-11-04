@@ -1,7 +1,14 @@
 (function () {
 	'use strict';
 
-	var T = window.Touche;
+	var T = window.Touche,
+		origHandleEvent = T.GestureController.prototype.handleEvent;
+
+    T.GestureController.prototype.handleEvent = function(e) {
+        if (e.isSimulated) {
+            origHandleEvent.apply(this, arguments);
+        }
+    };
 
 	T.simulate = {
 		_createTouchEvent: function (type, touchList, points) {
@@ -27,7 +34,6 @@
 			return event;
 		},
 		_createMouseEvent: function (type, touchList, points) {
-			console.log("create mouse event", points[0].x, points[0].y, window.scrollX, window.scrollY)
 			var event, e = {
 
 				bubbles: true,
@@ -63,6 +69,7 @@
 			}
 		},
 		_dispatchEvent: function (elem, event) {
+			event.isSimulated = true;
 			elem.dispatchEvent(event);
 			return event;
 		},
@@ -82,7 +89,7 @@
 				rect = T.getRect(target),
 				centerPoint = new T.Point((rect.x + rect.width) / 2, (rect.y + rect.height) / 2);
 
-			points = points || [centerPoint]; console.log(points[0].x, points[0].y, rect, "events", events[prefix].length)
+			points = points || [centerPoint];
 
 			events[prefix].forEach(function(suffix) {
 				event = createEvent(prefix + suffix, touchList, points);

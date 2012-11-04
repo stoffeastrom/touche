@@ -51,6 +51,24 @@ describe('Gesture', function () {
 			}, 225);
 		});
 
+		it('should be cancelled when tapping in center point and time threshold is not met', function (done) {
+			this.timeout(250);
+			var context = this;
+			Touche.simulate.gesture(el, null, {
+				mouse: ['down'],
+				touch: ['start']
+			}, null, null);
+			setTimeout(function() {
+				Touche.simulate.gesture(el, null, {
+					mouse: ['up'],
+					touch: ['end']					
+				}, null, null);
+				expect(context.called).to.be(false);
+				expect(context.cancelled).to.be(true);
+				done();
+			}, 100);
+		});
+
 		after(function() {
 			Touche.cache.get(el).context.removeGestures('tap');
 			body.removeChild(el);
