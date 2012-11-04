@@ -21,8 +21,7 @@ describe('Gesture', function () {
 			context.cancelled = false;
 			context.gesture = {
 				options: {
-					areaThreshold: 5,
-					timeThreshold: 1000
+					timeThreshold: 100
 				},
 				end: function () {
 					context.called = true;
@@ -34,20 +33,24 @@ describe('Gesture', function () {
 			Touche.doubletap(el, context.gesture);
 		});
 
-		it('should get called when tapping in center point', function () {
+		it('should get called when tapping in center point', function (done) {
 			Touche.simulate.gesture(el);
 			Touche.simulate.gesture(el);
 			expect(this.called).to.be(true);
 			expect(this.cancelled).to.be(false);
+			done();
 		});
 
-		it('should be cancelled when not inside time threshold', function () {
+		it('should not be called when not inside time threshold', function (done) {
+			this.timeout(250);
+			var context = this;
 			Touche.simulate.gesture(el);
 			setTimeout(function() {
 				Touche.simulate.gesture(el);
-				expect(this.called).to.be(true);
-				expect(this.cancelled).to.be(false);
-			}, 2000)
+				expect(context.called).to.be(false);
+				expect(context.cancelled).to.be(false);
+				done();
+			}, 200);
 		});
 
 		after(function() {

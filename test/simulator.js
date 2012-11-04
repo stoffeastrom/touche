@@ -27,10 +27,11 @@
 			return event;
 		},
 		_createMouseEvent: function (type, touchList, points) {
+			console.log("create mouse event", points[0].x, points[0].y, window.scrollX, window.scrollY)
 			var event, e = {
 
 				bubbles: true,
-				cancelable: (type !== "mousemove"),
+				cancelable: true, //(type !== "mousemove"),
 				view: window,
 				detail: 0,
 
@@ -45,7 +46,7 @@
 				metaKey: false,
 
 				button: 0,
-				relatedTarget: undefined
+				relatedTarget: null
 
 			};
 
@@ -65,8 +66,12 @@
 			elem.dispatchEvent(event);
 			return event;
 		},
-		gesture: function (target, points, prefix, touchList) {
+		gesture: function (target, points, events, prefix, touchList) {
 			target = target || window.document.body;
+			events = events || {
+				mouse: ['down', 'move', 'up'],
+				touch: ['start', 'move', 'end']
+			};
 			prefix = prefix || ('ontouchstart' in window) ? 'touch' : 'mouse';
 			touchList =  touchList || 'touches';
 			/*
@@ -74,14 +79,10 @@
 			 */
 			var createEvent = this._createEvent,
 				event,
-				events = {
-				mouse: ['down', 'move', 'up'],
-				touch: ['start', 'move', 'end']
-			},
 				rect = T.getRect(target),
 				centerPoint = new T.Point((rect.x + rect.width) / 2, (rect.y + rect.height) / 2);
 
-			points = points || [centerPoint];
+			points = points || [centerPoint]; console.log(points[0].x, points[0].y, rect, "events", events[prefix].length)
 
 			events[prefix].forEach(function(suffix) {
 				event = createEvent(prefix + suffix, touchList, points);
