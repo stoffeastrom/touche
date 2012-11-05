@@ -3,9 +3,12 @@ describe('Gesture', function () {
 	var body = document.body;
 
 	describe('#2FingerTap', function () {
-		var el;
+		var el, origUtilsTouch;
 
 		before(function() {
+			origUtilsTouch = Touche.utils.touch;
+			Touche.utils.touch = true;
+			
 			el = document.createElement('div');
 			el.style.position = "absolute";
 			el.style.top = "0px";
@@ -30,7 +33,6 @@ describe('Gesture', function () {
 					context.cancelled = true;
 				}
 			};
-			Touche.utils.touch = true;
 			Touche.tap(el, context.gesture);
 		});
 
@@ -49,6 +51,7 @@ describe('Gesture', function () {
 		});
 
 		after(function() {
+			Touche.utils.touch = origUtilsTouch;
 			Touche.cache.get(el).context.removeGestures('tap');
 			body.removeChild(el);
 		});
