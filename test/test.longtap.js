@@ -18,10 +18,15 @@ describe('Gesture', function () {
 		beforeEach(function () {
 			var context = this;
 			context.called = false;
+			context.intervalCount = 0;
 			context.cancelled = false;
 			context.gesture = {
 				options: {
-					timeThreshold: 200
+					timeThreshold: 200,
+					interval: 10
+				},
+				update: function() {
+					context.intervalCount++;
 				},
 				end: function () {
 					context.called = true;
@@ -33,7 +38,7 @@ describe('Gesture', function () {
 			Touche.longtap(el, context.gesture);
 		});
 
-		it('should get called when tapping in center point and time threshold is met', function (done) {
+		it('should get called when tapping in center point and time threshold is met, update should get calld 20 times', function (done) {
 			this.timeout(250);
 			var context = this;
 			Touche.simulate.gesture(el, null, {
@@ -46,6 +51,7 @@ describe('Gesture', function () {
 					touch: ['end']					
 				}, null, null);
 				expect(context.called).to.be(true);
+				expect(context.intervalCount).to.be(20);
 				expect(context.cancelled).to.be(false);
 				done();
 			}, 225);
