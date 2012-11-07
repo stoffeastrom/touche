@@ -112,6 +112,49 @@ Touche.pinch(element, {
 		console.log("pinch cancelled");
 	}
 });
+
+/*
+* If you are using jquery you could just
+* wrap Touche in the special event api like below
+*/
+
+/*
+* jquery special event wrapper
+*/
+(function() {
+    $.each({
+        tap: 'tap',
+        doubletap: 'tap',
+        longtap: 'tap',
+        swipe: 'swipe',
+        pinch: 'pinch',
+        rotate: 'rotate'
+    }, function(event, sourceEvent) {
+        $.event.special[event] = {
+            add: function(handleObj) {
+                var el = $(this);
+                Touche[event](el[0], {
+                    options: handleObj.data && handleObj.data.options || {},
+                    start: function(e, data) {
+                        el.trigger(event + 'start', [data]);
+                    },
+                    update: function(e, data) {
+                        el.trigger(event + 'update', [data]);
+                    },
+                    end: function(e, data) {
+                        el.trigger(event, [data]);
+                    },
+                    cancel: function() {
+                        el.trigger(event + 'cancel');
+                    }
+                });
+            },
+            remove: function(handleObj) {
+                Touche.cache.get(this).context.cancelGestures(sourceEvent);
+            }
+        };
+    });
+})();
 ```
 
 ## Setting up the build environment
