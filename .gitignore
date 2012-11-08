@@ -167,3 +167,6 @@ server/
 
 # node modules
 node_modules/
+
+# sublime workspace
+*.sublime-workspace
