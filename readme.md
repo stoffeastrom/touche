@@ -4,7 +4,7 @@ This is a little lightweight gesture library supporting desktop and touch device
 
 The api looks like this:
 ```js
-Touche.tap(element, {
+Touche(element).tap({
 	options: {
 		areaThreshold: 5,
 		precedence: 5
@@ -15,9 +15,8 @@ Touche.tap(element, {
 	cancel: function() {
 		console.log("tap cancelled");
 	}
-});
-
-Touche.tap(element, {
+})
+.tap({
 	options: {
 		areaThreshold: 5,
 		precedence: 5,
@@ -29,9 +28,8 @@ Touche.tap(element, {
 	cancel: function() {
 		console.log("2-finger tap cancelled");
 	}
-});
-
-Touche.doubletap(element, {
+})
+.doubletap({
 	options: {
 		timeThreshold: 600
 	},
@@ -41,9 +39,8 @@ Touche.doubletap(element, {
 	cancel: function() {
 		console.log("double tap cancelled");
 	}
-});
-
-Touche.longtap(element, {
+})
+.longtap({
 	options: {
 		timeThreshold: 800,
 		interval: 20
@@ -57,27 +54,25 @@ Touche.longtap(element, {
 	cancel: function() {
 		console.log("long tap cancelled");
 	}
-});
-
-Touche.swipe(element, {
+})
+.swipe({
 	options: {
 		radiusThreshold: 24
 	},
 	start: function(e, data) {
-		console.log("swipestart", data);
+		console.log("swipestart1", data);
 	},
 	update: function(e, data) {
-		console.log("swipeupdate", data);
+		console.log("swipeupdate1", data);
 	},
 	end: function(e, data) {
-		console.log("swipe", data);
+		console.log("swipe1", data);
 	},
 	cancel: function() {
 		console.log("swipe cancelled");
 	}
-});
-
-Touche.rotate(element, {
+})
+.rotate({
 	options: {
 		rotationThreshold: 18
 	},
@@ -93,11 +88,10 @@ Touche.rotate(element, {
 	cancel: function() {
 		console.log("rotate cancelled");
 	}
-});
-
-Touche.pinch(element, {
+})
+.pinch({
 	options: {
-		pinchThreshold: 10
+		pinchThreshold: 12
 	},
 	start: function(e, data) {
 		console.log("pinchstart", data.scale);
