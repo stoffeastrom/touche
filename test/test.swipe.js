@@ -38,7 +38,7 @@ describe('Gesture', function () {
 					context.cancelled = true;
 				}
 			};
-			Touche.swipe(el, context.gesture);
+			Touche(el).swipe(context.gesture);
 		});
 
 		it('should get called when swiping and radius threshold is met', function (done) {

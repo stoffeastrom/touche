@@ -35,7 +35,7 @@ describe('Gesture', function () {
 					context.cancelled = true;
 				}
 			};
-			Touche.longtap(el, context.gesture);
+			Touche(el).longtap(context.gesture);
 		});
 
 		it('should get called when tapping in center point and time threshold is met, update should get calld 20 times', function (done) {

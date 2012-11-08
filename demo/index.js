@@ -1,5 +1,4 @@
 /*global console, Touche*/
-/*jslint usenew:false*/
 function createTouche() {
 	console.log("create Gesture");
 
@@ -17,9 +16,8 @@ function createTouche() {
 		cancel: function() {
 			console.log("tap cancelled");
 		}
-	});
-
-	Touche(element).tap({
+	})
+	.tap({
 		options: {
 			areaThreshold: 5,
 			precedence: 5,
@@ -31,9 +29,8 @@ function createTouche() {
 		cancel: function() {
 			console.log("2-finger tap cancelled");
 		}
-	});
-
-	Touche(element).doubletap({
+	})
+	.doubletap({
 		options: {
 			timeThreshold: 600
 		},
@@ -43,9 +40,8 @@ function createTouche() {
 		cancel: function() {
 			console.log("double tap cancelled");
 		}
-	});
-
-	Touche(element).longtap({
+	})
+	.longtap({
 		options: {
 			timeThreshold: 800,
 			interval: 20
@@ -59,9 +55,8 @@ function createTouche() {
 		cancel: function() {
 			console.log("long tap cancelled");
 		}
-	});
-
-	Touche(element).swipe({
+	})
+	.swipe({
 		options: {
 			radiusThreshold: 24
 		},
@@ -77,9 +72,8 @@ function createTouche() {
 		cancel: function() {
 			console.log("swipe cancelled");
 		}
-	});
-
-	Touche(element).rotate({
+	})
+	.rotate({
 		options: {
 			rotationThreshold: 18
 		},
@@ -95,9 +89,8 @@ function createTouche() {
 		cancel: function() {
 			console.log("rotate cancelled");
 		}
-	});
-
-	Touche(element).pinch({
+	})
+	.pinch({
 		options: {
 			pinchThreshold: 12
 		},

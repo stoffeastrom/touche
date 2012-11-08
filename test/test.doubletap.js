@@ -30,7 +30,7 @@ describe('Gesture', function () {
 					context.cancelled = true;
 				}
 			};
-			Touche.doubletap(el, context.gesture);
+			Touche(el).doubletap(context.gesture);
 		});
 
 		it('should get called when tapping in center point', function (done) {
