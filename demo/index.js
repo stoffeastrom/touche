@@ -1,10 +1,12 @@
+/*global console, Touche*/
+/*jslint usenew:false*/
 function createTouche() {
 	console.log("create Gesture");
 
 	var doc = window.document,
 		element = doc.getElementById('container');
 
-	Touche.tap(element, {
+	Touche(element).tap({
 		options: {
 			areaThreshold: 5,
 			precedence: 5
@@ -17,7 +19,7 @@ function createTouche() {
 		}
 	});
 
-	Touche.tap(element, {
+	Touche(element).tap({
 		options: {
 			areaThreshold: 5,
 			precedence: 5,
@@ -31,7 +33,7 @@ function createTouche() {
 		}
 	});
 
-	Touche.doubletap(element, {
+	Touche(element).doubletap({
 		options: {
 			timeThreshold: 600
 		},
@@ -43,7 +45,7 @@ function createTouche() {
 		}
 	});
 
-	Touche.longtap(element, {
+	Touche(element).longtap({
 		options: {
 			timeThreshold: 800,
 			interval: 20
@@ -59,7 +61,7 @@ function createTouche() {
 		}
 	});
 
-	Touche.swipe(element, {
+	Touche(element).swipe({
 		options: {
 			radiusThreshold: 24
 		},
@@ -77,7 +79,7 @@ function createTouche() {
 		}
 	});
 
-	Touche.rotate(element, {
+	Touche(element).rotate({
 		options: {
 			rotationThreshold: 18
 		},
@@ -95,7 +97,7 @@ function createTouche() {
 		}
 	});
 
-	Touche.pinch(element, {
+	Touche(element).pinch({
 		options: {
 			pinchThreshold: 12
 		},
