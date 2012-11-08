@@ -133,7 +133,7 @@ Touche.pinch(element, {
         $.event.special[event] = {
             add: function(handleObj) {
                 var el = $(this);
-                Touche[event](el[0], {
+                Touche(el[0])[event]( {
                     options: handleObj.data && handleObj.data.options || {},
                     start: function(e, data) {
                         el.trigger(event + 'start', [data]);
