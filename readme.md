@@ -144,7 +144,7 @@ Touche(element).tap({
                 });
             },
             remove: function(handleObj) {
-                Touche.cache.get(this).context.cancelGestures(sourceEvent);
+                Touche.cache.get(this).context.removeGestures(sourceEvent);
             }
         };
     });
