@@ -43,6 +43,7 @@ function createTouche() {
 	})
 	.longtap({
 		options: {
+			precedence: 3,
 			timeThreshold: 800,
 			interval: 20
 		},

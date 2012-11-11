@@ -38,7 +38,7 @@ describe('Gesture', function () {
 			Touche(el).longtap(context.gesture);
 		});
 
-		it('should get called when tapping in center point and time threshold is met, update should get calld 20 times', function (done) {
+		it('should get called when tapping in center point and time threshold is met, update should get called 20 times', function (done) {
 			this.timeout(250);
 			var context = this;
 			Touche.simulate.gesture(el, null, {
@@ -48,7 +48,7 @@ describe('Gesture', function () {
 			setTimeout(function() {
 				Touche.simulate.gesture(el, null, {
 					mouse: ['up'],
-					touch: ['end']					
+					touch: ['end']
 				}, null, null);
 				expect(context.called).to.be(true);
 				expect(context.intervalCount).to.be(20);
@@ -67,7 +67,7 @@ describe('Gesture', function () {
 			setTimeout(function() {
 				Touche.simulate.gesture(el, null, {
 					mouse: ['up'],
-					touch: ['end']					
+					touch: ['end']
 				}, null, null);
 				expect(context.called).to.be(false);
 				expect(context.cancelled).to.be(true);
