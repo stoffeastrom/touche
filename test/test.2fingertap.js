@@ -37,16 +37,31 @@ describe('Gesture', function () {
 		});
 
 		it('should get called when tapping in center point with 2 finger', function (done) {
-		Touche.simulate.gesture(el, [new Touche.Point(50,50), new Touche.Point(50,50)], null, 'touch');
+			Touche.simulate.gesture(el, [new Touche.Point(50,50), new Touche.Point(50,50)], null, 'touch');
 			expect(this.called).to.be(true);
 			expect(this.cancelled).to.be(false);
 			done();
 		});
 
 		it('should not get called when tapping in center point with 3 fingers', function (done) {
-		Touche.simulate.gesture(el, [new Touche.Point(50,50), new Touche.Point(50,50), new Touche.Point(50,50)], null, 'touch');
+			Touche.simulate.gesture(el, [new Touche.Point(50,50), new Touche.Point(50,50), new Touche.Point(50,50)], null, 'touch');
 			expect(this.called).to.be(false);
 			expect(this.cancelled).to.be(true);
+			done();
+		});
+
+		it('should get called when tapping in center point with 2 finger even if they dont hit the touch area exactly the same time', function (done) {
+			Touche.simulate.gesture(el, [new Touche.Point(50,50)], {
+				touch: ['start']
+			}, 'touch');
+			Touche.simulate.gesture(el, [new Touche.Point(50,50), new Touche.Point(50,50)], {
+				touch: ['move']
+			}, 'touch');
+			Touche.simulate.gesture(el, null, {
+				touch: ['end']
+			}, 'touch');
+			expect(this.called).to.be(true);
+			expect(this.cancelled).to.be(false);
 			done();
 		});
 
