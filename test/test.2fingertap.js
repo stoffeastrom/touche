@@ -65,6 +65,24 @@ describe('Gesture', function () {
 			done();
 		});
 
+		it('should not get called when first holding correct amount of fingers and then accidently puts another finger down', function (done) {
+			Touche.simulate.gesture(el, [new Touche.Point(50,50)], {
+				touch: ['start']
+			}, 'touch');
+			Touche.simulate.gesture(el, [new Touche.Point(50,50), new Touche.Point(50,50)], {
+				touch: ['move']
+			}, 'touch');
+			Touche.simulate.gesture(el, [new Touche.Point(50,50), new Touche.Point(50,50), new Touche.Point(50,50)], {
+				touch: ['move']
+			}, 'touch');
+			Touche.simulate.gesture(el, null, {
+				touch: ['end']
+			}, 'touch');
+			expect(this.called).to.be(false);
+			expect(this.cancelled).to.be(true);
+			done();
+		});
+
 		after(function() {
 			Touche.utils.touch = origUtilsTouch;
 			Touche.cache.get(el).context.removeGestures('tap');
