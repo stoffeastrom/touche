@@ -32,7 +32,7 @@ function createTouche() {
 	})
 	.doubletap({
 		options: {
-			timeThreshold: 600
+			timeThreshold: 200
 		},
 		end: function() {
 			console.log("double tap");
