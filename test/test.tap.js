@@ -33,14 +33,14 @@ describe('Gesture', function () {
 			Touche(el).tap(context.gesture);
 		});
 
-		it('should get called when tapping in center point', function (done) {
+		it('should get called when tapping in center point, for mouse events', function (done) {
 			Touche.simulate.gesture(el);
 			expect(this.called).to.be(true);
 			expect(this.cancelled).to.be(false);
 			done();
 		});
 
-		it('should be cancelled when tapping outside element and areaThreshold', function(done) {
+		it('should be cancelled when tapping outside element and areaThreshold, for mouse events', function(done) {
 			Touche.simulate.gesture(el, [new Touche.Point(200,200)]);
 			expect(this.cancelled).to.be(true);
 			done();

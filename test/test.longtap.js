@@ -38,18 +38,16 @@ describe('Gesture', function () {
 			Touche(el).longtap(context.gesture);
 		});
 
-		it('should get called when tapping in center point and time threshold is met, update should get called 20 times', function (done) {
+		it('should get called when tapping in center point and time threshold is met, update should get called 20 times, for mouse events', function (done) {
 			this.timeout(250);
 			var context = this;
 			Touche.simulate.gesture(el, null, {
-				mouse: ['down'],
-				touch: ['start']
-			}, null, null);
+				mouse: ['down']
+			}, 'mouse');
 			setTimeout(function() {
 				Touche.simulate.gesture(el, null, {
-					mouse: ['up'],
-					touch: ['end']
-				}, null, null);
+					mouse: ['up']
+				}, 'mouse');
 				expect(context.called).to.be(true);
 				expect(context.intervalCount).to.be(20);
 				expect(context.cancelled).to.be(false);
@@ -57,18 +55,16 @@ describe('Gesture', function () {
 			}, 225);
 		});
 
-		it('should be cancelled when tapping in center point and time threshold is not met', function (done) {
+		it('should be cancelled when tapping in center point and time threshold is not met, for mouse events', function (done) {
 			this.timeout(250);
 			var context = this;
 			Touche.simulate.gesture(el, null, {
-				mouse: ['down'],
-				touch: ['start']
-			}, null, null);
+				mouse: ['down']
+			}, 'mouse');
 			setTimeout(function() {
 				Touche.simulate.gesture(el, null, {
-					mouse: ['up'],
-					touch: ['end']
-				}, null, null);
+					mouse: ['up']
+				}, 'mouse');
 				expect(context.called).to.be(false);
 				expect(context.cancelled).to.be(true);
 				done();

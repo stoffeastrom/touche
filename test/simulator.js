@@ -77,9 +77,10 @@
 			target = target || window.document.body;
 			events = events || {
 				mouse: ['down', 'move', 'up'],
-				touch: ['start', 'move', 'end']
+				touch: ['start', 'move', 'end'],
+				MSPointer: ['Down', 'Move', 'Up']
 			};
-			prefix = prefix || ('ontouchstart' in window) ? 'touch' : 'mouse';
+			prefix = prefix || ((window.navigator.msPointerEnabled) ? 'MSPointer' : (('ontouchstart' in window) ? 'touch' : 'mouse'));
 			touchList =  touchList || 'touches';
 			/*
 			 * This will handle all the logic to simulate a gesture
