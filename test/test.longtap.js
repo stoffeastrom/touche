@@ -3,9 +3,12 @@ describe('Gesture', function () {
 	var body = document.body;
 
 	describe('#LongTap', function () {
-		var el;
+		var el, origUtilsTouch;
 
 		before(function() {
+			origUtilsTouch = Touche.utils.touch;
+			Touche.utils.touch = false;
+
 			el = document.createElement('div');
 			el.style.position = "absolute";
 			el.style.top = "0px";
@@ -72,6 +75,7 @@ describe('Gesture', function () {
 		});
 
 		after(function() {
+			Touche.utils.touch = origUtilsTouch;
 			Touche.cache.get(el).context.removeGestures('tap');
 			body.removeChild(el);
 		});
