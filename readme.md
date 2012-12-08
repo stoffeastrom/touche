@@ -6,8 +6,7 @@ The api looks like this:
 ```js
 Touche(element).tap({
 	options: {
-		areaThreshold: 5,
-		precedence: 5
+		areaThreshold: 5
 	},
 	end: function(e, data) {
 		console.log("tap");
@@ -19,7 +18,6 @@ Touche(element).tap({
 .tap({
 	options: {
 		areaThreshold: 5,
-		precedence: 5,
 		touches: 2
 	},
 	end: function(e, data) {
