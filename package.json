@@ -9,8 +9,12 @@
 		"type": "git",
 		"url": "https://github.com/stoffeastrom/touche"
 	},
-	"dependencies": {
+	"devDependencies": {
 		"grunt": "0.3.x",
 		"grunt-mocha": "0.1.x"
+	},
+	"scripts" : {
+		"dev": "grunt",
+		"test": "grunt-mocha"
 	}
 }
