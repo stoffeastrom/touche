@@ -107,7 +107,7 @@ Touche(element).tap({
 
 /*
 * If you are using jquery you could just
-* wrap Touche in the special event api like below
+* wrap Touche in the special event api like below.
 */
 
 /*
