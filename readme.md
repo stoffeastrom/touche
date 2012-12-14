@@ -111,7 +111,7 @@ Touche(element).tap({
 */
 
 /*
-* jquery special event wrapper. :)
+* jquery special event wrapper.
 */
 (function() {
     $.each({
