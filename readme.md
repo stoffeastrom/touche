@@ -1,5 +1,7 @@
 #Touché
 
+[![Build Status](https://travis-ci.org/stoffeastrom/touche.png?branch=gh-pages)](https://travis-ci.org/stoffeastrom/touche)
+
 This is a little lightweight gesture library supporting desktop and touch devices.
 
 The api looks like this:
