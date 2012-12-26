@@ -27,8 +27,9 @@ module.exports = function(grunt) {
 			dist: {
 				src: [
 					'<banner:meta.banner>',
-					'lib/touche.js',
-					'lib/*.js'
+					'lib/core/touche.js',
+					'lib/core/*.js',
+					'lib/gestures/*.js'
 				],
 				dest: 'dist/touche.js'
 			}

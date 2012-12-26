@@ -2,9 +2,9 @@
 	'use strict';
 
 	var T = window.Touche,
-		origHandleEvent = T.GestureController.prototype.handleEvent;
+		origHandleEvent = T.GestureHandler.prototype.handleEvent;
 
-    T.GestureController.prototype.handleEvent = function(e) {
+    T.GestureHandler.prototype.handleEvent = function(e) {
         if (e.isSimulated) {
             origHandleEvent.apply(this, arguments);
         }
