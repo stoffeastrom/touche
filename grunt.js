@@ -70,9 +70,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('docs', 'Generate documentation', function() {
 		var done = this.async();
 		grunt.log.writeln('Generating documentation to docs/...');
-		cp.exec('jsdoc -d docs lib/', function() {
-			done();
-		});
+		cp.exec('jsdoc -d docs -r lib/', done);
 	});
 
 	// Default task.
