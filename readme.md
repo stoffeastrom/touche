@@ -126,20 +126,19 @@ Touche(element).tap({
     ], function(_, event) {
         $.event.special[event] = {
             add: function(handleObj) {
-                var el = $(this);
-                Touche(el[0])[event]( {
+                Touche(this)[event]( {
                     options: handleObj.data && handleObj.data.options || {},
                     start: function(e, data) {
-                        el.trigger(event + 'start', [data]);
+                        $(e.target).trigger(event + 'start', [data]);
                     },
                     update: function(e, data) {
-                        el.trigger(event + 'update', [data]);
+                        $(e.target).trigger(event + 'update', [data]);
                     },
                     end: function(e, data) {
-                        el.trigger(event, [data]);
+                        $(e.target).trigger(event, [data]);
                     },
                     cancel: function() {
-                        el.trigger(event + 'cancel');
+                        $(e.target).trigger(event + 'cancel');
                     }
                 });
             },
