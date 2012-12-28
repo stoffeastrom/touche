@@ -87,7 +87,7 @@
 			 */
 			var createEvent = this._createEvent,
 				event,
-				rect = T.getRect(target),
+				rect = T.utils.getRect(target),
 				centerPoint = new T.Point((rect.x + rect.width) / 2, (rect.y + rect.height) / 2);
 
 			points = points || [centerPoint];

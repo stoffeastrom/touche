@@ -34,7 +34,7 @@ describe('Rect', function() {
 
 	describe('#getRect', function() {
 		it('should get a `Rect` instance', function() {
-			expect(Touche.getRect(document.createElement('div'))).to.be.a(Touche.Rect);
+			expect(Touche.utils.getRect(document.createElement('div'))).to.be.a(Touche.Rect);
 		});
 	});
 });
