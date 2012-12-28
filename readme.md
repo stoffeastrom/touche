@@ -116,14 +116,14 @@ Touche(element).tap({
 * jquery special event wrapper.
 */
 (function() {
-    $.each({
-        tap: 'tap',
-        doubletap: 'tap',
-        longtap: 'tap',
-        swipe: 'swipe',
-        pinch: 'pinch',
-        rotate: 'rotate'
-    }, function(event, sourceEvent) {
+    $.each([
+        'tap',
+        'doubletap',
+        'longtap',
+        'swipe',
+        'pinch',
+        'rotate'
+    ], function(_, event) {
         $.event.special[event] = {
             add: function(handleObj) {
                 var el = $(this);
@@ -144,7 +144,7 @@ Touche(element).tap({
                 });
             },
             remove: function(handleObj) {
-                Touche.cache.get(this).context.removeGestures(sourceEvent);
+                Touche(this).off(event);
             }
         };
     });
