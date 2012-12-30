@@ -1,5 +1,85 @@
 /*global describe, Touche, expect, it*/
 describe('Utils', function() {
+	describe('#isSVG', function() {
+		var isSVG = Touche.utils.isSVG,
+			svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+
+		it('should return `true` when element is any svg element', function() {
+			expect(isSVG(svgEl)).to.be(true);
+		});
+
+		it('should return `false` when not svg element', function() {
+			expect(isSVG(document)).to.be(false);
+		});
+	});
+
+	describe('#closest', function() {
+		var closest = Touche.utils.closest,
+			svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
+			rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+
+		it('should return `null` if no match is found', function() {
+			expect(closest(document, 'div')).to.be(null);
+		});
+
+		it('should return `element` found', function() {
+			svg.appendChild(rect);
+			expect(closest(rect, 'svg').tagName.toUpperCase()).to.be('SVG');
+			expect(closest(rect, 'svg') === svg).to.be(true); //to avoid dom error
+			//expect(closest(rect, 'svg')).to.be.eql(svg);
+		});
+	});
+
+	describe('#transformPoint', function() {
+		var transformPoint = Touche.utils.transformPoint,
+			p = new Touche.Point(50,50),
+			tp,
+			div = document.createElement('div'),
+			svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
+			rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect'),
+			x,
+			y,
+			w,
+			h,
+			cp,
+			bbox,
+			rectCP;
+
+		it('should return same point if target is not SVG', function() {
+			expect(transformPoint(document, p)).to.be.eql(p);
+		});
+
+		it('should get correct transformed point for SVG', function() {
+			div.style.position = 'fixed';
+			div.style.width = '200px';
+			div.style.height = '200px';
+			div.style.left = '200px';
+			div.style.top = '200px';
+			svg.setAttribute('width', '100%');
+			svg.setAttribute('height', '100%');
+			rect.setAttribute('x', 0);
+			rect.setAttribute('y', 0);
+			rect.setAttribute('width', '100%');
+			rect.setAttribute('height', '100%');
+			rect.setAttribute('fill-opacity', '0');
+
+			document.body.appendChild(div);
+			svg.appendChild(rect);
+			div.appendChild(svg);
+
+			x = div.offsetLeft;
+			y = div.offsetTop;
+			w = div.offsetWidth;
+			h = div.offsetHeight;
+
+			cp = new Touche.Point(x + (w/2), y + (h/2));
+			bbox = rect.getBBox();
+			rectCP = new Touche.Point(bbox.x + (bbox.width/2), bbox.y + (bbox.height/2));
+			tp = transformPoint(rect, cp);
+			expect(rectCP.distanceTo(tp)).to.be(0);
+		});
+	});
+
 	describe('#isFunction', function() {
 		var isFn = Touche.utils.isFunction;
 
