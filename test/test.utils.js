@@ -1,4 +1,4 @@
-/*global describe, Touche, expect, it*/
+/*global describe, Touche, expect, it, before, after*/
 describe('Utils', function() {
 	describe('#isSVG', function() {
 		var isSVG = Touche.utils.isSVG,
@@ -45,11 +45,7 @@ describe('Utils', function() {
 			bbox,
 			rectCP;
 
-		it('should return same point if target is not SVG', function() {
-			expect(transformPoint(document, p)).to.be.eql(p);
-		});
-
-		it('should get correct transformed point for SVG', function() {
+		before(function() {
 			div.style.position = 'fixed';
 			div.style.width = '200px';
 			div.style.height = '200px';
@@ -66,6 +62,14 @@ describe('Utils', function() {
 			document.body.appendChild(div);
 			svg.appendChild(rect);
 			div.appendChild(svg);
+		});
+
+		it('should return same point if target is not SVG', function() {
+			expect(transformPoint(document, p)).to.be.eql(p);
+		});
+
+		it('should get correct transformed point for SVG', function() {
+
 
 			x = div.offsetLeft;
 			y = div.offsetTop;
@@ -77,6 +81,10 @@ describe('Utils', function() {
 			rectCP = new Touche.Point(bbox.x + (bbox.width/2), bbox.y + (bbox.height/2));
 			tp = transformPoint(rect, cp);
 			expect(rectCP.distanceTo(tp)).to.be(0);
+		});
+
+		after(function() {
+			document.body.removeChild(div);
 		});
 	});
 

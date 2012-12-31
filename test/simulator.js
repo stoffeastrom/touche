@@ -33,7 +33,7 @@
 
 			return event;
 		},
-		_createMouseEvent: function (type, touchList, points) {
+		_createMouseEvent: function (type, touchList, points, pointerId) {
 			var event, e = {
 
 				bubbles: true,
@@ -58,14 +58,17 @@
 
 			event = document.createEvent("MouseEvents");
 			event.initMouseEvent(type, e.bubbles, e.cancelable, e.view, e.detail, e.screenX, e.screenY, e.clientX, e.clientY, e.ctrlKey, e.altKey, e.shiftKey, e.metaKey, e.button, document.body.parentNode);
+			if(pointerId) {
+				event.pointerId = pointerId;
+			}
 
 			return event;
 		},
-		_createEvent: function (type, touchList, points) {
+		_createEvent: function (type, touchList, points, pointerId) {
 			if (type.indexOf('touch') === 0) {
 				return T.simulate._createTouchEvent(type, touchList, points);
 			} else {
-				return T.simulate._createMouseEvent(type, touchList, points);
+				return T.simulate._createMouseEvent(type, touchList, points, pointerId);
 			}
 		},
 		_dispatchEvent: function (elem, event) {
@@ -73,7 +76,7 @@
 			elem.dispatchEvent(event);
 			return event;
 		},
-		gesture: function (target, points, events, prefix, touchList) {
+		gesture: function (target, points, events, prefix, touchList, pointerId) {
 			target = target || window.document.body;
 			events = events || {
 				mouse: ['down', 'move', 'up'],
@@ -82,6 +85,8 @@
 			};
 			prefix = prefix || ((window.navigator.msPointerEnabled) ? 'MSPointer' : (('ontouchstart' in window) ? 'touch' : 'mouse'));
 			touchList =  touchList || 'touches';
+			pointerId = pointerId || 1;
+
 			/*
 			 * This will handle all the logic to simulate a gesture
 			 */
@@ -93,7 +98,7 @@
 			points = points || [centerPoint];
 
 			events[prefix].forEach(function(suffix) {
-				event = createEvent(prefix + suffix, touchList, points);
+				event = createEvent(prefix + suffix, touchList, points, pointerId);
 				T.simulate._dispatchEvent(target, event);
 			});
 		}

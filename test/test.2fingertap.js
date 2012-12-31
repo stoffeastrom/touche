@@ -2,12 +2,14 @@
 describe('Gesture', function () {
 	var body = document.body;
 
-	describe('#2FingerTap', function () {
-		var el, origUtilsTouch;
+	describe('#2FingerTap - Touch', function () {
+		var el, origUtilsTouch, origUtilsMSPointer;
 
 		before(function() {
 			origUtilsTouch = Touche.utils.touch;
-			Touche.utils.touch = true;
+			origUtilsMSPointer = Touche.utils.msPointer;
+			Touche.utils.touch  = true;
+			Touche.utils.msPointer = false;
 			
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -85,7 +87,87 @@ describe('Gesture', function () {
 
 		after(function() {
 			Touche.utils.touch = origUtilsTouch;
-			Touche.cache.get(el).context.removeGestures('tap');
+			Touche.utils.msPointer = origUtilsMSPointer;
+			Touche(el).off('tap');
+			expect(Touche.cache.data.length).to.be(0);
+			body.removeChild(el);
+		});
+	});
+
+	describe('#2FingerTap - MSPointer', function () {
+		var el, origUtilsTouch, origUtilsMSPointer;
+
+		before(function() {
+			origUtilsTouch = Touche.utils.touch;
+			origUtilsMSPointer = Touche.utils.msPointer;
+			Touche.utils.touch  = false;
+			Touche.utils.msPointer = true;
+			
+			el = document.createElement('div');
+			el.style.position = "absolute";
+			el.style.top = "0px";
+			el.style.left = "0px";
+			el.style.width = "100px";
+			el.style.height = "100px";
+			body.appendChild(el);
+		});
+
+		beforeEach(function () {
+			var context = this;
+			context.called = false;
+			context.cancelled = false;
+			context.gesture = {
+				options: {
+					touches: 2
+				},
+				end: function () {
+					context.called = true;
+				},
+				cancel: function () {
+					context.cancelled = true;
+				}
+			};
+			Touche(el).tap(context.gesture);
+		});
+
+		it('should get called when tapping in center point with 2 finger', function (done) {
+			Touche.simulate.gesture(el, [new Touche.Point(50,50)], {
+				MSPointer: ['Down']
+			}, 'MSPointer', null, 1);
+			Touche.simulate.gesture(el, [new Touche.Point(50,50)], {
+				MSPointer: ['Down']
+			}, 'MSPointer', null, 2);
+			Touche.simulate.gesture(el, [new Touche.Point(50,50)], {
+				MSPointer: ['Up']
+			}, 'MSPointer', null, 1);
+			expect(this.called).to.be(true);
+			expect(this.cancelled).to.be(false);
+			done();
+		});
+
+		it('should not get called when tapping in center point with 3 fingers', function (done) {
+			Touche.simulate.gesture(el, [new Touche.Point(50,50)], {
+				MSPointer: ['Down']
+			}, 'MSPointer', null, 1);
+			Touche.simulate.gesture(el, [new Touche.Point(50,50)], {
+				MSPointer: ['Down']
+			}, 'MSPointer', null, 2);
+			Touche.simulate.gesture(el, [new Touche.Point(50,50)], {
+				MSPointer: ['Down']
+			}, 'MSPointer', null, 3);
+			Touche.simulate.gesture(el, [new Touche.Point(50,50)], {
+				MSPointer: ['Up']
+			}, 'MSPointer', null, 1);
+			expect(this.called).to.be(false);
+			expect(this.cancelled).to.be(true);
+			done();
+		});
+
+		after(function() {
+			Touche.utils.touch = origUtilsTouch;
+			Touche.utils.msPointer = origUtilsMSPointer;
+			Touche(el).off('tap');
+			expect(Touche.cache.data.length).to.be(0);
 			body.removeChild(el);
 		});
 	});
