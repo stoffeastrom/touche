@@ -7,27 +7,19 @@ function createTouche() {
 
 	Touche(element).tap({
 		options: {
-			areaThreshold: 5,
-			precedence: 5
+			areaThreshold: 5
 		},
 		end: function(e, data) {
 			console.log("tap");
-		},
-		cancel: function() {
-			console.log("tap cancelled");
 		}
 	})
 	.tap({
 		options: {
 			areaThreshold: 5,
-			precedence: 5,
 			touches: 2
 		},
 		end: function(e, data) {
 			console.log("2-finger tap");
-		},
-		cancel: function() {
-			console.log("2-finger tap cancelled");
 		}
 	})
 	.doubletap({
@@ -36,25 +28,24 @@ function createTouche() {
 		},
 		end: function() {
 			console.log("double tap");
-		},
-		cancel: function() {
-			console.log("double tap cancelled");
 		}
 	})
 	.longtap({
 		options: {
-			precedence: 3,
 			timeThreshold: 800,
 			interval: 20
 		},
+		start: function(event, data) {
+			console.log("longtap start", data.percentage);
+		},
 		update: function(event, data) {
-			console.log("long tap", data.percentage);
+			console.log("longtap update", data.percentage);
 		},
 		end: function() {
-			console.log("long tap");
+			console.log("longtap");
 		},
 		cancel: function() {
-			console.log("long tap cancelled");
+			console.log("longtap cancelled");
 		}
 	})
 	.swipe({
@@ -62,13 +53,13 @@ function createTouche() {
 			radiusThreshold: 24
 		},
 		start: function(e, data) {
-			console.log("swipestart1", data);
+			console.log("swipe start", data);
 		},
 		update: function(e, data) {
-			console.log("swipeupdate1", data);
+			console.log("swipe update", data);
 		},
 		end: function(e, data) {
-			console.log("swipe1", data);
+			console.log("swipe", data);
 		},
 		cancel: function() {
 			console.log("swipe cancelled");
@@ -79,10 +70,10 @@ function createTouche() {
 			rotationThreshold: 18
 		},
 		start: function(e, data) {
-			console.log("rotatestart", data.rotation);
+			console.log("rotate start", data.rotation);
 		},
 		update: function(e, data) {
-			console.log("rotateupdate", data.rotation);
+			console.log("rotate update", data.rotation);
 		},
 		end: function(e, data) {
 			console.log("rotate");
@@ -96,16 +87,16 @@ function createTouche() {
 			pinchThreshold: 12
 		},
 		start: function(e, data) {
-			console.log("pinchstart", data.scale);
+			console.log("pinch start", data.scale, +new Date());
 		},
 		update: function(e, data) {
-			console.log("pinchupdate", data.scale);
+			console.log("pinch update", data.scale, +new Date());
 		},
 		end: function(e, data) {
-			console.log("pinch");
+			console.log("pinch", +new Date());
 		},
 		cancel: function() {
-			console.log("pinch cancelled");
+			console.log("pinch cancelled", +new Date());
 		}
 	});
 }

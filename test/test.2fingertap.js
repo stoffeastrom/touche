@@ -23,16 +23,12 @@ describe('Gesture', function () {
 		beforeEach(function () {
 			var context = this;
 			context.called = false;
-			context.cancelled = false;
 			context.gesture = {
 				options: {
 					touches: 2
 				},
 				end: function () {
 					context.called = true;
-				},
-				cancel: function () {
-					context.cancelled = true;
 				}
 			};
 			Touche(el).tap(context.gesture);
@@ -41,14 +37,12 @@ describe('Gesture', function () {
 		it('should get called when tapping in center point with 2 finger', function (done) {
 			Touche.simulate.gesture(el, [new Touche.Point(50,50), new Touche.Point(50,50)], null, 'touch');
 			expect(this.called).to.be(true);
-			expect(this.cancelled).to.be(false);
 			done();
 		});
 
 		it('should not get called when tapping in center point with 3 fingers', function (done) {
 			Touche.simulate.gesture(el, [new Touche.Point(50,50), new Touche.Point(50,50), new Touche.Point(50,50)], null, 'touch');
 			expect(this.called).to.be(false);
-			expect(this.cancelled).to.be(true);
 			done();
 		});
 
@@ -63,7 +57,6 @@ describe('Gesture', function () {
 				touch: ['end']
 			}, 'touch');
 			expect(this.called).to.be(true);
-			expect(this.cancelled).to.be(false);
 			done();
 		});
 
@@ -81,7 +74,6 @@ describe('Gesture', function () {
 				touch: ['end']
 			}, 'touch');
 			expect(this.called).to.be(false);
-			expect(this.cancelled).to.be(true);
 			done();
 		});
 
@@ -122,9 +114,6 @@ describe('Gesture', function () {
 				},
 				end: function () {
 					context.called = true;
-				},
-				cancel: function () {
-					context.cancelled = true;
 				}
 			};
 			Touche(el).tap(context.gesture);
@@ -141,7 +130,6 @@ describe('Gesture', function () {
 				MSPointer: ['Up']
 			}, 'MSPointer', null, 1);
 			expect(this.called).to.be(true);
-			expect(this.cancelled).to.be(false);
 			done();
 		});
 
@@ -159,7 +147,6 @@ describe('Gesture', function () {
 				MSPointer: ['Up']
 			}, 'MSPointer', null, 1);
 			expect(this.called).to.be(false);
-			expect(this.cancelled).to.be(true);
 			done();
 		});
 

@@ -1,6 +1,4 @@
-#Touché
-
-[![Build Status](https://travis-ci.org/stoffeastrom/touche.png?branch=gh-pages)](https://travis-ci.org/stoffeastrom/touche)
+#Touché - [![Build Status](https://travis-ci.org/stoffeastrom/touche.png?branch=gh-pages)](https://travis-ci.org/stoffeastrom/touche)
 
 This is a little lightweight gesture library supporting desktop and touch devices.
 
@@ -11,10 +9,7 @@ Touche(element).tap({
 		areaThreshold: 5
 	},
 	end: function(e, data) {
-		console.log("tap");
-	},
-	cancel: function() {
-		console.log("tap cancelled");
+		console.log("tap", +new Date());
 	}
 })
 .tap({
@@ -23,21 +18,15 @@ Touche(element).tap({
 		touches: 2
 	},
 	end: function(e, data) {
-		console.log("2-finger tap");
-	},
-	cancel: function() {
-		console.log("2-finger tap cancelled");
+		console.log("2-finger tap", +new Date());
 	}
 })
 .doubletap({
 	options: {
-		timeThreshold: 600
+		timeThreshold: 200
 	},
 	end: function() {
-		console.log("double tap");
-	},
-	cancel: function() {
-		console.log("double tap cancelled");
+		console.log("double tap", +new Date());
 	}
 })
 .longtap({
@@ -45,14 +34,17 @@ Touche(element).tap({
 		timeThreshold: 800,
 		interval: 20
 	},
+	start: function(event, data) {
+		console.log("longtap start", data.percentage, +new Date());
+	},
 	update: function(event, data) {
-		console.log("long tap", data.percentage);
+		console.log("longtap update", data.percentage, +new Date());
 	},
 	end: function() {
-		console.log("long tap");
+		console.log("longtap", +new Date());
 	},
 	cancel: function() {
-		console.log("long tap cancelled");
+		console.log("longtap cancelled", +new Date());
 	}
 })
 .swipe({
@@ -60,16 +52,16 @@ Touche(element).tap({
 		radiusThreshold: 24
 	},
 	start: function(e, data) {
-		console.log("swipestart1", data);
+		console.log("swipestart", data, +new Date());
 	},
 	update: function(e, data) {
-		console.log("swipeupdate1", data);
+		console.log("swipeupdate", data, +new Date());
 	},
 	end: function(e, data) {
-		console.log("swipe1", data);
+		console.log("swipe", data, +new Date());
 	},
 	cancel: function() {
-		console.log("swipe cancelled");
+		console.log("swipe cancelled", +new Date());
 	}
 })
 .rotate({
@@ -77,16 +69,16 @@ Touche(element).tap({
 		rotationThreshold: 18
 	},
 	start: function(e, data) {
-		console.log("rotatestart", data.rotation);
+		console.log("rotatestart", data.rotation, +new Date());
 	},
 	update: function(e, data) {
-		console.log("rotateupdate", data.rotation);
+		console.log("rotateupdate", data.rotation, +new Date());
 	},
 	end: function(e, data) {
-		console.log("rotate");
+		console.log("rotate", +new Date());
 	},
 	cancel: function() {
-		console.log("rotate cancelled");
+		console.log("rotate cancelled", +new Date());
 	}
 })
 .pinch({
@@ -94,16 +86,16 @@ Touche(element).tap({
 		pinchThreshold: 12
 	},
 	start: function(e, data) {
-		console.log("pinchstart", data.scale);
+		console.log("pinchstart", data.scale, +new Date());
 	},
 	update: function(e, data) {
-		console.log("pinchupdate", data.scale);
+		console.log("pinchupdate", data.scale, +new Date());
 	},
 	end: function(e, data) {
-		console.log("pinch");
+		console.log("pinch", +new Date());
 	},
 	cancel: function() {
-		console.log("pinch cancelled");
+		console.log("pinch cancelled", +new Date());
 	}
 });
 

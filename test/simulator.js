@@ -33,7 +33,7 @@
 
 			return event;
 		},
-		_createMouseEvent: function (type, touchList, points, pointerId) {
+		_createMouseEvent: function (type, touchList, points, pointerId, button) {
 			var event, e = {
 
 				bubbles: true,
@@ -51,7 +51,7 @@
 				shiftKey: false,
 				metaKey: false,
 
-				button: 0,
+				button: button || 0,
 				relatedTarget: null
 
 			};
@@ -64,11 +64,11 @@
 
 			return event;
 		},
-		_createEvent: function (type, touchList, points, pointerId) {
+		_createEvent: function (type, touchList, points, pointerId, button) {
 			if (type.indexOf('touch') === 0) {
 				return T.simulate._createTouchEvent(type, touchList, points);
 			} else {
-				return T.simulate._createMouseEvent(type, touchList, points, pointerId);
+				return T.simulate._createMouseEvent(type, touchList, points, pointerId, button);
 			}
 		},
 		_dispatchEvent: function (elem, event) {
@@ -76,7 +76,7 @@
 			elem.dispatchEvent(event);
 			return event;
 		},
-		gesture: function (target, points, events, prefix, touchList, pointerId) {
+		gesture: function (target, points, events, prefix, touchList, pointerId, button) {
 			target = target || window.document.body;
 			events = events || {
 				mouse: ['down', 'move', 'up'],
@@ -98,7 +98,7 @@
 			points = points || [centerPoint];
 
 			events[prefix].forEach(function(suffix) {
-				event = createEvent(prefix + suffix, touchList, points, pointerId);
+				event = createEvent(prefix + suffix, touchList, points, pointerId, button);
 				T.simulate._dispatchEvent(target, event);
 			});
 		}

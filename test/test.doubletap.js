@@ -30,9 +30,6 @@ describe('Gesture', function () {
 				},
 				end: function () {
 					context.called = true;
-				},
-				cancel: function () {
-					context.cancelled = true;
 				}
 			};
 			Touche(el).doubletap(context.gesture);
@@ -53,7 +50,6 @@ describe('Gesture', function () {
 			setTimeout(function() {
 				Touche.simulate.gesture(el, null, null, 'mouse');
 				expect(context.called).to.be(false);
-				expect(context.cancelled).to.be(false);
 				done();
 			}, 200);
 		});
@@ -88,16 +84,12 @@ describe('Gesture', function () {
 		beforeEach(function () {
 			var context = this;
 			context.called = false;
-			context.cancelled = false;
 			context.gesture = {
 				options: {
 					timeThreshold: 100
 				},
 				end: function () {
 					context.called = true;
-				},
-				cancel: function () {
-					context.cancelled = true;
 				}
 			};
 			Touche(el).doubletap(context.gesture);
@@ -107,7 +99,6 @@ describe('Gesture', function () {
 			Touche.simulate.gesture(el, null, null, 'touch');
 			Touche.simulate.gesture(el, null, null, 'touch');
 			expect(this.called).to.be(true);
-			expect(this.cancelled).to.be(false);
 			done();
 		});
 
@@ -118,7 +109,6 @@ describe('Gesture', function () {
 			setTimeout(function() {
 				Touche.simulate.gesture(el, null, null, 'touch');
 				expect(context.called).to.be(false);
-				expect(context.cancelled).to.be(false);
 				done();
 			}, 200);
 		});
@@ -160,9 +150,6 @@ describe('Gesture', function () {
 				},
 				end: function () {
 					context.called = true;
-				},
-				cancel: function () {
-					context.cancelled = true;
 				}
 			};
 			Touche(el).doubletap(context.gesture);
@@ -172,7 +159,6 @@ describe('Gesture', function () {
 			Touche.simulate.gesture(el, null, null, 'MSPointer');
 			Touche.simulate.gesture(el, null, null, 'MSPointer');
 			expect(this.called).to.be(true);
-			expect(this.cancelled).to.be(false);
 			done();
 		});
 
@@ -183,7 +169,6 @@ describe('Gesture', function () {
 			setTimeout(function() {
 				Touche.simulate.gesture(el, null, null, 'MSPointer');
 				expect(context.called).to.be(false);
-				expect(context.cancelled).to.be(false);
 				done();
 			}, 200);
 		});

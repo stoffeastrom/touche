@@ -3,11 +3,13 @@ describe('Gesture', function () {
 	var body = document.body;
 
 	describe('#LongTap - Mouse', function () {
-		var el, origUtilsTouch;
+		var el, origUtilsTouch, origUtilsMSPointer;
 
 		before(function() {
 			origUtilsTouch = Touche.utils.touch;
+			origUtilsMSPointer = Touche.utils.msPointer;
 			Touche.utils.touch = false;
+			Touche.utils.msPointer = false;
 
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -27,6 +29,9 @@ describe('Gesture', function () {
 				options: {
 					timeThreshold: 200,
 					interval: 10
+				},
+				start: function() {
+					context.intervalCount++;
 				},
 				update: function() {
 					context.intervalCount++;
@@ -83,11 +88,13 @@ describe('Gesture', function () {
 	});
 
 	describe('#LongTap - Touch', function () {
-		var el, origUtilsTouch;
+		var el, origUtilsTouch, origUtilsMSPointer;
 
 		before(function() {
 			origUtilsTouch = Touche.utils.touch;
+			origUtilsMSPointer = Touche.utils.msPointer;
 			Touche.utils.touch = true;
+			Touche.utils.msPointer = false;
 
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -107,6 +114,9 @@ describe('Gesture', function () {
 				options: {
 					timeThreshold: 200,
 					interval: 10
+				},
+				start: function() {
+					context.intervalCount++;
 				},
 				update: function() {
 					context.intervalCount++;
@@ -154,6 +164,22 @@ describe('Gesture', function () {
 			}, 100);
 		});
 
+		it('should be cancelled when tapping in center point and using more than one finger, for touch events', function (done) {
+			this.timeout(250);
+			var context = this;
+			Touche.simulate.gesture(el, null, {
+				touch: ['start']
+			}, 'touch');
+			setTimeout(function() {
+				Touche.simulate.gesture(el, [new Touche.Point(50,50), new Touche.Point(50,50)], {
+					touch: ['move']
+				}, 'touch');
+				expect(context.called).to.be(false);
+				expect(context.cancelled).to.be(true);
+				done();
+			}, 25);
+		});
+
 		after(function() {
 			Touche.utils.touch = origUtilsTouch;
 			Touche(el).off('longtap');
@@ -189,6 +215,9 @@ describe('Gesture', function () {
 				options: {
 					timeThreshold: 200,
 					interval: 10
+				},
+				start: function() {
+					context.intervalCount++;
 				},
 				update: function() {
 					context.intervalCount++;
