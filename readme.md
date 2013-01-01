@@ -9,7 +9,7 @@ Touche(element).tap({
 		areaThreshold: 5
 	},
 	end: function(e, data) {
-		console.log("tap", +new Date());
+		console.log("tap");
 	}
 })
 .tap({
@@ -18,7 +18,7 @@ Touche(element).tap({
 		touches: 2
 	},
 	end: function(e, data) {
-		console.log("2-finger tap", +new Date());
+		console.log("2-finger tap");
 	}
 })
 .doubletap({
@@ -26,7 +26,7 @@ Touche(element).tap({
 		timeThreshold: 200
 	},
 	end: function() {
-		console.log("double tap", +new Date());
+		console.log("double tap");
 	}
 })
 .longtap({
@@ -35,16 +35,16 @@ Touche(element).tap({
 		interval: 20
 	},
 	start: function(event, data) {
-		console.log("longtap start", data.percentage, +new Date());
+		console.log("longtap start", data.percentage);
 	},
 	update: function(event, data) {
-		console.log("longtap update", data.percentage, +new Date());
+		console.log("longtap update", data.percentage);
 	},
 	end: function() {
-		console.log("longtap", +new Date());
+		console.log("longtap");
 	},
 	cancel: function() {
-		console.log("longtap cancelled", +new Date());
+		console.log("longtap cancelled");
 	}
 })
 .swipe({
@@ -52,16 +52,16 @@ Touche(element).tap({
 		radiusThreshold: 24
 	},
 	start: function(e, data) {
-		console.log("swipestart", data, +new Date());
+		console.log("swipe start", data);
 	},
 	update: function(e, data) {
-		console.log("swipeupdate", data, +new Date());
+		console.log("swipe update", data);
 	},
 	end: function(e, data) {
-		console.log("swipe", data, +new Date());
+		console.log("swipe", data);
 	},
 	cancel: function() {
-		console.log("swipe cancelled", +new Date());
+		console.log("swipe cancelled");
 	}
 })
 .rotate({
@@ -69,16 +69,16 @@ Touche(element).tap({
 		rotationThreshold: 18
 	},
 	start: function(e, data) {
-		console.log("rotatestart", data.rotation, +new Date());
+		console.log("rotate start", data.rotation);
 	},
 	update: function(e, data) {
-		console.log("rotateupdate", data.rotation, +new Date());
+		console.log("rotate update", data.rotation);
 	},
 	end: function(e, data) {
-		console.log("rotate", +new Date());
+		console.log("rotate");
 	},
 	cancel: function() {
-		console.log("rotate cancelled", +new Date());
+		console.log("rotate cancelled");
 	}
 })
 .pinch({
@@ -86,10 +86,10 @@ Touche(element).tap({
 		pinchThreshold: 12
 	},
 	start: function(e, data) {
-		console.log("pinchstart", data.scale, +new Date());
+		console.log("pinch start", data.scale, +new Date());
 	},
 	update: function(e, data) {
-		console.log("pinchupdate", data.scale, +new Date());
+		console.log("pinch update", data.scale, +new Date());
 	},
 	end: function(e, data) {
 		console.log("pinch", +new Date());
