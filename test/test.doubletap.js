@@ -23,7 +23,6 @@ describe('Gesture', function () {
 		beforeEach(function () {
 			var context = this;
 			context.called = false;
-			context.cancelled = false;
 			context.gesture = {
 				options: {
 					timeThreshold: 100
@@ -39,7 +38,6 @@ describe('Gesture', function () {
 			Touche.simulate.gesture(el, null, null, 'mouse');
 			Touche.simulate.gesture(el, null, null, 'mouse');
 			expect(this.called).to.be(true);
-			expect(this.cancelled).to.be(false);
 			done();
 		});
 
@@ -51,7 +49,7 @@ describe('Gesture', function () {
 				Touche.simulate.gesture(el, null, null, 'mouse');
 				expect(context.called).to.be(false);
 				done();
-			}, 200);
+			}, 225);
 		});
 
 		after(function() {
@@ -110,7 +108,7 @@ describe('Gesture', function () {
 				Touche.simulate.gesture(el, null, null, 'touch');
 				expect(context.called).to.be(false);
 				done();
-			}, 200);
+			}, 225);
 		});
 
 		after(function() {
@@ -143,7 +141,6 @@ describe('Gesture', function () {
 		beforeEach(function () {
 			var context = this;
 			context.called = false;
-			context.cancelled = false;
 			context.gesture = {
 				options: {
 					timeThreshold: 100
@@ -170,7 +167,7 @@ describe('Gesture', function () {
 				Touche.simulate.gesture(el, null, null, 'MSPointer');
 				expect(context.called).to.be(false);
 				done();
-			}, 200);
+			}, 225);
 		});
 
 		after(function() {

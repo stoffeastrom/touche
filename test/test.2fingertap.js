@@ -129,6 +129,9 @@ describe('Gesture', function () {
 			Touche.simulate.gesture(el, [new Touche.Point(50,50)], {
 				MSPointer: ['Up']
 			}, 'MSPointer', null, 1);
+			Touche.simulate.gesture(el, [new Touche.Point(50,50)], {
+				MSPointer: ['Up']
+			}, 'MSPointer', null, 2);
 			expect(this.called).to.be(true);
 			done();
 		});
