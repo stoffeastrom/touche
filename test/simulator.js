@@ -15,9 +15,8 @@
 			touchList = touchList || 'touches';
 
 			var event = document.createEvent('UIEvent');
-			event.initUIEvent(type, true, true);
+			event.initUIEvent(type, true, true, window, 0);
 
-			event.view = window;
 			event.altKey = false;
 			event.ctrlKey = false;
 			event.shiftKey = false;
