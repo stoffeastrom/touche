@@ -43,8 +43,8 @@
 
 				screenX: points[0].x,
 				screenY: points[0].y,
-				clientX: points[0].x - window.scrollX,
-				clientY: points[0].y - window.scrollY,
+				clientX: points[0].x - (window.scrollX || document.documentElement.scrollLeft),
+				clientY: points[0].y - (window.scrollY || document.documentElement.scrollTop),
 
 				ctrlKey: false,
 				altKey: false,
