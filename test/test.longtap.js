@@ -174,6 +174,9 @@ describe('Gesture', function () {
 				Touche.simulate.gesture(el, [new Touche.Point(50,50), new Touche.Point(50,50)], {
 					touch: ['move']
 				}, 'touch');
+				Touche.simulate.gesture(el, null, {
+					touch: ['end']
+				}, 'touch');
 				expect(context.called).to.be(false);
 				expect(context.cancelled).to.be(true);
 				done();

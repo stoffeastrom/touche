@@ -103,7 +103,7 @@ describe('Gesture', function () {
 		it('should not be called when not inside time threshold', function (done) {
 			this.timeout(250);
 			var context = this;
-			Touche.simulate.gesture(el);
+			Touche.simulate.gesture(el, null, null, 'touch');
 			setTimeout(function() {
 				Touche.simulate.gesture(el, null, null, 'touch');
 				expect(context.called).to.be(false);

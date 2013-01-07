@@ -10,12 +10,14 @@
 		<script src="mocha/expect.js"></script>
 		<script src="mocha/mocha.js"></script>
 		<script>mocha.setup('bdd')</script>
+		<script src="../lib/core/augment.js"></script>
 		<script src="../lib/core/touche.js"></script>
+		<script src="../lib/core/util.js"></script>
 		<script src="../lib/core/cache.js"></script>
 		<script src="../lib/core/gesture.js"></script>
+		<script src="../lib/core/binder.js"></script>
 		<script src="../lib/core/point.js"></script>
 		<script src="../lib/core/rect.js"></script>
-		<script src="../lib/core/util.js"></script>
 		<script src="../lib/gestures/tap.js"></script>
 		<script src="../lib/gestures/doubletap.js"></script>
 		<script src="../lib/gestures/longtap.js"></script>
@@ -30,6 +32,7 @@
 		<script src="test.longtap.js"></script>
 		<script src="test.2fingertap.js"></script>
 		<script src="test.swipe.js"></script>
+		<script src="test.combined.js"></script>
 		<script>if (!window._phantom) mocha.run();</script>
 	</body>
 </html>

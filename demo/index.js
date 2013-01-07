@@ -64,7 +64,7 @@ function createTouche() {
 		cancel: function() {
 			console.log("swipe cancelled");
 		}
-	})
+	})/*
 	.rotate({
 		options: {
 			rotationThreshold: 18
@@ -98,6 +98,6 @@ function createTouche() {
 		cancel: function() {
 			console.log("pinch cancelled", +new Date());
 		}
-	});
+	})*/;
 }
 window.addEventListener('DOMContentLoaded', createTouche, false);

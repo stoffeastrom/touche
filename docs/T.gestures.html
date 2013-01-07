@@ -98,7 +98,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="doubletap"><span class="type-signature">&lt;static> </span>doubletap<span class="signature">(gesture)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="doubletap"><span class="type-signature">&lt;static> </span>doubletap<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -107,6 +107,70 @@
     
     <div class="description">
         Bind a doubletap event, used for basic interaction. Supports an area threshold for easier interaction
+on mobile devices.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>doubletap.js, line 4</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="longtap"><span class="type-signature">&lt;static> </span>longtap<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Longtap gesture, Supports an area threshold for easier interaction
 on mobile devices. Triggers `start`, `update` and `end` events.
     </div>
     
@@ -116,54 +180,6 @@ on mobile devices. Triggers `start`, `update` and `end` events.
     
     
     
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>gesture</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">Data to set up the gesture</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
     
     
 <dl class="details">
@@ -187,7 +203,7 @@ on mobile devices. Triggers `start`, `update` and `end` events.
 	
 	
 	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source"><ul class="dummy"><li>doubletap.js, line 6</li></ul></dd>
+	<dd class="tag-source"><ul class="dummy"><li>longtap.js, line 4</li></ul></dd>
 	
     
     
@@ -210,7 +226,7 @@ on mobile devices. Triggers `start`, `update` and `end` events.
         
             
 <dt>
-    <h4 class="name" id="longtap"><span class="type-signature">&lt;static> </span>longtap<span class="signature">(gesture)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="pinch"><span class="type-signature">&lt;static> </span>pinch<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -218,119 +234,7 @@ on mobile devices. Triggers `start`, `update` and `end` events.
     
     
     <div class="description">
-        Bind a longtap event, used for basic interaction. Supports an area threshold for easier interaction
-on mobile devices. Triggers `start`, `update` and `end` events.
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>gesture</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">Data to set up the gesture</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-	
-	
-	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source"><ul class="dummy"><li>longtap.js, line 6</li></ul></dd>
-	
-    
-    
-	
-	
-	
-	
-</dl>
-
-    
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="pinch"><span class="type-signature">&lt;static> </span>pinch<span class="signature">(gesture)</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Bind a pinch gesture. Supports a pinch threshold that is used to measure when the gesture starts.
+        Pinch gesture. Supports a pinch threshold that is used to measure when the gesture starts.
 Triggers `start`, `update` and `end` events.
     </div>
     
@@ -340,54 +244,6 @@ Triggers `start`, `update` and `end` events.
     
     
     
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>gesture</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">Data to set up the gesture</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
     
     
 <dl class="details">
@@ -411,7 +267,7 @@ Triggers `start`, `update` and `end` events.
 	
 	
 	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source"><ul class="dummy"><li>pinch.js, line 7</li></ul></dd>
+	<dd class="tag-source"><ul class="dummy"><li>pinch.js, line 4</li></ul></dd>
 	
     
     
@@ -434,7 +290,7 @@ Triggers `start`, `update` and `end` events.
         
             
 <dt>
-    <h4 class="name" id="rotate"><span class="type-signature">&lt;static> </span>rotate<span class="signature">(gesture)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="rotate"><span class="type-signature">&lt;static> </span>rotate<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -442,7 +298,7 @@ Triggers `start`, `update` and `end` events.
     
     
     <div class="description">
-        Bind a rotate gesture. Supports a rotation threshold that is used to measure when the gesture starts.
+        Rotate gesture. Supports a rotation threshold that is used to measure when the gesture starts.
 Triggers `start`, `update` and `end` events.
     </div>
     
@@ -452,54 +308,6 @@ Triggers `start`, `update` and `end` events.
     
     
     
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>gesture</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">Data to set up the gesture</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
     
     
 <dl class="details">
@@ -523,7 +331,7 @@ Triggers `start`, `update` and `end` events.
 	
 	
 	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source"><ul class="dummy"><li>rotate.js, line 6</li></ul></dd>
+	<dd class="tag-source"><ul class="dummy"><li>rotate.js, line 4</li></ul></dd>
 	
     
     
@@ -546,7 +354,7 @@ Triggers `start`, `update` and `end` events.
         
             
 <dt>
-    <h4 class="name" id="swipe"><span class="type-signature">&lt;static> </span>swipe<span class="signature">(gesture)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="swipe"><span class="type-signature">&lt;static> </span>swipe<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -554,7 +362,7 @@ Triggers `start`, `update` and `end` events.
     
     
     <div class="description">
-        Bind a swipe gesture. Supports a radius threshold that is used to measure when the gesture starts.
+        Swipe gesture. Supports a radius threshold that is used to measure when the gesture starts.
 Triggers `start`, `update` and `end` events.
     </div>
     
@@ -564,54 +372,6 @@ Triggers `start`, `update` and `end` events.
     
     
     
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>gesture</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">Data to set up the gesture</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
     
     
 <dl class="details">
@@ -635,7 +395,7 @@ Triggers `start`, `update` and `end` events.
 	
 	
 	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source"><ul class="dummy"><li>swipe.js, line 7</li></ul></dd>
+	<dd class="tag-source"><ul class="dummy"><li>swipe.js, line 4</li></ul></dd>
 	
     
     
@@ -658,7 +418,7 @@ Triggers `start`, `update` and `end` events.
         
             
 <dt>
-    <h4 class="name" id="tap"><span class="type-signature">&lt;static> </span>tap<span class="signature">(gesture)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="tap"><span class="type-signature">&lt;static> </span>tap<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -666,8 +426,7 @@ Triggers `start`, `update` and `end` events.
     
     
     <div class="description">
-        Bind a tap event, used for basic interaction. Supports an area threshold for easier interaction
-on mobile devices. Triggers `start`, `update` and `end` events.
+        Tap gesture
     </div>
     
 
@@ -675,54 +434,6 @@ on mobile devices. Triggers `start`, `update` and `end` events.
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>gesture</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">Data to set up the gesture</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
     
     
     
@@ -747,7 +458,7 @@ on mobile devices. Triggers `start`, `update` and `end` events.
 	
 	
 	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source"><ul class="dummy"><li>tap.js, line 6</li></ul></dd>
+	<dd class="tag-source"><ul class="dummy"><li>tap.js, line 4</li></ul></dd>
 	
     
     
@@ -789,7 +500,7 @@ on mobile devices. Triggers `start`, `update` and `end` events.
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3</a> on Wed Jan 02 2013 19:28:24 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3</a> on Mon Jan 07 2013 22:18:58 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>
