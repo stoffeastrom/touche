@@ -21,28 +21,29 @@ describe('Gestures, combined', function() {
 		});
 
 		beforeEach(function () {
-			var context = this,
-				gestures = context.gestures = {};
-			gestures.tap = {
+			var context = this;
+			context.gestures = {};
+
+			context.gestures.tap = {
 				called: false,
 				gesture: {
 					end: function() {
-						gestures.tap.called = true;
+						context.gestures.tap.called = true;
 					}
 				}
 			};
-			gestures.doubletap = {
+			context.gestures.doubletap = {
 				called: false,
 				gesture: {
 					options: {
 						timeThreshold: 200
 					},
 					end: function() {
-						gestures.doubletap.called = true;
+						context.gestures.doubletap.called = true;
 					}
 				}
 			};
-			gestures.longtap = {
+			context.gestures.longtap = {
 				started: false,
 				updated: false,
 				called: false,
@@ -52,23 +53,23 @@ describe('Gestures, combined', function() {
 						timeThreshold: 400
 					},
 					start: function() {
-						gestures.longtap.started = true;
+						context.gestures.longtap.started = true;
 					},
 					update: function() {
-						gestures.longtap.updated = true;
+						context.gestures.longtap.updated = true;
 					},
 					end: function() {
-						gestures.longtap.called = true;
+						context.gestures.longtap.called = true;
 					},
 					cancel: function() {
-						gestures.longtap.cancelled = true;
+						context.gestures.longtap.cancelled = true;
 					}
 				}
 			};
 			Touche(el)
-				.tap(gestures.tap.gesture)
-				.doubletap(gestures.doubletap.gesture)
-				.longtap(gestures.longtap.gesture);
+				.tap(context.gestures.tap.gesture)
+				.doubletap(context.gestures.doubletap.gesture)
+				.longtap(context.gestures.longtap.gesture);
 		});
 
 		it('should trigger longtap start/update/cancel, tap', function (done) {
@@ -93,7 +94,7 @@ describe('Gestures, combined', function() {
 			}, 100);
 		});
 
-		/*it('should trigger doubletap', function (done) {
+		it('should trigger doubletap', function (done) {
 			var context = this;
 			context.timeout(500);
 			Touche.simulate.gesture(el, null, {
@@ -111,12 +112,19 @@ describe('Gestures, combined', function() {
 						Touche.simulate.gesture(el, null, {
 							mouse: ['up']
 						}, 'mouse');
-						
-						done();
+						setTimeout(function() {
+							expect(context.gestures.longtap.started).to.be(false);
+							expect(context.gestures.longtap.updated).to.be(false);
+							expect(context.gestures.longtap.called).to.be(false);
+							expect(context.gestures.longtap.cancelled).to.be(false);
+							expect(context.gestures.tap.called).to.be(false);
+							expect(context.gestures.doubletap.called).to.be(true);
+							done();
+						}, 10);
 					}, 10);
 				}, 10);
 			}, 10);
-		});*/
+		});
 
 		after(function() {
 			Touche.utils.touch = origUtilsTouch;
