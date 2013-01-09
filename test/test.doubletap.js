@@ -1,4 +1,4 @@
-/*global describe, Touche, expect, it, before, beforeEach, after*/
+/*global describe, Touche, expect, it, before, beforeEach, after, afterEach*/
 describe('Gesture', function () {
 	var body = document.body;
 
@@ -170,11 +170,13 @@ describe('Gesture', function () {
 			}, 225);
 		});
 
+		afterEach(function() {
+			Touche(el).off();
+			expect(Touche.cache.data.length).to.be(0);
+		});
 		after(function() {
 			Touche.utils.touch = origUtilsTouch;
 			Touche.utils.msPointer = origUtilsMSPointer;
-			Touche(el).off('doubletap');
-			expect(Touche.cache.data.length).to.be(0);
 			body.removeChild(el);
 		});
 	});

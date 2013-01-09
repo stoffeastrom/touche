@@ -1,4 +1,4 @@
-/*global describe, before, beforeEach, after, Touche, expect, it */
+/*global describe, before, beforeEach, after, Touche, expect, it, afterEach */
 describe('Gestures, combined', function() {
 	var body = document.body;
 
@@ -112,25 +112,25 @@ describe('Gestures, combined', function() {
 						Touche.simulate.gesture(el, null, {
 							mouse: ['up']
 						}, 'mouse');
-						setTimeout(function() {
-							expect(context.gestures.longtap.started).to.be(false);
-							expect(context.gestures.longtap.updated).to.be(false);
-							expect(context.gestures.longtap.called).to.be(false);
-							expect(context.gestures.longtap.cancelled).to.be(false);
-							expect(context.gestures.tap.called).to.be(false);
-							expect(context.gestures.doubletap.called).to.be(true);
-							done();
-						}, 10);
+						expect(context.gestures.longtap.started).to.be(false);
+						expect(context.gestures.longtap.updated).to.be(false);
+						expect(context.gestures.longtap.called).to.be(false);
+						expect(context.gestures.longtap.cancelled).to.be(false);
+						expect(context.gestures.tap.called).to.be(false);
+						expect(context.gestures.doubletap.called).to.be(true);
+						done();
 					}, 10);
 				}, 10);
 			}, 10);
 		});
 
+		afterEach(function() {
+			Touche(el).off();
+			expect(Touche.cache.data.length).to.be(0);
+		});
 		after(function() {
 			Touche.utils.touch = origUtilsTouch;
 			Touche.utils.msPointer = origUtilsMSPointer;
-			Touche(el).off();
-			expect(Touche.cache.data.length).to.be(0);
 			body.removeChild(el);
 		});
 	});
