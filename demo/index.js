@@ -1,6 +1,6 @@
 /*global console, Touche*/
-function createTouche() {
-	console.log("create Gesture");
+function bindGestures() {
+	console.log("binding gestures...");
 
 	var doc = window.document,
 		element = doc.getElementById('container');
@@ -100,4 +100,4 @@ function createTouche() {
 		}
 	})*/;
 }
-window.addEventListener('DOMContentLoaded', createTouche, false);
+window.addEventListener('DOMContentLoaded', bindGestures, false);

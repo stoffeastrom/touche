@@ -123,10 +123,12 @@ describe('Gestures, combined', function() {
 				}, 10);
 			}, 10);
 		});
+
 		afterEach(function() {
 			Touche(el).off();
 			expect(Touche.cache.data.length).to.be(0);
 		});
+
 		after(function() {
 			Touche.utils.touch = origUtilsTouch;
 			Touche.utils.msPointer = origUtilsMSPointer;
@@ -260,6 +262,7 @@ describe('Gestures, combined', function() {
 			Touche(el).off();
 			expect(Touche.cache.data.length).to.be(0);
 		});
+
 		after(function() {
 			Touche.utils.touch = origUtilsTouch;
 			Touche.utils.msPointer = origUtilsMSPointer;
@@ -393,6 +396,7 @@ describe('Gestures, combined', function() {
 			Touche(el).off();
 			expect(Touche.cache.data.length).to.be(0);
 		});
+		
 		after(function() {
 			Touche.utils.touch = origUtilsTouch;
 			Touche.utils.msPointer = origUtilsMSPointer;

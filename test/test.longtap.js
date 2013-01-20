@@ -79,10 +79,14 @@ describe('Gesture', function () {
 			}, 100);
 		});
 
-		after(function() {
-			Touche.utils.touch = origUtilsTouch;
+		afterEach(function() {
 			Touche(el).off('longtap');
 			expect(Touche.cache.data.length).to.be(0);
+		});
+
+		after(function() {
+			Touche.utils.touch = origUtilsTouch;
+			Touche.utils.msPointer = origUtilsMSPointer;
 			body.removeChild(el);
 		});
 	});
@@ -183,10 +187,14 @@ describe('Gesture', function () {
 			}, 25);
 		});
 
-		after(function() {
-			Touche.utils.touch = origUtilsTouch;
+		afterEach(function() {
 			Touche(el).off('longtap');
 			expect(Touche.cache.data.length).to.be(0);
+		});
+
+		after(function() {
+			Touche.utils.touch = origUtilsTouch;
+			Touche.utils.msPointer = origUtilsMSPointer;
 			body.removeChild(el);
 		});
 	});
@@ -269,9 +277,10 @@ describe('Gesture', function () {
 		});
 
 		afterEach(function() {
-			Touche(el).off();
+			Touche(el).off('longtap');
 			expect(Touche.cache.data.length).to.be(0);
 		});
+
 		after(function() {
 			Touche.utils.touch = origUtilsTouch;
 			Touche.utils.msPointer = origUtilsMSPointer;
