@@ -24,9 +24,8 @@ module.exports = function(grunt) {
 			}
 		},
 		concat: {
-			dist: {
+			core: {
 				src: [
-					'<banner:meta.banner>',
 					'lib/core/augment.js',
 					'lib/core/binder.js',
 					'lib/core/cache.js',
@@ -37,24 +36,47 @@ module.exports = function(grunt) {
 					'lib/core/gesture-handler.js',
 					'lib/core/gesture.js'
 				],
-				dest: 'dist/touche.js'
-			}
-		},
-		min: {
-			dist: {
-				src: ['<banner:meta.banner>', '<config:concat.dist.dest>', 'lib/gestures/*.js'],
-				dest: 'dist/touche.min.js'
+				dest: 'dist/touche.core.js'
 			},
-			lite: {
+			all: {
 				src: [
-					'<banner:meta.banner>',
-					'<config:concat.dist.dest>',
+					'lib/gestures/*.js'
+				],
+				dest: 'dist/touche.js'
+			},
+			light: {
+				src: [
 					'lib/gestures/tap.js',
 					'lib/gestures/doubletap.js',
 					'lib/gestures/longtap.js',
 					'lib/gestures/swipe.js'
 				],
-				dest: 'dist/touche.lite.min.js'
+				dest: 'dist/touche.light.js'
+			}
+		},
+		min: {
+			core: {
+				src: [
+					'<banner:meta.banner>',
+					'<config:concat.core.dest>'
+				],
+				dest: 'dist/touche.core.min.js'
+			},
+			all: {
+				src: [
+					'<banner:meta.banner>',
+					'<config:concat.core.dest>',
+					'<config:concat.all.dest>'
+				],
+				dest: 'dist/touche.min.js'
+			},
+			light: {
+				src: [
+					'<banner:meta.banner>',
+					'<config:concat.core.dest>',
+					'<config:concat.light.dest>'
+				],
+				dest: 'dist/touche.light.min.js'
 			}
 		},
 		watch: {
