@@ -42,12 +42,19 @@ module.exports = function(grunt) {
 		},
 		min: {
 			dist: {
-				src: ['<banner:meta.banner>', 'lib/gestures/*.js'],
+				src: ['<banner:meta.banner>', '<config:concat.dist.dest>', 'lib/gestures/*.js'],
 				dest: 'dist/touche.min.js'
 			},
-			tap: {
-				src: ['<banner:meta.banner>', 'lib/gestures/tap.js'],
-				dest: 'dist/touche.tap.min.js'
+			lite: {
+				src: [
+					'<banner:meta.banner>',
+					'<config:concat.dist.dest>',
+					'lib/gestures/tap.js',
+					'lib/gestures/doubletap.js',
+					'lib/gestures/longtap.js',
+					'lib/gestures/swipe.js'
+				],
+				dest: 'dist/touche.lite.min.js'
 			}
 		},
 		watch: {
