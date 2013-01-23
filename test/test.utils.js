@@ -140,52 +140,6 @@ describe('Utils', function() {
 		});
 	});
 
-	describe('#extend', function() {
-		var test = {
-			one: true,
-			two: {
-				nested: [1, 2, 3]
-			},
-			three: function() {}
-		},
-			opts = {
-				areaThreshold: 5,
-				precedence: 6
-			},
-			defaultOpts = {
-				areaThreshold: 10,
-				precedence: 10,
-				preventDefault: true,
-				touches: 1,
-				which: 1
-			};
-
-		it('should be able to clone a nested object', function() {
-			var target = Touche.utils.extend({}, test);
-			expect(target.one).to.be(true);
-			expect(Touche.utils.isObject(target.two)).to.be(true);
-			expect(Touche.utils.isArray(target.two.nested)).to.be(true);
-			expect(Touche.utils.isFunction(target.three)).to.be(true);
-		});
-
-		it('should never keep a reference to other objects', function() {
-			var target = Touche.utils.extend({}, test);
-			expect(target.one).to.be(true);
-			expect(target.two).to.not.equal(test.two);
-			expect(target.two.nested).to.not.equal(test.two.nested);
-			expect(target.three).to.not.equal(test.three);
-		});
-
-		it('should be able to set default options', function() {
-			opts = Touche.utils.extend(defaultOpts, opts);
-			expect(opts.areaThreshold).to.be(5);
-			expect(opts.precedence).to.be(6);
-			expect(opts.preventDefault).to.be(true);
-			expect(opts.touches).to.be(1);
-			expect(opts.which).to.be(1);
-		});
-	});
-
 	describe("#getAngle", function() {
 		var getAngle = Touche.utils.getAngle;
 
