@@ -9,8 +9,8 @@ function bindGestures() {
 		options: {
 			areaThreshold: 5
 		},
-		end: function(e, data) {
-			console.log("tap");
+		end: function(event, data) {
+			console.log("tap", data);
 		}
 	})
 	.tap({
@@ -18,16 +18,16 @@ function bindGestures() {
 			areaThreshold: 5,
 			touches: 2
 		},
-		end: function(e, data) {
-			console.log("2-finger tap");
+		end: function(event, data) {
+			console.log("2-finger tap", data);
 		}
 	})
 	.doubletap({
 		options: {
 			timeThreshold: 200
 		},
-		end: function() {
-			console.log("double tap");
+		end: function(event, data) {
+			console.log("double tap", data);
 		}
 	})
 	.longtap({
@@ -36,13 +36,13 @@ function bindGestures() {
 			interval: 20
 		},
 		start: function(event, data) {
-			console.log("longtap start", data.percentage);
+			console.log("longtap start", data.percentage, data);
 		},
 		update: function(event, data) {
-			console.log("longtap update", data.percentage);
+			console.log("longtap update", data.percentage, data);
 		},
-		end: function() {
-			console.log("longtap");
+		end: function(event, data) {
+			console.log("longtap", data.percentage, data);
 		},
 		cancel: function() {
 			console.log("longtap cancelled");
@@ -52,13 +52,13 @@ function bindGestures() {
 		options: {
 			radiusThreshold: 24
 		},
-		start: function(e, data) {
+		start: function(event, data) {
 			console.log("swipe start", data);
 		},
-		update: function(e, data) {
+		update: function(event, data) {
 			console.log("swipe update", data);
 		},
-		end: function(e, data) {
+		end: function(event, data) {
 			console.log("swipe", data);
 		},
 		cancel: function() {
