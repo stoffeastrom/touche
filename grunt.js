@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 	// Project configuration.
 	grunt.initConfig({
 		meta: {
-			version: '0.1.0pre',
+			version: '0.1.0',
 			banner: '/*! Touché - v<%= meta.version %> - ' +
 				'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
 				'* https://github.com/stoffeastrom/touche/\n' +
@@ -26,6 +26,7 @@ module.exports = function(grunt) {
 		concat: {
 			core: {
 				src: [
+					'<banner:meta.banner>',
 					'lib/core/augment.js',
 					'lib/core/touche.js',
 					'lib/core/gesture-handler.js',
@@ -40,12 +41,14 @@ module.exports = function(grunt) {
 			},
 			all: {
 				src: [
+					'<config:concat.core.dest>',
 					'lib/gestures/*.js'
 				],
 				dest: 'dist/touche.js'
 			},
 			light: {
 				src: [
+					'<config:concat.core.dest>',
 					'lib/gestures/tap.js',
 					'lib/gestures/doubletap.js',
 					'lib/gestures/longtap.js',
@@ -56,26 +59,15 @@ module.exports = function(grunt) {
 		},
 		min: {
 			core: {
-				src: [
-					'<banner:meta.banner>',
-					'<config:concat.core.dest>'
-				],
+				src: ['<config:concat.core.dest>'],
 				dest: 'dist/touche.core.min.js'
 			},
 			all: {
-				src: [
-					'<banner:meta.banner>',
-					'<config:concat.core.dest>',
-					'<config:concat.all.dest>'
-				],
+				src: ['<config:concat.all.dest>'],
 				dest: 'dist/touche.min.js'
 			},
 			light: {
-				src: [
-					'<banner:meta.banner>',
-					'<config:concat.core.dest>',
-					'<config:concat.light.dest>'
-				],
+				src: ['<config:concat.light.dest>'],
 				dest: 'dist/touche.light.min.js'
 			}
 		},
