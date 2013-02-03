@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 	// Project configuration.
 	grunt.initConfig({
 		meta: {
-			version: '1.0.0',
+			version: '1.1.0dev',
 			banner: '/*! Touché - v<%= meta.version %> - ' +
 				'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
 				'* https://github.com/stoffeastrom/touche/\n' +
@@ -114,5 +114,5 @@ module.exports = function(grunt) {
 	});
 
 	// Default task.
-	grunt.registerTask('default', 'lint mocha docs concat min');
+	grunt.registerTask('default', 'lint mocha');
 };
