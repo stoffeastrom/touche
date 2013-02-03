@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 	// Project configuration.
 	grunt.initConfig({
 		meta: {
-			version: '0.1.0',
+			version: '1.0.0',
 			banner: '/*! Touché - v<%= meta.version %> - ' +
 				'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
 				'* https://github.com/stoffeastrom/touche/\n' +
