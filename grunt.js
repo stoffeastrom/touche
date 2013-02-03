@@ -59,15 +59,24 @@ module.exports = function(grunt) {
 		},
 		min: {
 			core: {
-				src: ['<config:concat.core.dest>'],
+				src: [
+					'<banner:meta.banner>',
+					'<config:concat.core.dest>'
+				],
 				dest: 'dist/touche.core.min.js'
 			},
 			all: {
-				src: ['<config:concat.all.dest>'],
+				src: [
+					'<banner:meta.banner>',
+					'<config:concat.all.dest>'
+				],
 				dest: 'dist/touche.min.js'
 			},
 			light: {
-				src: ['<config:concat.light.dest>'],
+				src: [
+					'<banner:meta.banner>',
+					'<config:concat.light.dest>'
+				],
 				dest: 'dist/touche.light.min.js'
 			}
 		},
