@@ -17,7 +17,7 @@
 		#container
 		{
 			position: relative;
-			top: 10%;
+			top: 1%;
 			width: 80%;
 			height: 80%; 
 			border: solid black 1px;
@@ -27,6 +27,14 @@
 			background-size: 100% 100%;
 			background-repeat: no-repeat;
 		}
+		img {
+			display: block;
+			margin: 0 auto;
+			margin-top: -20%;
+			width: 10%;
+			position: relative;
+			z-index: 1;
+		}
 	</style>
 </head>
 <body>
@@ -34,6 +42,7 @@
 	<div id="container">
 		<p>touch(é) me</p>
 	</div>
+	<img id="dragtap" src="https://raw.github.com/voodootikigod/logo.js/master/js.png" draggable="true">
 	<script src="../lib/core/augment.js"></script>
 	<script src="../lib/core/touche.js"></script>
 	<script src="../lib/core/gesture-handler.js"></script>

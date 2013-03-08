@@ -80,7 +80,8 @@
 			events = events || {
 				mouse: ['down', 'move', 'up'],
 				touch: ['start', 'move', 'end'],
-				MSPointer: ['Down', 'Move', 'Up']
+				MSPointer: ['Down', 'Move', 'Up'],
+				drag: ['start', 'end']
 			};
 			prefix = prefix || ((window.navigator.msPointerEnabled) ? 'MSPointer' : (('ontouchstart' in window) ? 'touch' : 'mouse'));
 			touchList =  touchList || 'touches';

@@ -5,6 +5,21 @@ function bindGestures() {
 	var doc = window.document,
 		element = doc.getElementById('container');
 
+	Touche(document.getElementById("dragtap")).tap({
+		options: {
+			preventDefault: false
+		},
+		start: function(event, data) {
+			console.log("dragtap started");
+		},
+		end: function(event, data) {
+			console.log("dragtap");
+		},
+		cancel: function(event, data) {
+			console.log("dragtap cancelled");
+		}
+	});
+
 	Touche(element).tap({
 		options: {
 			areaThreshold: 5

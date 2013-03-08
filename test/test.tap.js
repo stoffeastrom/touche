@@ -22,13 +22,21 @@ describe('Gesture', function () {
 
 		beforeEach(function () {
 			var context = this;
+			context.started = false;
 			context.called = false;
+			context.cancelled = false;
 			context.gesture = {
 				options: {
 					areaThreshold: 5
 				},
+				start: function () {
+					context.started = true;
+				},
 				end: function () {
 					context.called = true;
+				},
+				cancel: function () {
+					context.cancelled = true;
 				}
 			};
 			Touche(el).tap(context.gesture);
@@ -37,6 +45,14 @@ describe('Gesture', function () {
 		it('should get called when clicking in center point with allowed button', function (done) {
 			Touche.simulate.gesture(el, null, null, 'mouse', null, null, 0);
 			expect(this.called).to.be(true);
+			done();
+		});
+
+		it('should be cancelled when a native drag gesture starts', function (done) {
+			Touche.simulate.gesture(el, null, { mouse: ["down"] }, "mouse", null, null, 0);
+			expect(this.started).to.be(true);
+			Touche.simulate.gesture(el, null, { drag: ["start"] }, "drag", null, null, 0);
+			expect(this.cancelled).to.be(true);
 			done();
 		});
 

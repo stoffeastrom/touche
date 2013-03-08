@@ -1,4 +1,4 @@
-/*! Touché - v1.0.0 - 2013-02-03
+/*! Touché - v1.0.1 - 2013-03-08
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 
@@ -39,7 +39,7 @@
 	};
 
 	T.prototype.on = function(type, binder) {
-		T.prototype[type].call(this,binder);
+		T.prototype[type].call(this, binder);
 		return this;
 	};
 	
@@ -111,6 +111,16 @@
 })();
 (function(T, doc){
 	'use strict';
+
+	/**
+	* Bind dragstart event to make sure we cancel all active gestures,
+	* since a native drag gesture is not compatible with Touché.
+	*/
+	document.addEventListener("dragstart", function() {
+		T.cache.data.forEach(function(obj) {
+			obj.context.cancelAllGestures();
+		});
+	}, false);
 
 	/**
 	 * Represents a handler for gestures, used to set up basic structure for creating gestures.
@@ -240,6 +250,16 @@
 				this.cancelGesture(gesture);
 			}, this);
 			return this;
+		};
+
+		this.cancelAllGestures = function() {
+			this.gestures.forEach(function(gesture) {
+				if (gesture.started) {
+					this.bindDoc(false);
+					this.ended = true;
+					this.cancelGesture(gesture);
+				}
+			}, this);
 		};
 
 		this.sortGestures = function() {
@@ -417,10 +437,11 @@
 		 * @returns {T.Rect} A rectangle with the position and dimension
 		 */
 		getRect: function(target) {
-			var bbox, win = window, doc = win.document, body = doc.body, elem;
+			var bbox, win = window, doc = win.document, body = doc.body, elem, fn;
 			if(T.utils.isSVG(target)){
-				bbox = target.getBBox();
-				return new T.Rect(bbox.x, bbox.y, bbox.width, bbox.height);
+				fn = (target.getBBox || target.getBoundingClientRect);
+				bbox = fn.call(target);
+				return new T.Rect((bbox.x || bbox.left || 0), (bbox.y || bbox.left || 0), bbox.width, bbox.height);
 			} else {
 				elem = (win === target || doc === target || (!target.getBoundingClientRect)) ? body : target;
 				bbox = elem.getBoundingClientRect();
@@ -623,6 +644,7 @@
 		}
 	};
 })(window.Touche, Math.atan2, Math.PI);
+
 (function(T) {
 	'use strict';
 
@@ -671,7 +693,7 @@
 				index;
 
 			if (cache.length) {
-				index = this.data.indexOf(cache);
+				index = this.data.indexOf(cache[0]);
 				this.data.splice(index, 1);
 			}
 		}
@@ -757,7 +779,7 @@
 			if(T.utils.touch) {
 				return true;
 			}
-			if(T.utils.msPointer) {
+			if(T.utils.msPointer && event.pointerType !== event.MSPOINTER_TYPE_MOUSE ) {
 				return true;
 			}
 			var btn = event.button,
@@ -787,6 +809,7 @@
 
 (function(T) {
 	'use strict';
+
 	T.Binder = Object.augment(function () {
 		this.start = T.utils.noop;
 		this.update = T.utils.noop;
@@ -998,6 +1021,7 @@
 			this.startTime = +new Date();
 
 			var self = this;
+			window.clearTimeout(self.timerId);
 			self.timerId = window.setInterval(function(){
 				++self.count;
 				data.percentage = self.count/self.intervalSteps * 100;
@@ -1392,12 +1416,15 @@ T.gestures.add('rotate', Rotate);
 		};
 
 		this.start = function(event, data) {
+			this.started = true;
 			this.rect = T.utils.getRect(event.target);
 			if( !this.isValidMouseButton(event, this.options.which) ||
 				this.hasMoreTouches(data.points)) {
 				this.cancel();
 			}
 
+			this.binder.start.call(this, event, data);
+			
 			if(this.options.preventDefault) {
 				event.preventDefault();
 			}
@@ -1424,6 +1451,10 @@ T.gestures.add('rotate', Rotate);
 			if(this.options.preventDefault) {
 				event.preventDefault();
 			}
+		};
+
+		this.cancel = function(event, data) {
+			this.binder.cancel.call(this, event, data);
 		};
 
 		function Tap() {
