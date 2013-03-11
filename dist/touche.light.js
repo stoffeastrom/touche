@@ -1,4 +1,4 @@
-/*! Touché - v1.0.1 - 2013-03-08
+/*! Touché - v1.0.2 - 2013-03-11
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 
@@ -253,10 +253,10 @@
 		};
 
 		this.cancelAllGestures = function() {
+			this.bindDoc(false);
+			this.ended = true;
 			this.gestures.forEach(function(gesture) {
 				if (gesture.started) {
-					this.bindDoc(false);
-					this.ended = true;
 					this.cancelGesture(gesture);
 				}
 			}, this);
@@ -918,6 +918,7 @@
 			if( !this.isValidMouseButton(event, this.options.which) ||
 				this.hasMoreTouches(data.points)) {
 				this.cancel();
+				return;
 			}
 
 			this.binder.start.call(this, event, data);
@@ -931,6 +932,7 @@
 			if(this.hasMoreTouches(data.points) ||
 				!this.rect.pointInside(data.points[0], this.options.areaThreshold)) {
 				this.cancel();
+				return;
 			}
 
 			if(this.options.preventDefault) {
@@ -951,6 +953,7 @@
 		};
 
 		this.cancel = function(event, data) {
+			this.cancelled = true;
 			this.binder.cancel.call(this, event, data);
 		};
 
