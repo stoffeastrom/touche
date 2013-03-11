@@ -1,20 +1,23 @@
 {
-	"name": "touche",
-	"version": "1.0.2",
-	"description": "Gestures library for desktop and touch devices",
-	"author": {
-		"name": "Christoffer Åström"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/stoffeastrom/touche"
-	},
-	"devDependencies": {
-		"grunt": "0.3.x",
-		"grunt-mocha": "0.1.x"
-	},
-	"scripts" : {
-		"dev": "grunt",
-		"test": "grunt mocha"
-	}
+  "name": "touche",
+  "version": "1.0.2",
+  "description": "Gestures library for desktop and touch devices",
+  "author": {
+    "name": "Christoffer Åström"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stoffeastrom/touche"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.0",
+    "grunt-mocha": "~0.2.3",
+    "grunt-contrib-jshint": "~0.2.0",
+    "grunt-contrib-concat": "~0.1.3",
+    "grunt-contrib-uglify": "~0.1.2"
+  },
+  "scripts": {
+    "dev": "grunt",
+    "test": "grunt mocha"
+  }
 }

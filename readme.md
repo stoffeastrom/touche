@@ -144,25 +144,30 @@ Touche(element).tap({
 
 ## Setting up the build environment
 
-Touché is using grunt.js to build (concatenate + minify) and running tests. Below is instructions on how to properly set up this project.
+Touché is using grunt to build (concatenate + minify) and running tests. Below is instructions on how to properly set up this project.
 
 ```
 $ cd touche
-$ npm install -g grunt
+$ npm uninstall -g grunt
+$ npm install -g grunt-cli
 $ npm install -g phantomjs
-$ npm install
+$ npm install grunt
+$ npm install grunt-contrib-jshint
+$ npm install grunt-contrib-concat
+$ npm install grunt-contrib-uglify
+$ npm install grunt-mocha
 ```
 
 After installing, you can run a few different tasks using grunt:
 
 ```
-// lint all test + lib files
-$ grunt lint
+// jshint all test + lib files
+$ grunt jshint
 // run the test suite
-$ grunt mocha
+$ grunt test
 // generate documentation, requires "jsdoc" to be in path
-$ grunt doc
-// default: runs lint, mocha, concat, min
+$ grunt docs
+// default: runs jshint, test, concat, min
 $ grunt
 ```
 

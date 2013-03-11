@@ -5,25 +5,38 @@ module.exports = function(grunt) {
 
 	// Project configuration.
 	grunt.initConfig({
+		pkg: grunt.file.readJSON('package.json'),
 		meta: {
 			version: '1.0.2',
-			banner: '/*! Touché - v<%= meta.version %> - ' +
-				'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-				'* https://github.com/stoffeastrom/touche/\n' +
-				'* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
-				'Christoffer Åström, Andrée Hansson; Licensed MIT */'
+			banner: '/*! Touché - v<%= pkg.version %> - ' +
+					'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
+					'* https://github.com/stoffeastrom/touche/\n' +
+					'* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
+					'Christoffer Åström, Andrée Hansson; Licensed MIT */' + '\n'
 		},
-		lint: {
-			files: ['grunt.js', 'lib/**/*.js', 'test/*.js']
+		jshint: {
+			all: [
+				"GruntFile.js",
+				"lib/*/*.js",
+				"test/*.js"
+			],
+			options: {
+				jshintrc: ".jshintrc"
+			}
 		},
 		mocha: {
 			all: {
 				src: ['test/index.html'],
-				run: true,
-				ignoreLeaks: false
+				options: {
+					run: true,
+					ignoreLeaks: false
+				}
 			}
 		},
 		concat: {
+			options: {
+				banner: '<%= meta.banner %>'
+			},
 			core: {
 				src: [
 					'<banner:meta.banner>',
@@ -57,53 +70,38 @@ module.exports = function(grunt) {
 				dest: 'dist/touche.light.js'
 			}
 		},
-		min: {
+		uglify: {
+			options: {
+				banner: '<%= meta.banner %>'
+			},
 			core: {
 				src: [
-					'<banner:meta.banner>',
-					'<config:concat.core.dest>'
+					'<%= concat.core.dest %>'
 				],
 				dest: 'dist/touche.core.min.js'
 			},
 			all: {
 				src: [
-					'<banner:meta.banner>',
-					'<config:concat.all.dest>'
+					'<%= concat.all.dest %>'
 				],
 				dest: 'dist/touche.min.js'
 			},
 			light: {
 				src: [
-					'<banner:meta.banner>',
-					'<config:concat.light.dest>'
+					'<%= concat.light.dest %>'
 				],
 				dest: 'dist/touche.light.min.js'
 			}
 		},
 		watch: {
-			files: '<config:lint.files>',
-			tasks: 'lint'
-		},
-		jshint: {
-			options: {
-				curly: true,
-				eqeqeq: true,
-				immed: true,
-				latedef: true,
-				newcap: false,
-				noarg: true,
-				sub: true,
-				undef: true,
-				unused: true,
-				boss: true,
-				eqnull: true,
-				browser: true
-				},
-			globals: {}
-		},
-		uglify: {}
+			files: ['<%= jshint.all %>'],
+			tasks: ['jshint']
+		}
 	});
 
+	grunt.loadNpmTasks("grunt-contrib-jshint");
+	grunt.loadNpmTasks("grunt-contrib-concat");
+	grunt.loadNpmTasks("grunt-contrib-uglify");
 	grunt.loadNpmTasks('grunt-mocha');
 
 	// Documentation generation, requires "jsdoc" to be in path
@@ -112,7 +110,10 @@ module.exports = function(grunt) {
 		grunt.log.writeln('Generating documentation to docs/...');
 		cp.exec('jsdoc -d docs -r lib/', done);
 	});
+	
+	grunt.registerTask("test", "mocha");
+
 
 	// Default task.
-	grunt.registerTask('default', 'lint mocha');
+	grunt.registerTask("default", ["jshint", "test", "concat", "uglify"]);
 };
