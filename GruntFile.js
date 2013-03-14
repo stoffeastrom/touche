@@ -38,7 +38,6 @@ module.exports = function(grunt) {
 			},
 			core: {
 				src: [
-					'<banner:meta.banner>',
 					'lib/core/augment.js',
 					'lib/core/touche.js',
 					'lib/core/gesture-handler.js',
@@ -53,14 +52,14 @@ module.exports = function(grunt) {
 			},
 			all: {
 				src: [
-					'<config:concat.core.dest>',
+					'<%= concat.core.src %>',
 					'lib/gestures/*.js'
 				],
 				dest: 'dist/touche.js'
 			},
 			light: {
 				src: [
-					'<config:concat.core.dest>',
+					'<%= concat.core.src %>',
 					'lib/gestures/tap.js',
 					'lib/gestures/doubletap.js',
 					'lib/gestures/longtap.js',
