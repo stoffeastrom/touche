@@ -7,7 +7,6 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		meta: {
-			version: '1.0.2',
 			banner: '/*! Touché - v<%= pkg.version %> - ' +
 					'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
 					'* https://github.com/stoffeastrom/touche/\n' +

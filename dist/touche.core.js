@@ -1,4 +1,4 @@
-/*! Touché - v1.0.2 - 2013-03-11
+/*! Touché - v1.0.3 - 2013-03-14
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -172,6 +172,7 @@
 			this.data.pagePoints = [];
 			this.started = false;
 			this.ended = false;
+			this.relatedTarget = null;
 		};
 
 		this.trigger = function(action, event, data) {
@@ -287,20 +288,25 @@
 					this.reset();
 				}
 				this.bindDoc(true);
+				this.relatedTarget = event.target;
+				event.relatedTarget = this.relatedTarget;
 				this.setPoints(event);
 				this.trigger('start', event, this.data);
 				this.started = true;
 				break;
 			case events.move:
+				event.relatedTarget = this.relatedTarget;
 				this.setPoints(event);
 				this.trigger('update', event, this.data);
 				break;
 			case events.end:
+				event.relatedTarget = this.relatedTarget;
 				this.bindDoc(false);
 				this.trigger('end', event, this.data);
 				this.ended = true;
 				break;
 			case events.cancel:
+				event.relatedTarget = this.relatedTarget;
 				this.bindDoc(false);
 				this.trigger('cancel', event, this.data);
 				break;
@@ -319,7 +325,7 @@
 				for(i = 0; i < len; ++i) {
 					this.data.points.length = len;
 					this.data.pagePoints.length = len;
-					this.data.points[i] = T.utils.transformPoint(event.target, new T.Point(touches[i].pageX, touches[i].pageY));
+					this.data.points[i] = T.utils.transformPoint(this.relatedTarget, new T.Point(touches[i].pageX, touches[i].pageY));
 					this.data.pagePoints[i] = new T.Point(touches[i].pageX, touches[i].pageY);
 				}
 			} else if(T.utils.msPointer) {
@@ -331,12 +337,12 @@
 				len = this.data.pointerIds.length;
 				this.data.points.length = len;
 				this.data.pagePoints.length = len;
-				this.data.points[index] = T.utils.transformPoint(event.target, new T.Point(event.pageX, event.pageY));
+				this.data.points[index] = T.utils.transformPoint(this.relatedTarget, new T.Point(event.pageX, event.pageY));
 				this.data.pagePoints[index] = new T.Point(event.pageX, event.pageY);
 			} else {
 				this.data.points.length = 1;
 				this.data.pagePoints.length = 1;
-				this.data.points[0] = T.utils.transformPoint(event.target, new T.Point(event.pageX, event.pageY));
+				this.data.points[0] = T.utils.transformPoint(this.relatedTarget, new T.Point(event.pageX, event.pageY));
 				this.data.pagePoints[0] = new T.Point(event.pageX, event.pageY);
 			}
 		};
@@ -351,6 +357,7 @@
 			this.data.pagePoints = [];
 			this.started = false;
 			this.ended = false;
+			this.relatedTarget = null;
 		}
 		return GestureHandler;
 	});
@@ -423,7 +430,7 @@
 					svgPoint = svg.createSVGPoint();
 					svgPoint.x = point.x;
 					svgPoint.y = point.y;
-					svgPoint = svgPoint.matrixTransform(svg.getScreenCTM().inverse());
+					svgPoint = svgPoint.matrixTransform(el.getScreenCTM().inverse());
 					return new T.Point(svgPoint.x, svgPoint.y);
 				}
 			}
