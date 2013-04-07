@@ -27,7 +27,8 @@ describe('Gesture', function () {
 			context.cancelled = false;
 			context.gesture = {
 				options: {
-					areaThreshold: 5
+					areaThreshold: 5,
+					which: [1,2]
 				},
 				start: function () {
 					context.started = true;
@@ -43,7 +44,7 @@ describe('Gesture', function () {
 		});
 
 		it('should get called when clicking in center point with allowed button', function (done) {
-			Touche.simulate.gesture(el, null, null, 'mouse', null, null, 0);
+			Touche.simulate.gesture(el, null, null, 'mouse', null, null, 1);
 			expect(this.called).to.be(true);
 			done();
 		});
