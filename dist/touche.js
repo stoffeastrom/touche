@@ -334,34 +334,41 @@
 			touchList = touchList || 'touches';
 
 			var i, len, touches, pointerId, index,
-				data = this.data[T.utils.getFlowType(event.type)];
+				flowType = T.utils.getFlowType(event.type),
+				data = this.data[flowType];
 
-			if(T.utils.touch) {
-				touches = event[touchList];
-				len = touches.length;
-				
-				for(i = 0; i < len; ++i) {
+			switch(flowType) {
+				case 'mouse':
+					data.points.length = 1;
+					data.pagePoints.length = 1;
+					data.points[0] = T.utils.transformPoint(data.relatedTarget, new T.Point(event.pageX, event.pageY));
+					data.pagePoints[0] = new T.Point(event.pageX, event.pageY);
+					break;
+				case 'touch':
+					touches = event[touchList];
+					len = touches.length;
+					
+					for(i = 0; i < len; ++i) {
+						data.points.length = len;
+						data.pagePoints.length = len;
+						data.points[i] = T.utils.transformPoint(data.relatedTarget, new T.Point(touches[i].pageX, touches[i].pageY));
+						data.pagePoints[i] = new T.Point(touches[i].pageX, touches[i].pageY);
+					}
+					break;
+				case 'MSPointer':
+				case 'pointer':
+					pointerId = event.pointerId;
+					index = data.pointerIds.indexOf(pointerId);
+					if(index < 0 ) {
+						index = data.pointerIds.push(pointerId) -1;
+					}
+					len = data.pointerIds.length;
 					data.points.length = len;
 					data.pagePoints.length = len;
-					data.points[i] = T.utils.transformPoint(data.relatedTarget, new T.Point(touches[i].pageX, touches[i].pageY));
-					data.pagePoints[i] = new T.Point(touches[i].pageX, touches[i].pageY);
-				}
-			} else if(T.utils.msPointer) {
-				pointerId = event.pointerId;
-				index = data.pointerIds.indexOf(pointerId);
-				if(index < 0 ) {
-					index = data.pointerIds.push(pointerId) -1;
-				}
-				len = data.pointerIds.length;
-				data.points.length = len;
-				data.pagePoints.length = len;
-				data.points[index] = T.utils.transformPoint(data.relatedTarget, new T.Point(event.pageX, event.pageY));
-				data.pagePoints[index] = new T.Point(event.pageX, event.pageY);
-			} else {
-				data.points.length = 1;
-				data.pagePoints.length = 1;
-				data.points[0] = T.utils.transformPoint(data.relatedTarget, new T.Point(event.pageX, event.pageY));
-				data.pagePoints[0] = new T.Point(event.pageX, event.pageY);
+					data.points[index] = T.utils.transformPoint(data.relatedTarget, new T.Point(event.pageX, event.pageY));
+					data.pagePoints[index] = new T.Point(event.pageX, event.pageY);
+					break;
+				default: throw 'Not implemented!';
 			}
 		};
 
