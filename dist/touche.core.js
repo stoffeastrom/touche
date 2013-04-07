@@ -304,6 +304,7 @@
 			case events.cancel:
 				this.bindDoc(false);
 				this.trigger('cancel', event, this.data);
+				this.ended = true;
 				break;
 			}
 		};
