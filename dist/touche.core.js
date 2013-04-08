@@ -1,4 +1,4 @@
-/*! Touché - v1.0.3 - 2013-04-07
+/*! Touché - v1.0.3 - 2013-03-14
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -110,6 +110,7 @@
 })();
 (function(T, doc){
 	'use strict';
+
 	/**
 	* Bind dragstart event to make sure we cancel all active gestures,
 	* since a native drag gesture is not compatible with Touché.
@@ -288,23 +289,26 @@
 				}
 				this.bindDoc(true);
 				this.relatedTarget = event.target;
+				event.relatedTarget = this.relatedTarget;
 				this.setPoints(event);
 				this.trigger('start', event, this.data);
 				this.started = true;
 				break;
 			case events.move:
+				event.relatedTarget = this.relatedTarget;
 				this.setPoints(event);
 				this.trigger('update', event, this.data);
 				break;
 			case events.end:
+				event.relatedTarget = this.relatedTarget;
 				this.bindDoc(false);
 				this.trigger('end', event, this.data);
 				this.ended = true;
 				break;
 			case events.cancel:
+				event.relatedTarget = this.relatedTarget;
 				this.bindDoc(false);
 				this.trigger('cancel', event, this.data);
-				this.ended = true;
 				break;
 			}
 		};
@@ -358,7 +362,6 @@
 		return GestureHandler;
 	});
 })(window.Touche, window.document);
-
 (function(T, atan2, PI) {
 	'use strict';
 
@@ -776,7 +779,6 @@
 		 * @name T.Gesture#validMouseButton
 		 * @function
 		 * @param {Event} event The event object o evaluate
-		 * @param {Numeric|[Numeric[]]}
 		 * @returns {Boolean} Whether the event had the allowedBtn or not, always true for touch/MSPointer
 		 */
 		this.isValidMouseButton = function(event, allowedBtn) {
@@ -789,11 +791,8 @@
 			var btn = event.button,
 				which = event.which,
 				actualBtn;
-
 			actualBtn = (!which && btn !== undefined) ? ( btn & 1 ? 1 : ( btn & 2 ? 3 : ( btn & 4 ? 2 : 0 ) ) ) : which;
-			return T.utils.isArray(allowedBtn) ? allowedBtn.some(function(val) {
-				return actualBtn === val;
-			}) : actualBtn === allowedBtn;
+			return actualBtn === allowedBtn;
 		};
 
 		function Gesture(gestureHandler, type, binder) {
