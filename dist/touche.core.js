@@ -1,4 +1,4 @@
-/*! Touché - v1.0.3 - 2013-03-14
+/*! Touché - v1.0.4 - 2013-04-08
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -130,11 +130,15 @@
 	T.GestureHandler = Object.augment(function() {
 
 		this.activate = function() {
-			this.on(this.element, T.utils.getEvents().start);
+			T.utils.getEvents().start.forEach(function(event) {
+				this.on(this.element, event);
+			}, this);
 		};
 
 		this.deactivate = function() {
-			this.off(this.element, T.utils.getEvents().start);
+			T.utils.getEvents().start.forEach(function(event) {
+				this.off(this.element, event);
+			}, this);
 			this.bindDoc(false);
 			T.cache.remove(this.element);
 		};
@@ -160,19 +164,22 @@
 			}
 		};
 
-		this.reset = function() {
+		this.reset = function(event) {
+			var type = T.utils.getFlowType(event);
+
 			this.gestures.forEach(function(gesture) {
 				gesture.started = false;
 				gesture.cancelled = false;
 				gesture.countTouches = 0;
 			});
-			this.data = {};
-			this.data.pointerIds = [];
-			this.data.points = [];
-			this.data.pagePoints = [];
-			this.started = false;
-			this.ended = false;
-			this.relatedTarget = null;
+
+			this.data[type] = {};
+			this.data[type].points = [];
+			this.data[type].pointerIds = [];
+			this.data[type].pagePoints = [];
+			this.data[type].started = false;
+			this.data[type].ended = false;
+			this.data[type].relatedTarget = null;
 		};
 
 		this.trigger = function(action, event, data) {
@@ -273,77 +280,92 @@
 			});
 		};
 
-		this.bindDoc = function(on) {
-			this[on ? 'on' : 'off'](doc, T.utils.getEvents().move);
-			this[on ? 'on' : 'off'](doc, T.utils.getEvents().end);
-			this[on ? 'on' : 'off'](doc, T.utils.getEvents().cancel);
+		this.bindDoc = function(on, type) {
+			var flowTypes = T.utils.getFlowTypes(type),
+				events;
+			flowTypes.forEach(function(flowType){
+				events = [T.utils.getEvent('update', flowType), T.utils.getEvent('end', flowType), T.utils.getEvent('cancel', flowType)];
+				events.forEach(function(event) {
+					if(event) {
+						this[on ? 'on' : 'off'](doc, event);
+					}
+				}, this);
+			}, this);
 		};
 
 		this.handleEvent = function(event) {
-			var events = T.utils.getEvents();
+			var events = T.utils.getEvents(),
+				flowType = T.utils.getFlowType(event.type);
 
-			switch(event.type) {
-			case events.start:
-				if(this.started && this.ended) {
-					this.reset();
+			if(events.start.some(function(val) {
+				return event.type === val;
+			})) {
+				if(this.data[flowType].started && this.data[flowType].ended) {
+					this.reset(event.type);
 				}
-				this.bindDoc(true);
-				this.relatedTarget = event.target;
-				event.relatedTarget = this.relatedTarget;
+				this.bindDoc(true, event.type);
+				this.data[flowType].relatedTarget = event.target;
 				this.setPoints(event);
-				this.trigger('start', event, this.data);
-				this.started = true;
-				break;
-			case events.move:
-				event.relatedTarget = this.relatedTarget;
+				this.trigger('start', event, this.data[flowType]);
+				this.data[flowType].started = true;
+			} else if(events.update.some(function(val) {
+				return event.type === val;
+			})) {
 				this.setPoints(event);
-				this.trigger('update', event, this.data);
-				break;
-			case events.end:
-				event.relatedTarget = this.relatedTarget;
-				this.bindDoc(false);
-				this.trigger('end', event, this.data);
-				this.ended = true;
-				break;
-			case events.cancel:
-				event.relatedTarget = this.relatedTarget;
-				this.bindDoc(false);
-				this.trigger('cancel', event, this.data);
-				break;
+				this.trigger('update', event, this.data[flowType]);
+			} else if(events.end.some(function(val) {
+				return event.type === val;
+			})) {
+				this.bindDoc(false, event.type);
+				this.trigger('end', event, this.data[flowType]);
+				this.data[flowType].ended = true;
+			} else if(events.cancel.some(function(val) {
+				return event.type === val;
+			})) {
+				this.bindDoc(false, event.type);
+				this.trigger('cancel', event, this.data[flowType]);
+				this.data[flowType].ended = true;
 			}
 		};
 
 		this.setPoints = function(event, touchList) {
 			touchList = touchList || 'touches';
 
-			var i, len, touches, pointerId, index;
+			var i, len, touches, pointerId, index,
+				flowType = T.utils.getFlowType(event.type);
 
-			if(T.utils.touch) {
-				touches = event[touchList];
-				len = touches.length;
-				
-				for(i = 0; i < len; ++i) {
-					this.data.points.length = len;
-					this.data.pagePoints.length = len;
-					this.data.points[i] = T.utils.transformPoint(this.relatedTarget, new T.Point(touches[i].pageX, touches[i].pageY));
-					this.data.pagePoints[i] = new T.Point(touches[i].pageX, touches[i].pageY);
-				}
-			} else if(T.utils.msPointer) {
-				pointerId = event.pointerId;
-				index = this.data.pointerIds.indexOf(pointerId);
-				if(index < 0 ) {
-					index = this.data.pointerIds.push(pointerId) -1;
-				}
-				len = this.data.pointerIds.length;
-				this.data.points.length = len;
-				this.data.pagePoints.length = len;
-				this.data.points[index] = T.utils.transformPoint(this.relatedTarget, new T.Point(event.pageX, event.pageY));
-				this.data.pagePoints[index] = new T.Point(event.pageX, event.pageY);
-			} else {
-				this.data.points.length = 1;
-				this.data.pagePoints.length = 1;
-				this.data.points[0] = T.utils.transformPoint(this.relatedTarget, new T.Point(event.pageX, event.pageY));
-				this.data.pagePoints[0] = new T.Point(event.pageX, event.pageY);
+			switch(flowType) {
+				case 'mouse':
+					this.data[flowType].points.length = 1;
+					this.data[flowType].pagePoints.length = 1;
+					this.data[flowType].points[0] = T.utils.transformPoint(this.data[flowType].relatedTarget, new T.Point(event.pageX, event.pageY));
+					this.data[flowType].pagePoints[0] = new T.Point(event.pageX, event.pageY);
+					break;
+				case 'touch':
+					touches = event[touchList];
+					len = touches.length;
+					
+					for(i = 0; i < len; ++i) {
+						this.data[flowType].points.length = len;
+						this.data[flowType].pagePoints.length = len;
+						this.data[flowType].points[i] = T.utils.transformPoint(this.data[flowType].relatedTarget, new T.Point(touches[i].pageX, touches[i].pageY));
+						this.data[flowType].pagePoints[i] = new T.Point(touches[i].pageX, touches[i].pageY);
+					}
+					break;
+				case 'MSPointer':
+				case 'pointer':
+					pointerId = event.pointerId;
+					index = this.data[flowType].pointerIds.indexOf(pointerId);
+					if(index < 0 ) {
+						index = this.data[flowType].pointerIds.push(pointerId) -1;
+					}
+					len = this.data[flowType].pointerIds.length;
+					this.data[flowType].points.length = len;
+					this.data[flowType].pagePoints.length = len;
+					this.data[flowType].points[index] = T.utils.transformPoint(this.data[flowType].relatedTarget, new T.Point(event.pageX, event.pageY));
+					this.data[flowType].pagePoints[index] = new T.Point(event.pageX, event.pageY);
+					break;
+				default: throw 'Not implemented!';
 			}
 		};
 
@@ -352,16 +374,20 @@
 			this.gestures = [];
 			this.sortedGestures = [];
 			this.data = {};
-			this.data.points = [];
-			this.data.pointerIds = [];
-			this.data.pagePoints = [];
-			this.started = false;
-			this.ended = false;
-			this.relatedTarget = null;
+			T.utils.getFlowTypes().forEach(function(type) {
+				this.data[type] = {};
+				this.data[type].points = [];
+				this.data[type].pointerIds = [];
+				this.data[type].pagePoints = [];
+				this.data[type].started = false;
+				this.data[type].ended = false;
+				this.data[type].relatedTarget = null;
+			}, this);
 		}
 		return GestureHandler;
 	});
 })(window.Touche, window.document);
+
 (function(T, atan2, PI) {
 	'use strict';
 
@@ -447,7 +473,10 @@
 			if(T.utils.isSVG(target)){
 				fn = (target.getBBox || target.getBoundingClientRect);
 				bbox = fn.call(target);
-				return new T.Rect((bbox.x || bbox.left || 0), (bbox.y || bbox.left || 0), bbox.width, bbox.height);
+				return new T.Rect(((bbox.x || bbox.left || 0) + (win.scrollX || doc.documentElement.scrollLeft)),
+					((bbox.y || bbox.top || 0) + (win.scrollY || doc.documentElement.scrollTop)),
+					bbox.width,
+					bbox.height);
 			} else {
 				elem = (win === target || doc === target || (!target.getBoundingClientRect)) ? body : target;
 				bbox = elem.getBoundingClientRect();
@@ -463,42 +492,61 @@
 		touch: ('ontouchstart' in window),
 		msPointer: (window.navigator.msPointerEnabled),
 
-		getEvent: function(phase) {
+		getFlowType: function(event) {
+			switch(event) {
+				case 'mousedown':
+				case 'mousemove':
+				case 'mouseup':
+					return 'mouse';
+				case 'touchstart':
+				case 'touchmove':
+				case 'touchend':
+					return 'touch';
+				case 'MSPointerDown':
+				case 'MSPointerMove':
+				case 'MSPointerUp':
+					return 'MSPointer';
+				case 'pointerdown':
+				case 'pointermove':
+				case 'pointerup':
+					return 'pointer';
+				default: throw 'Not implemented!';
+			}
+		},
+
+		getFlowTypes: function(event) {
+			switch(event) {
+				case 'mousedown':     return ['mouse'];
+				case 'touchstart':    return ['touch'];
+				case 'MSPointerDown': return ['MSPointer'];
+				case 'pointerdown':   return ['pointer'];
+				default: return ['mouse', 'touch', 'MSPointer', 'pointer'];
+			}
+		},
+
+		getEvent: function(phase, type) {
 			switch(phase) {
-				case 'start':
-					if(this.msPointer) {
-						return 'MSPointerDown';
-					} else if(this.touch) {
-						return 'touchstart';
-					} else {
-						return 'mousedown';
-					}
-					break;
 				case 'update':
-					if(this.msPointer) {
-						return 'MSPointerMove';
-					} else if(this.touch) {
-						return 'touchmove';
-					} else {
-						return 'mousemove';
+					switch(type) {
+						case 'mouse':     return 'mousemove';
+						case 'touch':     return 'touchmove';
+						case 'MSPointer': return 'MSPointerMove';
+						case 'pointer':   return 'pointermove';
 					}
 					break;
 				case 'end':
-					if(this.msPointer) {
-						return 'MSPointerUp';
-					} else if(this.touch) {
-						return 'touchend';
-					} else {
-						return 'mouseup';
+					switch(type) {
+						case 'mouse':     return 'mouseup';
+						case 'touch':     return 'touchend';
+						case 'MSPointer': return 'MSPointerUp';
+						case 'pointer':   return 'pointerup';
 					}
 					break;
 				case 'cancel':
-					if(this.msPointer) {
-						return 'MSPointerCancel';
-					} else if(this.touch) {
-						return 'touchcancel';
-					} else {
-						return '';
+					switch(type) {
+						case 'touch':     return 'touchcancel';
+						case 'MSPointer': return 'MSPointerCancel';
+						case 'pointer':   return 'pointercancel';
 					}
 					break;
 				default: throw 'Not implemented!';
@@ -513,10 +561,10 @@
 		*/
 		getEvents: function () {
 			return {
-				start: this.getEvent('start'),
-				move: this.getEvent('update'),
-				end: this.getEvent('end'),
-				cancel: this.getEvent('cancel')
+				start: ['mousedown', 'touchstart', 'MSPointerDown', 'pointerdown'],
+				update: ['mousemove', 'touchmove', 'MSPointerMove', 'pointermove'],
+				end: ['mouseup', 'touchend', 'MSPointerUp', 'pointerup'],
+				cancel: ['touchcancel', 'MSPointerCancel', 'pointercancel']
 			};
 		},
 
@@ -779,6 +827,7 @@
 		 * @name T.Gesture#validMouseButton
 		 * @function
 		 * @param {Event} event The event object o evaluate
+		 * @param {Numeric|[Numeric[]]}
 		 * @returns {Boolean} Whether the event had the allowedBtn or not, always true for touch/MSPointer
 		 */
 		this.isValidMouseButton = function(event, allowedBtn) {
@@ -791,8 +840,11 @@
 			var btn = event.button,
 				which = event.which,
 				actualBtn;
+
 			actualBtn = (!which && btn !== undefined) ? ( btn & 1 ? 1 : ( btn & 2 ? 3 : ( btn & 4 ? 2 : 0 ) ) ) : which;
-			return actualBtn === allowedBtn;
+			return T.utils.isArray(allowedBtn) ? allowedBtn.some(function(val) {
+				return actualBtn === val;
+			}) : actualBtn === allowedBtn;
 		};
 
 		function Gesture(gestureHandler, type, binder) {
