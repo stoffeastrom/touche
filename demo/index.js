@@ -22,7 +22,8 @@ function bindGestures() {
 
 	Touche(element).tap({
 		options: {
-			areaThreshold: 5
+			areaThreshold: 5,
+			preventDefault: false
 		},
 		end: function(event, data) {
 			console.log("tap", data);
@@ -31,7 +32,8 @@ function bindGestures() {
 	.tap({
 		options: {
 			areaThreshold: 5,
-			touches: 2
+			touches: 2,
+			preventDefault: false
 		},
 		end: function(event, data) {
 			console.log("2-finger tap", data);
@@ -39,7 +41,8 @@ function bindGestures() {
 	})
 	.doubletap({
 		options: {
-			timeThreshold: 200
+			timeThreshold: 200,
+			preventDefault: false
 		},
 		end: function(event, data) {
 			console.log("double tap", data);
@@ -48,7 +51,8 @@ function bindGestures() {
 	.longtap({
 		options: {
 			timeThreshold: 800,
-			interval: 20
+			interval: 20,
+			preventDefault: false
 		},
 		start: function(event, data) {
 			console.log("longtap start", data.percentage, data);
@@ -65,7 +69,8 @@ function bindGestures() {
 	})
 	.swipe({
 		options: {
-			radiusThreshold: 24
+			radiusThreshold: 24,
+			preventDefault: false
 		},
 		start: function(event, data) {
 			console.log("swipe start", data);

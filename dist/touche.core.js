@@ -1,4 +1,4 @@
-/*! Touché - v1.0.4 - 2013-04-08
+/*! Touché - v1.0.5 - 2013-04-11
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -164,22 +164,20 @@
 			}
 		};
 
-		this.reset = function(event) {
-			var type = T.utils.getFlowType(event);
-
+		this.reset = function(flowType) {
 			this.gestures.forEach(function(gesture) {
 				gesture.started = false;
 				gesture.cancelled = false;
 				gesture.countTouches = 0;
 			});
 
-			this.data[type] = {};
-			this.data[type].points = [];
-			this.data[type].pointerIds = [];
-			this.data[type].pagePoints = [];
-			this.data[type].started = false;
-			this.data[type].ended = false;
-			this.data[type].relatedTarget = null;
+			this.data[flowType] = {};
+			this.data[flowType].points = [];
+			this.data[flowType].pointerIds = [];
+			this.data[flowType].pagePoints = [];
+			this.data[flowType].started = false;
+			this.data[flowType].ended = false;
+			this.data[flowType].relatedTarget = null;
 		};
 
 		this.trigger = function(action, event, data) {
@@ -293,6 +291,29 @@
 			}, this);
 		};
 
+		this.isOtherFlowStarted = function(type) {
+			var flowTypes = T.utils.getFlowTypes(),
+				len = flowTypes.length,
+				i;
+			for(i = 0; i < len; ++i) {
+				if(type !== flowTypes[i] && this.data[flowTypes[i]].started) {
+					return true;
+				}
+			}
+			return false;
+		};
+
+		this.resetFlowTypes = function() {
+			var flowTypes = T.utils.getFlowTypes(),
+				len = flowTypes.length,
+				i;
+			for(i = 0; i < len; ++i) {
+				if(this.data[flowTypes[i]].started && this.data[flowTypes[i]].ended) {
+					this.reset(flowTypes[i]);
+				}
+			}
+		};
+
 		this.handleEvent = function(event) {
 			var events = T.utils.getEvents(),
 				flowType = T.utils.getFlowType(event.type);
@@ -300,9 +321,10 @@
 			if(events.start.some(function(val) {
 				return event.type === val;
 			})) {
-				if(this.data[flowType].started && this.data[flowType].ended) {
-					this.reset(event.type);
+				if(this.isOtherFlowStarted(flowType)) {
+					return;
 				}
+				this.resetFlowTypes();
 				this.bindDoc(true, event.type);
 				this.data[flowType].relatedTarget = event.target;
 				this.setPoints(event);
