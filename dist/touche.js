@@ -1,4 +1,4 @@
-/*! Touché - v1.0.5 - 2013-04-11
+/*! Touché - v1.0.6 - 2013-04-16
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -523,14 +523,17 @@
 				case 'touchstart':
 				case 'touchmove':
 				case 'touchend':
+				case 'touchcancel':
 					return 'touch';
 				case 'MSPointerDown':
 				case 'MSPointerMove':
 				case 'MSPointerUp':
+				case 'MSPointerCancel':
 					return 'MSPointer';
 				case 'pointerdown':
 				case 'pointermove':
 				case 'pointerup':
+				case 'pointercancel':
 					return 'pointer';
 				default: throw 'Not implemented!';
 			}
