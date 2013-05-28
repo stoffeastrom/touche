@@ -1,4 +1,4 @@
-/*! Touché - v1.0.6 - 2013-04-16
+/*! Touché - v1.0.7 - 2013-05-28
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -1074,6 +1074,7 @@
 		this.on = function(elem) {
 			this.count = 0;
 			T(elem).on('tap', {
+				options: this.options,
 				id: this.id,
 				end: this.end
 			});

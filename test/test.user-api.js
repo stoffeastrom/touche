@@ -42,6 +42,26 @@ describe('Touché - user api', function() {
 			});
 		});
 
+		it("should be able to set preventDefault for the bounded tap in doubletap", function() {
+			var dt = Touche.gestures.get("doubletap").augment(function(DoubleTap){
+				this.end = function() {
+					expect(this.options.preventDefault).to.be(false);
+				};
+
+				function DoubleTapTest() {
+					DoubleTap.apply(this, arguments);
+				}
+				return DoubleTapTest;
+			});
+			Touche.gestures.add('doubletaptest', dt);
+			Touche(doc).on("doubletaptest", {
+				options: {
+					preventDefault: false
+				}
+			});
+			Touche.simulate.gesture(doc, null, null, 'mouse');
+		});
+
 		after(function() {
 			Touche(doc).off();
 			expect(Touche.cache.data.length).to.be(0);
