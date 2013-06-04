@@ -216,6 +216,11 @@
 		};
 
 		this.addGesture = function(gesture) {
+			if(Object.keys(this.data).some(function(key){
+				return this.data[key].started;
+			}, this)) {
+				gesture.cancelled = true;
+			} 
 			this.gestures.push(gesture);
 			this.sortGestures();
 
