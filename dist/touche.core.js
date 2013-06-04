@@ -197,7 +197,7 @@
 			this.sortedGestures.map(function(sorted) {
 				return sorted.context;
 			}).filter(function(gesture) {
-				return gesture.paused;
+				return gesture.paused && gesture.started;
 			}).forEach(function(gesture) {
 				gesture.play(trigger);
 			});
@@ -206,6 +206,8 @@
 		this.pause = function(type, excludeGesture) {
 			this.sortedGestures.map(function(sorted){
 				return sorted.context;
+			}).filter(function(gesture) {
+				return gesture.started;
 			}).filter(function(gesture) {
 				return type ? (excludeGesture !== gesture && type === gesture.type) : (excludeGesture !== gesture);
 			}).forEach(function(gesture) {
