@@ -1,4 +1,4 @@
-/*! Touché - v1.0.7 - 2013-05-28
+/*! Touché - v1.0.8 - 2013-06-04
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -462,6 +462,7 @@
 			}
 			return null;
 		},
+
 		/**
 		 * Transforms a point if needed
 		 * @name T.utils.transformPoint

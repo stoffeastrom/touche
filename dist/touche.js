@@ -1,4 +1,4 @@
-/*! Touché - v1.0.7 - 2013-05-28
+/*! Touché - v1.0.8 - 2013-06-04
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -462,6 +462,7 @@
 			}
 			return null;
 		},
+
 		/**
 		 * Transforms a point if needed
 		 * @name T.utils.transformPoint
@@ -1099,7 +1100,7 @@
 				this.cancel();
 				return;
 			}
-			this.rect = T.utils.getRect(event.target);
+			this.rect = T.utils.getRect(this.gestureHandler.element);
 			this.count = 0;
 			this.intervalSteps = this.options.timeThreshold / this.options.interval;
 			this.startTime = +new Date();
@@ -1202,7 +1203,7 @@
 		};
 
 		this.start = function(event, data) {
-			this.rect = T.utils.getRect(event.target);
+			this.rect = T.utils.getRect(this.gestureHandler.element);
 			this.pinch = {
 				start: {},
 				current: {}
@@ -1298,7 +1299,7 @@
 		};
 		
 		this.start = function(event, data) {
-			this.rect = T.utils.getRect(event.target);
+			this.rect = T.utils.getRect(this.gestureHandler.element);
 			this.rotate = {
 				start: {},
 				current: {}
@@ -1408,7 +1409,7 @@ T.gestures.add('rotate', Rotate);
 		};
 
 		this.start = function(event, data) {
-			this.rect = T.utils.getRect(event.target);
+			this.rect = T.utils.getRect(this.gestureHandler.element);
 			this.swipe = {};
 
 			this.countTouches = 0;
@@ -1501,7 +1502,7 @@ T.gestures.add('rotate', Rotate);
 
 		this.start = function(event, data) {
 			this.started = true;
-			this.rect = T.utils.getRect(event.target);
+			this.rect = T.utils.getRect(this.gestureHandler.element);
 			if( !this.isValidMouseButton(event, this.options.which) ||
 				this.hasMoreTouches(data.points)) {
 				this.cancel();
