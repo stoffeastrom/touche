@@ -1,4 +1,4 @@
-/*! Touché - v1.0.8 - 2013-06-04
+/*! Touché - v1.0.8 - 2013-06-05
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -107,6 +107,19 @@
 			}
 		}
 	};
+
+	T.preventGestures = function(excludeHandler) {
+		T.cache.data.filter(function(obj) {
+			return (excludeHandler ? obj.context !== excludeHandler : true);
+		}).forEach(function(obj) {
+			if(Object.keys(obj.context.data).some(function(key) {
+				return obj.context.data[key].started;
+			})) {
+				obj.context.prevented = true;
+			}
+		});
+	};
+
 })();
 (function(T, doc){
 	'use strict';
@@ -310,50 +323,87 @@
 			return false;
 		};
 
-		this.resetFlowTypes = function() {
+		this.resetFlowTypes = function(excludeType) {
+			excludeType = excludeType || "";
+
 			var flowTypes = T.utils.getFlowTypes(),
 				len = flowTypes.length,
 				i;
 			for(i = 0; i < len; ++i) {
-				if(this.data[flowTypes[i]].started && this.data[flowTypes[i]].ended) {
+				if(this.data[flowTypes[i]].started && this.data[flowTypes[i]].ended && excludeType !== flowTypes[i]) {
 					this.reset(flowTypes[i]);
 				}
 			}
 		};
 
-		this.handleEvent = function(event) {
-			var events = T.utils.getEvents(),
-				flowType = T.utils.getFlowType(event.type);
+		this.isEmulatedMouseEvents = function(event) {
+			var flowType = T.utils.getFlowType(event.type),
+				touchData = this.data["touch"],
+				lastPoint,
+				point = new T.Point(event.pageX, event.pageY);
 
-			if(events.start.some(function(val) {
-				return event.type === val;
-			})) {
-				if(this.isOtherFlowStarted(flowType)) {
-					return;
-				}
-				this.resetFlowTypes();
-				this.bindDoc(true, event.type);
-				this.data[flowType].relatedTarget = event.target;
-				this.setPoints(event);
-				this.trigger('start', event, this.data[flowType]);
-				this.data[flowType].started = true;
-			} else if(events.update.some(function(val) {
-				return event.type === val;
-			})) {
-				this.setPoints(event);
-				this.trigger('update', event, this.data[flowType]);
-			} else if(events.end.some(function(val) {
-				return event.type === val;
-			})) {
-				this.bindDoc(false, event.type);
-				this.trigger('end', event, this.data[flowType]);
-				this.data[flowType].ended = true;
-			} else if(events.cancel.some(function(val) {
-				return event.type === val;
-			})) {
-				this.bindDoc(false, event.type);
-				this.trigger('cancel', event, this.data[flowType]);
-				this.data[flowType].ended = true;
+			if(flowType !== "mouse") {
+				return false;
+			}
+
+			if(touchData.pagePoints.length !== 1) {
+				return false;
+			}
+
+			lastPoint = touchData.pagePoints[0];
+
+			if(point.distanceTo(lastPoint) < 25) {
+				return true;
+			}
+
+			return false;
+		};
+
+		this.handleEvent = function(event) {
+			var flowType = T.utils.getFlowType(event.type);
+
+			/*if(this.prevented) {
+				this.prevented = false;
+				return;
+			}*/
+			if(this.isOtherFlowStarted(flowType) || this.isEmulatedMouseEvents(event)) {
+				return;
+			}
+
+			switch(event.type) {
+				case "mousedown":
+				case "touchstart":
+				case "MSPointerDown":
+				case "pointerstart":
+					this.resetFlowTypes();
+					this.bindDoc(true, event.type);
+					this.data[flowType].relatedTarget = event.target;
+					this.setPoints(event);
+					this.trigger('start', event, this.data[flowType]);
+					this.data[flowType].started = true;
+					break;
+				case "mousemove":
+				case "touchmove":
+				case "MSPointerMove":
+				case "pointermove":
+					this.setPoints(event);
+					this.trigger('update', event, this.data[flowType]);
+					break;
+				case "mouseup":
+				case "touchend":
+				case "MSPointerUp":
+				case "pointerup":
+					this.bindDoc(false, event.type);
+					this.trigger('end', event, this.data[flowType]);
+					this.data[flowType].ended = true;
+					break;
+				case "touchcancel":
+				case "MSPointerCancel":
+				case "pointercancel":
+					this.bindDoc(false, event.type);
+					this.trigger('cancel', event, this.data[flowType]);
+					this.data[flowType].ended = true;
+					break;
 			}
 		};
 
