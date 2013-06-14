@@ -534,7 +534,7 @@
 			}, this);
 		};
 
-		this.handleEvent = function() {
+		this.handleEvent = function(event) {
 			switch(event.type) {
 				case "mousedown":
 				case "touchstart":
@@ -582,7 +582,7 @@
 (function(T){
 	'use strict';
 
-	var lastTouchPoints = [], timerId;
+	/*var lastTouchPoints = [], timerId;
 
 	function setLastTouch(points) {
 		lastTouchPoints.length = 0;
@@ -593,7 +593,7 @@
 		timerId = setTimeout(function() {
 			lastTouchPoints.length = 0;
 		}, 800);
-	}
+	}*/
 
 	/**
 	 * Represents a handler for gestures, used to set up basic structure for creating gestures.
@@ -744,7 +744,7 @@
 			}
 		};
 
-		this.isEmulatedMouseEvents = function(event) {
+		/*this.isEmulatedMouseEvents = function(event) {
 			if(event.isSimulated) {
 				return false;
 			}
@@ -768,7 +768,7 @@
 			}
 
 			return false;
-		};
+		};*/
 
 		this.onStart = function(event) {
 			T._superHandler.addHandler(this, event);
@@ -776,6 +776,9 @@
 
 		this.start = function(event) {
 			var flowType = T.utils.getFlowType(event.type);
+			if(this.isOtherFlowStarted(flowType)) {
+				return;
+			}
 			this.resetFlowTypes();
 			this.data[flowType].relatedTarget = event.target;
 			this.setPoints(event);
@@ -785,12 +788,18 @@
 
 		this.update = function(event) {
 			var flowType = T.utils.getFlowType(event.type);
+			if(this.isOtherFlowStarted(flowType)) {
+				return;
+			}
 			this.setPoints(event);
 			this.trigger('update', event, this.data[flowType]);
 		};
 
 		this.end = function(event) {
 			var flowType = T.utils.getFlowType(event.type);
+			if(this.isOtherFlowStarted(flowType)) {
+				return;
+			}
 			this.trigger('end', event, this.data[flowType]);
 			this.data[flowType].ended = true;
 		};
@@ -804,7 +813,7 @@
 		this.handleEvent = function(event) {
 			var flowType = T.utils.getFlowType(event.type);
 
-			if(this.isOtherFlowStarted(flowType) || this.isEmulatedMouseEvents(event)) {
+			if(this.isOtherFlowStarted(flowType)) {
 				return;
 			}
 
@@ -834,7 +843,7 @@
 						this.data[flowType].points[i] = T.utils.transformPoint(this.data[flowType].relatedTarget, new T.Point(touches[i].pageX, touches[i].pageY));
 						this.data[flowType].pagePoints[i] = new T.Point(touches[i].pageX, touches[i].pageY);
 					}
-					setLastTouch(this.data[flowType].pagePoints);
+					//setLastTouch(this.data[flowType].pagePoints);
 					break;
 				case 'MSPointer':
 				case 'pointer':
@@ -848,6 +857,7 @@
 					this.data[flowType].pagePoints.length = len;
 					this.data[flowType].points[index] = T.utils.transformPoint(this.data[flowType].relatedTarget, new T.Point(event.pageX, event.pageY));
 					this.data[flowType].pagePoints[index] = new T.Point(event.pageX, event.pageY);
+					//setLastTouch(this.data[flowType].pagePoints);
 					break;
 				default: throw 'Not implemented!';
 			}
