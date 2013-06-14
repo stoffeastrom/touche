@@ -40,9 +40,11 @@ module.exports = function(grunt) {
 				src: [
 					'lib/core/augment.js',
 					'lib/core/touche.js',
-					'lib/core/gesture-handler.js',
 					'lib/core/util.js',
 					'lib/core/cache.js',
+					'lib/core/flow-handler.js',
+					'lib/core/gesture-handler.js',
+					'lib/core/super-handler.js',
 					'lib/core/gesture.js',
 					'lib/core/binder.js',
 					'lib/core/point.js',

@@ -1,4 +1,4 @@
-/*! Touché - v1.0.8 - 2013-06-05
+/*! Touché - v1.0.8 - 2013-06-14
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -60,6 +60,9 @@
 		}
 		return this;
 	};
+
+	T._handlers = [];
+
 	/**
 	 * Internal cache of all defined (raw) gestures.
 	 * @private
@@ -108,365 +111,7 @@
 		}
 	};
 
-	T.preventGestures = function(excludeHandler) {
-		T.cache.data.filter(function(obj) {
-			return (excludeHandler ? obj.context !== excludeHandler : true);
-		}).forEach(function(obj) {
-			if(Object.keys(obj.context.data).some(function(key) {
-				return obj.context.data[key].started;
-			})) {
-				obj.context.prevented = true;
-			}
-		});
-	};
-
 })();
-(function(T, doc){
-	'use strict';
-
-	/**
-	* Bind dragstart event to make sure we cancel all active gestures,
-	* since a native drag gesture is not compatible with Touché.
-	*/
-	document.addEventListener("dragstart", function() {
-		T.cache.data.forEach(function(obj) {
-			obj.context.cancelAllGestures();
-		});
-	}, false);
-
-	/**
-	 * Represents a handler for gestures, used to set up basic structure for creating gestures.
-	 * @name T.GestureHandler
-	 * @class
-	 * @param {DOMElement} element The element attached to the {@link T.GestureHandler}
-	 */
-	T.GestureHandler = Object.augment(function() {
-
-		this.activate = function() {
-			T.utils.getEvents().start.forEach(function(event) {
-				this.on(this.element, event);
-			}, this);
-		};
-
-		this.deactivate = function() {
-			T.utils.getEvents().start.forEach(function(event) {
-				this.off(this.element, event);
-			}, this);
-			this.bindDoc(false);
-			T.cache.remove(this.element);
-		};
-
-		this.on = function(element, event) {
-			if(T.utils.msPointer) {
-				if(element.style && element.style.msTouchAction) {
-					this.msTouchAction = element.style.msTouchAction;
-				} else if (!element.style) {
-					element.style = '';
-				}
-				element.style.msTouchAction = 'none';
-			}
-			element.addEventListener(event, this, false);
-		};
-
-		this.off = function(element, event) {
-			element.removeEventListener(event, this, false);
-			if(T.utils.msPointer) {
-				if(element.style) {
-					element.style.msTouchAction = this.msTouchAction;
-				}
-			}
-		};
-
-		this.reset = function(flowType) {
-			this.gestures.forEach(function(gesture) {
-				gesture.started = false;
-				gesture.cancelled = false;
-				gesture.countTouches = 0;
-			});
-
-			this.data[flowType] = {};
-			this.data[flowType].points = [];
-			this.data[flowType].pointerIds = [];
-			this.data[flowType].pagePoints = [];
-			this.data[flowType].started = false;
-			this.data[flowType].ended = false;
-			this.data[flowType].relatedTarget = null;
-		};
-
-		this.trigger = function(action, event, data) {
-			this.sortedGestures.map(function(sorted) {
-				return sorted.context;
-			}).forEach(function(gesture) {
-				if(gesture.paused && T.utils.isFunction(gesture[action]) && !gesture.cancelled) {
-					gesture.addPausedCallback(action, event, data);
-				} else if(T.utils.isFunction(gesture[action]) && !gesture.cancelled) {
-					gesture[action].call(gesture, event, data);
-				}
-			}, this);
-		};
-
-		this.play = function(trigger) {
-			trigger = trigger || false;
-			this.sortedGestures.map(function(sorted) {
-				return sorted.context;
-			}).filter(function(gesture) {
-				return gesture.paused;
-			}).forEach(function(gesture) {
-				gesture.play(trigger);
-			});
-		};
-
-		this.pause = function(type, excludeGesture) {
-			this.sortedGestures.map(function(sorted){
-				return sorted.context;
-			}).filter(function(gesture) {
-				return gesture.started;
-			}).filter(function(gesture) {
-				return type ? (excludeGesture !== gesture && type === gesture.type) : (excludeGesture !== gesture);
-			}).forEach(function(gesture) {
-				gesture.pause();
-			});
-		};
-
-		this.addGesture = function(gesture) {
-			if(Object.keys(this.data).some(function(key){
-				return this.data[key].started;
-			}, this)) {
-				gesture.cancelled = true;
-			} 
-			this.gestures.push(gesture);
-			this.sortGestures();
-
-			if(this.gestures.length === 1) {
-				this.activate();
-			}
-		};
-
-		this.removeGesture = function(gesture) {
-			this.gestures = this.gestures.filter(function(obj) {
-				return obj !== gesture;
-			});
-			this.sortGestures();
-
-			if(this.gestures.length === 0) {
-				this.deactivate();
-			}
-		};
-
-		this.removeGestures = function(type) {
-			this.gestures.filter(function(obj) {
-				return type ? (obj.type === type) : true;
-			}).forEach(function(gesture) {
-				this.removeGesture(gesture);
-			}, this);
-		};
-
-		this.cancelGesture = function(gesture) {
-			if(!gesture.cancelled) {
-				gesture.cancel.call(gesture);
-				gesture.cancelled = true;
-			}
-		};
-
-		this.cancelGestures = function(excludeType) {
-			this.gestures.filter(function(obj) {
-				return obj.type !== excludeType;
-			}).forEach(function(gesture) {
-				this.cancelGesture(gesture);
-			}, this);
-			return this;
-		};
-
-		this.cancelAllGestures = function() {
-			this.bindDoc(false);
-			this.ended = true;
-			this.gestures.forEach(function(gesture) {
-				if (gesture.started) {
-					this.cancelGesture(gesture);
-				}
-			}, this);
-		};
-
-		this.sortGestures = function() {
-			this.sortedGestures = this.gestures.map(function(gesture) {
-				return {
-					key: gesture.sortKey,
-					context: gesture
-				};
-			}).sort(function(g1, g2) {
-				return g1.key - g2.key;
-			});
-		};
-
-		this.bindDoc = function(on, type) {
-			var flowTypes = T.utils.getFlowTypes(type),
-				events;
-			flowTypes.forEach(function(flowType){
-				events = [T.utils.getEvent('update', flowType), T.utils.getEvent('end', flowType), T.utils.getEvent('cancel', flowType)];
-				events.forEach(function(event) {
-					if(event) {
-						this[on ? 'on' : 'off'](doc, event);
-					}
-				}, this);
-			}, this);
-		};
-
-		this.isOtherFlowStarted = function(type) {
-			var flowTypes = T.utils.getFlowTypes(),
-				len = flowTypes.length,
-				i;
-			for(i = 0; i < len; ++i) {
-				if(type !== flowTypes[i] && this.data[flowTypes[i]].started) {
-					return true;
-				}
-			}
-			return false;
-		};
-
-		this.resetFlowTypes = function(excludeType) {
-			excludeType = excludeType || "";
-
-			var flowTypes = T.utils.getFlowTypes(),
-				len = flowTypes.length,
-				i;
-			for(i = 0; i < len; ++i) {
-				if(this.data[flowTypes[i]].started && this.data[flowTypes[i]].ended && excludeType !== flowTypes[i]) {
-					this.reset(flowTypes[i]);
-				}
-			}
-		};
-
-		this.isEmulatedMouseEvents = function(event) {
-			var flowType = T.utils.getFlowType(event.type),
-				touchData = this.data["touch"],
-				lastPoint,
-				point = new T.Point(event.pageX, event.pageY);
-
-			if(flowType !== "mouse") {
-				return false;
-			}
-
-			if(touchData.pagePoints.length !== 1) {
-				return false;
-			}
-
-			lastPoint = touchData.pagePoints[0];
-
-			if(point.distanceTo(lastPoint) < 25) {
-				return true;
-			}
-
-			return false;
-		};
-
-		this.handleEvent = function(event) {
-			var flowType = T.utils.getFlowType(event.type);
-
-			/*if(this.prevented) {
-				this.prevented = false;
-				return;
-			}*/
-			if(this.isOtherFlowStarted(flowType) || this.isEmulatedMouseEvents(event)) {
-				return;
-			}
-
-			switch(event.type) {
-				case "mousedown":
-				case "touchstart":
-				case "MSPointerDown":
-				case "pointerstart":
-					this.resetFlowTypes();
-					this.bindDoc(true, event.type);
-					this.data[flowType].relatedTarget = event.target;
-					this.setPoints(event);
-					this.trigger('start', event, this.data[flowType]);
-					this.data[flowType].started = true;
-					break;
-				case "mousemove":
-				case "touchmove":
-				case "MSPointerMove":
-				case "pointermove":
-					this.setPoints(event);
-					this.trigger('update', event, this.data[flowType]);
-					break;
-				case "mouseup":
-				case "touchend":
-				case "MSPointerUp":
-				case "pointerup":
-					this.bindDoc(false, event.type);
-					this.trigger('end', event, this.data[flowType]);
-					this.data[flowType].ended = true;
-					break;
-				case "touchcancel":
-				case "MSPointerCancel":
-				case "pointercancel":
-					this.bindDoc(false, event.type);
-					this.trigger('cancel', event, this.data[flowType]);
-					this.data[flowType].ended = true;
-					break;
-			}
-		};
-
-		this.setPoints = function(event, touchList) {
-			touchList = touchList || 'touches';
-
-			var i, len, touches, pointerId, index,
-				flowType = T.utils.getFlowType(event.type);
-
-			switch(flowType) {
-				case 'mouse':
-					this.data[flowType].points.length = 1;
-					this.data[flowType].pagePoints.length = 1;
-					this.data[flowType].points[0] = T.utils.transformPoint(this.data[flowType].relatedTarget, new T.Point(event.pageX, event.pageY));
-					this.data[flowType].pagePoints[0] = new T.Point(event.pageX, event.pageY);
-					break;
-				case 'touch':
-					touches = event[touchList];
-					len = touches.length;
-					
-					for(i = 0; i < len; ++i) {
-						this.data[flowType].points.length = len;
-						this.data[flowType].pagePoints.length = len;
-						this.data[flowType].points[i] = T.utils.transformPoint(this.data[flowType].relatedTarget, new T.Point(touches[i].pageX, touches[i].pageY));
-						this.data[flowType].pagePoints[i] = new T.Point(touches[i].pageX, touches[i].pageY);
-					}
-					break;
-				case 'MSPointer':
-				case 'pointer':
-					pointerId = event.pointerId;
-					index = this.data[flowType].pointerIds.indexOf(pointerId);
-					if(index < 0 ) {
-						index = this.data[flowType].pointerIds.push(pointerId) -1;
-					}
-					len = this.data[flowType].pointerIds.length;
-					this.data[flowType].points.length = len;
-					this.data[flowType].pagePoints.length = len;
-					this.data[flowType].points[index] = T.utils.transformPoint(this.data[flowType].relatedTarget, new T.Point(event.pageX, event.pageY));
-					this.data[flowType].pagePoints[index] = new T.Point(event.pageX, event.pageY);
-					break;
-				default: throw 'Not implemented!';
-			}
-		};
-
-		function GestureHandler(element) {
-			this.element = element;
-			this.gestures = [];
-			this.sortedGestures = [];
-			this.data = {};
-			T.utils.getFlowTypes().forEach(function(type) {
-				this.data[type] = {};
-				this.data[type].points = [];
-				this.data[type].pointerIds = [];
-				this.data[type].pagePoints = [];
-				this.data[type].started = false;
-				this.data[type].ended = false;
-				this.data[type].relatedTarget = null;
-			}, this);
-		}
-		return GestureHandler;
-	});
-})(window.Touche, window.document);
-
 (function(T, atan2, PI) {
 	'use strict';
 
@@ -836,6 +481,475 @@
 		}
 	};
 })(window.Touche);
+(function(T, doc) {
+
+	T.FlowHandler = Object.augment(function() {
+
+		this.activate = function() {
+			T.utils.getEvents().start.forEach(function(event) {
+				this.on(this.element, event);
+			}, this);
+		};
+
+		this.deactivate = function() {
+			T.utils.getEvents().start.forEach(function(event) {
+				this.off(this.element, event);
+			}, this);
+			this.bindDoc(false);
+			this.resetFlowTypes();
+			T.cache.remove(this.element);
+		};
+
+		this.on = function(element, event) {
+			if(T.utils.msPointer) {
+				if(element.style && element.style.msTouchAction) {
+					this.msTouchAction = element.style.msTouchAction;
+				} else if (!element.style) {
+					element.style = '';
+				}
+				element.style.msTouchAction = 'none';
+			}
+			element.addEventListener(event, this, false);
+		};
+
+		this.off = function(element, event) {
+			element.removeEventListener(event, this, false);
+			if(T.utils.msPointer) {
+				if(element.style) {
+					element.style.msTouchAction = this.msTouchAction;
+				}
+			}
+		};
+
+		this.bindDoc = function(on, type) {
+			var flowTypes = T.utils.getFlowTypes(type),
+				events;
+			flowTypes.forEach(function(flowType){
+				events = [T.utils.getEvent('update', flowType), T.utils.getEvent('end', flowType), T.utils.getEvent('cancel', flowType)];
+				events.forEach(function(event) {
+					if(event) {
+						this[on ? 'on' : 'off'](doc, event);
+					}
+				}, this);
+			}, this);
+		};
+
+		this.handleEvent = function() {
+			switch(event.type) {
+				case "mousedown":
+				case "touchstart":
+				case "MSPointerDown":
+				case "pointerstart":
+					this.onStart(event);
+					break;
+				case "mousemove":
+				case "touchmove":
+				case "MSPointerMove":
+				case "pointermove":
+					this.onUpdate(event);
+					break;
+				case "mouseup":
+				case "touchend":
+				case "MSPointerUp":
+				case "pointerup":
+					this.onEnd(event);
+					break;
+				case "touchcancel":
+				case "MSPointerCancel":
+				case "pointercancel":
+					this.onCancel(event);
+					break;
+			}
+		};
+
+		this.onStart = function() {};
+		this.start = function() {};
+		this.onUpdate = function() {};
+		this.update = function() {};
+		this.onEnd = function() {};
+		this.end = function() {};
+		this.onCancel = function() {};
+		this.cancel = function() {};
+
+		function FlowHandler(element) {
+			this.element = element;
+		}
+		return FlowHandler;
+	});
+
+})(window.Touche, window.document);
+
+(function(T){
+	'use strict';
+
+	var lastTouchPoints = [], timerId;
+
+	function setLastTouch(points) {
+		lastTouchPoints.length = 0;
+		clearTimeout(timerId);
+		points.forEach(function(point) {
+			lastTouchPoints.push(new T.Point(point.x, point.y));
+		});
+		timerId = setTimeout(function() {
+			lastTouchPoints.length = 0;
+		}, 800);
+	}
+
+	/**
+	 * Represents a handler for gestures, used to set up basic structure for creating gestures.
+	 * @name T.GestureHandler
+	 * @class
+	 * @param {DOMElement} element The element attached to the {@link T.GestureHandler}
+	 */
+	T.GestureHandler = T.FlowHandler.augment(function(FlowHandler, _super) {
+
+		this.reset = function(flowType) {
+			this.gestures.forEach(function(gesture) {
+				gesture.reset();
+			});
+
+			this.data[flowType] = {};
+			this.data[flowType].points = [];
+			this.data[flowType].pointerIds = [];
+			this.data[flowType].pagePoints = [];
+			this.data[flowType].started = false;
+			this.data[flowType].ended = false;
+			this.data[flowType].relatedTarget = null;
+		};
+
+		this.trigger = function(action, event, data) {
+			this.sortedGestures.map(function(sorted) {
+				return sorted.context;
+			}).forEach(function(gesture) {
+				if(gesture.paused && T.utils.isFunction(gesture[action]) && !gesture.cancelled) {
+					gesture.addPausedCallback(action, event, data);
+				} else if(T.utils.isFunction(gesture[action]) && !gesture.cancelled) {
+					gesture[action](event, data);
+				}
+			}, this);
+		};
+
+		this.play = function(trigger) {
+			trigger = trigger || false;
+			this.sortedGestures.map(function(sorted) {
+				return sorted.context;
+			}).filter(function(gesture) {
+				return gesture.paused;
+			}).forEach(function(gesture) {
+				gesture.play(trigger);
+			});
+		};
+
+		this.pause = function(type, excludeGesture) {
+			this.sortedGestures.map(function(sorted){
+				return sorted.context;
+			}).filter(function(gesture) {
+				return type ? (excludeGesture !== gesture && type === gesture.type) : (excludeGesture !== gesture);
+			}).forEach(function(gesture) {
+				gesture.pause();
+			});
+		};
+
+		this.addGesture = function(gesture) {
+			/*if(Object.keys(this.data).some(function(key){
+				return this.data[key].started;
+			}, this)) {
+				gesture.cancelled = true;
+			}*/ 
+			this.gestures.push(gesture);
+			this.sortGestures();
+
+			if(this.gestures.length === 1) {
+				this.activate();
+			}
+		};
+
+		this.removeGesture = function(gesture) {
+			this.gestures = this.gestures.filter(function(obj) {
+				return obj !== gesture;
+			});
+			this.sortGestures();
+
+			if(this.gestures.length === 0) {
+				this.deactivate();
+			}
+		};
+
+		this.removeGestures = function(type) {
+			this.gestures.filter(function(obj) {
+				return type ? (obj.type === type) : true;
+			}).forEach(function(gesture) {
+				this.removeGesture(gesture);
+			}, this);
+		};
+
+		this.cancelGesture = function(gesture) {
+			if(!gesture.cancelled) {
+				gesture.cancel();
+				gesture.cancelled = true;
+			}
+		};
+
+		this.cancelGestures = function(excludeType) {
+			this.gestures.filter(function(obj) {
+				return obj.type !== excludeType;
+			}).forEach(function(gesture) {
+				this.cancelGesture(gesture);
+			}, this);
+			return this;
+		};
+
+		this.cancelAllGestures = function() {
+			this.gestures.forEach(function(gesture) {
+				this.cancelGesture(gesture);
+			}, this);
+			this.resetFlowTypes(true);
+		};
+
+		this.sortGestures = function() {
+			this.sortedGestures = this.gestures.map(function(gesture) {
+				return {
+					key: gesture.sortKey,
+					context: gesture
+				};
+			}).sort(function(g1, g2) {
+				return g1.key - g2.key;
+			});
+		};
+
+		this.isOtherFlowStarted = function(type) {
+			var flowTypes = T.utils.getFlowTypes(),
+				len = flowTypes.length,
+				i;
+			for(i = 0; i < len; ++i) {
+				if(type !== flowTypes[i] && this.data[flowTypes[i]].started) {
+					return true;
+				}
+			}
+			return false;
+		};
+
+		this.resetFlowTypes = function(force) {
+			force = force || false;
+
+			var flowTypes = T.utils.getFlowTypes(),
+				len = flowTypes.length,
+				i;
+			for(i = 0; i < len; ++i) {
+				if(this.data[flowTypes[i]].started && this.data[flowTypes[i]].ended) {
+					this.reset(flowTypes[i]);
+				} else if(force) {
+					this.reset(flowTypes[i]);
+				}
+			}
+		};
+
+		this.isEmulatedMouseEvents = function(event) {
+			if(event.isSimulated) {
+				return false;
+			}
+
+			var flowType = T.utils.getFlowType(event.type),
+				lastPoint,
+				point = new T.Point(event.pageX, event.pageY);
+
+			if(flowType !== "mouse") {
+				return false;
+			}
+
+			if(lastTouchPoints.length !== 1) {
+				return false;
+			}
+
+			lastPoint = lastTouchPoints[0];
+
+			if(point.distanceTo(lastPoint) < 25) {
+				return true;
+			}
+
+			return false;
+		};
+
+		this.onStart = function(event) {
+			T._superHandler.addHandler(this, event);
+		};
+
+		this.start = function(event) {
+			var flowType = T.utils.getFlowType(event.type);
+			this.resetFlowTypes();
+			this.data[flowType].relatedTarget = event.target;
+			this.setPoints(event);
+			this.trigger('start', event, this.data[flowType]);
+			this.data[flowType].started = true;
+		};
+
+		this.update = function(event) {
+			var flowType = T.utils.getFlowType(event.type);
+			this.setPoints(event);
+			this.trigger('update', event, this.data[flowType]);
+		};
+
+		this.end = function(event) {
+			var flowType = T.utils.getFlowType(event.type);
+			this.trigger('end', event, this.data[flowType]);
+			this.data[flowType].ended = true;
+		};
+
+		this.cancel = function(event) {
+			var flowType = T.utils.getFlowType(event.type);
+			this.trigger('cancel', event, this.data[flowType]);
+			this.data[flowType].ended = true;
+		};
+
+		this.handleEvent = function(event) {
+			var flowType = T.utils.getFlowType(event.type);
+
+			if(this.isOtherFlowStarted(flowType) || this.isEmulatedMouseEvents(event)) {
+				return;
+			}
+
+			_super.handleEvent.call(this, event);
+		};
+
+		this.setPoints = function(event, touchList) {
+			touchList = touchList || 'touches';
+
+			var i, len, touches, pointerId, index,
+				flowType = T.utils.getFlowType(event.type);
+
+			switch(flowType) {
+				case 'mouse':
+					this.data[flowType].points.length = 1;
+					this.data[flowType].pagePoints.length = 1;
+					this.data[flowType].points[0] = T.utils.transformPoint(this.data[flowType].relatedTarget, new T.Point(event.pageX, event.pageY));
+					this.data[flowType].pagePoints[0] = new T.Point(event.pageX, event.pageY);
+					break;
+				case 'touch':
+					touches = event[touchList];
+					len = touches.length;
+					
+					for(i = 0; i < len; ++i) {
+						this.data[flowType].points.length = len;
+						this.data[flowType].pagePoints.length = len;
+						this.data[flowType].points[i] = T.utils.transformPoint(this.data[flowType].relatedTarget, new T.Point(touches[i].pageX, touches[i].pageY));
+						this.data[flowType].pagePoints[i] = new T.Point(touches[i].pageX, touches[i].pageY);
+					}
+					setLastTouch(this.data[flowType].pagePoints);
+					break;
+				case 'MSPointer':
+				case 'pointer':
+					pointerId = event.pointerId;
+					index = this.data[flowType].pointerIds.indexOf(pointerId);
+					if(index < 0 ) {
+						index = this.data[flowType].pointerIds.push(pointerId) -1;
+					}
+					len = this.data[flowType].pointerIds.length;
+					this.data[flowType].points.length = len;
+					this.data[flowType].pagePoints.length = len;
+					this.data[flowType].points[index] = T.utils.transformPoint(this.data[flowType].relatedTarget, new T.Point(event.pageX, event.pageY));
+					this.data[flowType].pagePoints[index] = new T.Point(event.pageX, event.pageY);
+					break;
+				default: throw 'Not implemented!';
+			}
+		};
+
+		function GestureHandler(element) {
+			this.element = element;
+			this.gestures = [];
+			this.sortedGestures = [];
+			this.data = {};
+			T.utils.getFlowTypes().forEach(function(type) {
+				this.data[type] = {};
+				this.data[type].points = [];
+				this.data[type].pointerIds = [];
+				this.data[type].pagePoints = [];
+				this.data[type].started = false;
+				this.data[type].ended = false;
+				this.data[type].relatedTarget = null;
+			}, this);
+		}
+		return GestureHandler;
+	});
+})(window.Touche);
+
+(function(T, doc) {
+	T.SuperHandler = T.FlowHandler.augment(function() {
+
+		this.addHandler = function(handler) {
+			var index = this._handlers.indexOf(handler);
+			if(index === -1) {
+				this._handlers.push(handler);
+			}
+		};
+
+		this.onStart = function(event) {
+			this._handlers.forEach(function(handler) {
+				handler.start(event);
+			});
+			this.bindDoc(true, event.type);
+		};
+
+		this.onUpdate = function(event) {
+			this._handlers.forEach(function(handler) {
+				handler.update(event);
+			});
+		};
+
+		this.onEnd = function(event) {
+			this.bindDoc(false, event.type);
+			this._handlers.forEach(function(handler) {
+				handler.end(event);
+			});
+			this._handlers.length = 0;
+		};
+
+		this.onCancel = function(event) {
+			this.bindDoc(false, event.type);
+			this._handlers.forEach(function(handler) {
+				handler.cancel(event);
+			});
+			this._handlers.length = 0;
+		};
+
+		this.onDragStart = function() {
+			this._handlers.forEach(function(handler) {
+				handler.cancelAllGestures();
+			});
+		};
+
+		function SuperHandler() {
+			this._handlers = [];
+			T.FlowHandler.apply(this, arguments);
+		}
+		return SuperHandler;
+	});
+
+	T._superHandler = new T.SuperHandler(doc);
+	T._superHandler.activate();
+
+	/**
+	* Bind dragstart event to make sure we cancel all active gestures,
+	* since a native drag gesture is not compatible with Touché.
+	*/
+	document.addEventListener("dragstart", function(e) {
+		T._superHandler.onDragStart(e);
+	}, false);
+
+	T.preventGestures = function(preventer) {
+		var i, handlers = T._superHandler._handlers, handler, len = handlers.length;
+
+		for(i = len - 1; i >= 0; --i) {
+			handler = handlers[i];
+			if(handler === preventer) {
+				break;
+			}
+			handler.cancelAllGestures();
+			handlers.splice(i, 1);
+		}
+	};
+
+
+})(window.Touche, window.document);
 (function(T) {
 	'use strict';
 
@@ -865,13 +979,14 @@
 		this.play = function(trigger) {
 			if(trigger && !this.cancelled) {
 				this.pausedCallbacks.forEach(function(obj) {
-					this[obj.action].call(this, obj.event, obj.data);
+					this[obj.action](obj.event, obj.data);
 				}, this);
 			} else {
 				this.gestureHandler.cancelGesture(this);
 			}
 			this.paused = false;
 			this.pausedCallbacks = [];
+			this.reset();
 		};
 		this.setOptions = function () {
 			Object.keys(this.defaults).forEach(function (key) {
@@ -928,6 +1043,15 @@
 			return T.utils.isArray(allowedBtn) ? allowedBtn.some(function(val) {
 				return actualBtn === val;
 			}) : actualBtn === allowedBtn;
+		};
+
+		this.reset = function() {
+			if(this.paused) {
+				return;
+			}
+			this.started = false;
+			this.cancelled = false;
+			this.countTouches = 0;
 		};
 
 		function Gesture(gestureHandler, type, binder) {
@@ -1057,7 +1181,10 @@
 		this.on = function(elem) {
 			this.count = 0;
 			T(elem).on('tap', {
-				options: this.options,
+				areaThreshold: this.options.areaThreshold,
+				preventDefault: this.options.preventDefault,
+				touches: this.options.touches,
+				which: this.options.which,
 				id: this.id,
 				end: this.end
 			});
@@ -1073,23 +1200,23 @@
 				return;
 			}
 
-			var self = this;
-			++this.count;
-			if(this.count === 1) {
-				this.startTime = +new Date();
-				this.gestureHandler.pause(null, this);
-				this.timerId = setTimeout(function() {
-					self.gestureHandler.play(true);
-					self.count = 0;
-				}, this.options.timeThreshold + 5);
-			} else if(this.count === 2) {
-				window.clearTimeout(this.timerId);
-				this.endTime = +new Date();
-				if((this.startTime + this.options.timeThreshold) >= this.endTime) {
-					this.gestureHandler.play();
-					this.binder.end.call(this, event, data);
+			var instance = this;
+			++instance.count;
+			if(instance.count === 1) {
+				instance.startTime = +new Date();
+				instance.gestureHandler.pause(null, this);
+				instance.timerId = setTimeout(function() {
+					instance.gestureHandler.play(true);
+					instance.count = 0;
+				}, instance.options.timeThreshold + 5);
+			} else if(instance.count === 2) {
+				window.clearTimeout(instance.timerId);
+				instance.endTime = +new Date();
+				if((instance.startTime + instance.options.timeThreshold) >= instance.endTime) {
+					instance.gestureHandler.play();
+					instance.binder.end.call(instance, event, data);
 				}
-				this.count = 0;
+				instance.count = 0;
 			}
 
 			if(this.options.preventDefault) {
@@ -1168,21 +1295,21 @@
 			this.intervalSteps = this.options.timeThreshold / this.options.interval;
 			this.startTime = +new Date();
 
-			var self = this;
-			window.clearTimeout(self.timerId);
-			self.timerId = window.setInterval(function(){
-				++self.count;
-				data.percentage = self.count/self.intervalSteps * 100;
+			var instance = this;
+			window.clearTimeout(instance.timerId);
+			instance.timerId = window.setInterval(function(){
+				++instance.count;
+				data.percentage = instance.count/instance.intervalSteps * 100;
 								
-				if(self.count === 1) {
-					self.binder.start.call(self.binder, event, data);
-					self.startFired = true;
+				if(instance.count === 1) {
+					instance.started = true;
+					instance.binder.start.call(instance, event, data);
 				} else {
-					self.binder.update.call(self.binder, event, data);
+					instance.binder.update.call(instance, event, data);
 				}
 
-				if(self.count >= self.intervalSteps) {
-					window.clearTimeout(self.timerId);
+				if(instance.count >= instance.intervalSteps) {
+					window.clearTimeout(instance.timerId);
 				}
 			}, this.options.interval);
 
@@ -1224,14 +1351,13 @@
 		};
 
 		this.cancel = function() {
+			window.clearTimeout(this.timerId);
 			if(this.cancelled) {
 				return;
 			}
 			this.cancelled = true;
-			window.clearTimeout(this.timerId);
-			if(this.startFired && this.count > 0) {
-				this.binder.cancel.call(this.binder);
-				this.startFired = false;
+			if(this.started) {
+				this.binder.cancel.call(this);
 			}
 			this.preventDefaultForMSPointer(false);
 		};
@@ -1529,7 +1655,7 @@ T.gestures.add('rotate', Rotate);
 			}
 			this.cancelled = true;
 			if(this.started) {
-				this.binder.cancel.call(this.bindingObj);
+				this.binder.cancel.call(this);
 			}
 		};
 
@@ -1580,6 +1706,9 @@ T.gestures.add('rotate', Rotate);
 		};
 
 		this.update = function(event, data) {
+			if(!this.started) {
+				return;
+			}
 			if(this.hasMoreTouches(data.points) ||
 				!this.rect.pointInside(data.points[0], this.options.areaThreshold)) {
 				this.cancel();
@@ -1592,10 +1721,14 @@ T.gestures.add('rotate', Rotate);
 		};
 
 		this.end = function(event, data) {
+			if(!this.started) {
+				return;
+			}
 			if(this.hasNotEqualTouches(data.points)) {
 				return;
 			}
 			if(this.rect.pointInside(data.points[0], this.options.areaThreshold)) {
+				this.gestureHandler.cancelGestures(this.type);
 				this.binder.end.call(this, event, data);
 			}
 			if(this.options.preventDefault) {

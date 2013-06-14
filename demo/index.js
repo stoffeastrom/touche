@@ -3,19 +3,20 @@ function bindGestures() {
 	console.log("binding gestures...");
 
 	var doc = window.document,
-		element = doc.getElementById('container');
+		element = doc.getElementById('container'),
+		activated = false;
 
 	Touche(document.getElementById("dragtap")).tap({
 		options: {
 			preventDefault: false
 		},
-		start: function(event, data) {
+		start: function(/*event, data*/) {
 			console.log("dragtap started");
 		},
-		end: function(event, data) {
+		end: function(/*event, data*/) {
 			console.log("dragtap");
 		},
-		cancel: function(event, data) {
+		cancel: function(/*event, data*/) {
 			console.log("dragtap cancelled");
 		}
 	});
@@ -27,6 +28,22 @@ function bindGestures() {
 		},
 		end: function(event, data) {
 			console.log("tap", data);
+			if(!activated) {
+				activated = true;
+				Touche(element).doubletap({
+					id: "myDoubleTap",
+					options: {
+						timeThreshold: 200,
+						preventDefault: false
+					},
+					end: function(event, data) {
+						console.log("double tap", data);
+					}
+				});
+			} else {
+				Touche(element).off("*", "myDoubleTap");
+				activated = false;
+			}
 		}
 	})
 	.tap({
@@ -37,15 +54,6 @@ function bindGestures() {
 		},
 		end: function(event, data) {
 			console.log("2-finger tap", data);
-		}
-	})
-	.doubletap({
-		options: {
-			timeThreshold: 200,
-			preventDefault: false
-		},
-		end: function(event, data) {
-			console.log("double tap", data);
 		}
 	})
 	.longtap({

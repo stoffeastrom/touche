@@ -51,7 +51,7 @@ describe('Gesture', function () {
 				touch: ['start']
 			}, 'touch');
 			Touche.simulate.gesture(el, [new Touche.Point(50,50), new Touche.Point(50,50)], {
-				touch: ['move']
+				touch: ['start']
 			}, 'touch');
 			Touche.simulate.gesture(el, null, {
 				touch: ['end']
