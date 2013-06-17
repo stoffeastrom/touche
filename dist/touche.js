@@ -1,4 +1,4 @@
-/*! Touché - v1.0.8 - 2013-06-14
+/*! Touché - v1.0.8 - 2013-06-17
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -1186,10 +1186,12 @@
 		this.on = function(elem) {
 			this.count = 0;
 			T(elem).on('tap', {
-				areaThreshold: this.options.areaThreshold,
-				preventDefault: this.options.preventDefault,
-				touches: this.options.touches,
-				which: this.options.which,
+				options: {
+					areaThreshold: this.options.areaThreshold,
+					preventDefault: this.options.preventDefault,
+					touches: this.options.touches,
+					which: this.options.which
+				},
 				id: this.id,
 				end: this.end
 			});
