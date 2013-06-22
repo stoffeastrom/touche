@@ -187,4 +187,68 @@ describe('Gesture', function () {
 			body.removeChild(el);
 		});
 	});
+
+	describe('#DoubleTap - Options', function () {
+		var el;
+
+		before(function() {
+			el = document.createElement('div');
+			el.style.position = "absolute";
+			el.style.top = "0px";
+			el.style.left = "0px";
+			el.style.width = "100px";
+			el.style.height = "100px";
+			body.appendChild(el);
+		});
+
+		function bindDoubleTap(name, newValue) {
+			var defaultTapOptions = {
+					areaThreshold: 5,
+					precedence: 6,
+					preventDefault: true,
+					touches: 1,
+					which: 1
+				};
+
+			defaultTapOptions[name] = newValue;
+			Touche(el).doubletap({
+				options: defaultTapOptions
+			});
+		}
+
+		function getTapGesture() {
+			return Touche(el).gestureHandler.gestures.filter(function(gesture) {
+				return gesture.type === "tap";
+			})[0];
+		}
+
+		it("should bind tap gesture with areaThreshold as 10", function () {
+			bindDoubleTap("areaThreshold", 10);
+			expect(getTapGesture().options.areaThreshold).to.be(10);
+		});
+
+		it("should bind tap gesture with preventDefault as false", function () {
+			bindDoubleTap("preventDefault", false);
+			expect(getTapGesture().options.preventDefault).to.be(false);
+		});
+
+		it("should bind tap gesture with touches as 2", function () {
+			bindDoubleTap("touches", 2);
+			expect(getTapGesture().options.touches).to.be(2);
+		});
+
+		it("should bind tap gesture with which as 3", function () {
+			bindDoubleTap("which", 3);
+			expect(getTapGesture().options.which).to.be(3);
+		});
+
+		afterEach(function() {
+			Touche(el).off('doubletap');
+			expect(Touche.cache.data.length).to.be(0);
+		});
+
+		after(function() {
+			body.removeChild(el);
+		});
+	});
 });
