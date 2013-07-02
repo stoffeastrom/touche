@@ -1,4 +1,4 @@
-/*! Touché - v1.0.8 - 2013-06-22
+/*! Touché - v1.0.8 - 2013-07-02
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -792,6 +792,14 @@
 
 		this.end = function(event) {
 			var flowType = T.utils.getFlowType(event.type);
+
+			// Solves the cases where the browser dont fire touchend but mouseup
+			if ( this.data.touch.started && !this.data.touch.ended && event.type === 'mouseup' ) {
+				this.trigger('end', event, this.data.touch);
+				this.data.touch.ended = true;
+				return;
+			}
+
 			if(this.isOtherFlowStarted(flowType) || this.isEmulatedMouseEvents(event)) {
 				return;
 			}
