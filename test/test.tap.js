@@ -107,6 +107,15 @@ describe('Gesture', function () {
 			done();
 		});
 
+		it('should work eventhough browser dont trigger touchend but triggers mouseup', function (done) {
+			Touche.simulate.gesture(el, [new Touche.Point(50,50)], {
+				touch: ['start']
+			}, 'touch');
+			Touche.simulate.gesture(el, null, null, 'mouse', null, null, 1);
+			expect(this.called).to.be(true);
+			done();
+		});
+
 		afterEach(function() {
 			Touche(el).off('tap');
 			expect(Touche.cache.data.length).to.be(0);
