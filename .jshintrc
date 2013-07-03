@@ -5,7 +5,7 @@
 	"latedef": true,
 	"newcap": true,
 	"noarg": true,
-	"sub": true,
+	"sub": false,
 	"undef": true,
 	"boss": true,
 	"unused": true,
