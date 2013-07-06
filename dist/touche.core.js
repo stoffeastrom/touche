@@ -1,4 +1,4 @@
-/*! Touché - v1.0.8 - 2013-07-02
+/*! Touché - v1.0.8 - 2013-07-06
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -175,7 +175,7 @@
 		transformPoint: function(el, point) {
 			var svg, svgPoint;
 
-			if(T.utils.isSVG(el)) {
+			if(el && T.utils.isSVG(el)) {
 				svg = T.utils.closest(el, 'svg');
 				if(svg) {
 					svgPoint = svg.createSVGPoint();
