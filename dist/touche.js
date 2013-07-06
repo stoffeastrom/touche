@@ -1288,7 +1288,6 @@
 					e.preventDefault();
 				};
 
-			on = on || true;
 			events.forEach(function(event) {
 				doc[on ? 'addEventListener' : 'removeEventListener'](event, prevent, false);
 			});
@@ -1330,7 +1329,7 @@
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
-				this.preventDefaultForMSPointer();
+				this.preventDefaultForMSPointer(true);
 			}
 		};
 
@@ -1374,7 +1373,9 @@
 			if(this.started) {
 				this.binder.cancel.call(this);
 			}
-			this.preventDefaultForMSPointer(false);
+			if(this.options.preventDefault) {
+				this.preventDefaultForMSPointer(false);
+			}
 		};
 
 		function Longtap() {
