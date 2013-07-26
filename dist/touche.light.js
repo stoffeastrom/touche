@@ -1,4 +1,4 @@
-/*! Touché - v1.0.8 - 2013-07-06
+/*! Touché - v1.0.9 - 2013-07-26
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -1033,6 +1033,17 @@
 			return this.countTouches > 0 && this.countTouches !== this.options.touches;
 		};
 
+		/**
+		 * Determine if the event has equal number of touches
+		 * @name T.Gesture#hasEqualTouches
+		 * @function
+		 * @param {[Points]} points The points to evaluate
+		 * @returns {Boolean} Whether the event equal the set number
+		 */
+		this.hasEqualTouches = function(points) {
+			this.countTouches = points.length;
+			return this.countTouches === this.options.touches;
+		};
 		/**
 		 * Determine if the event's pressed button is valid
 		 * @name T.Gesture#validMouseButton

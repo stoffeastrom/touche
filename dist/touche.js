@@ -1,4 +1,4 @@
-/*! Touché - v1.0.8 - 2013-07-06
+/*! Touché - v1.0.9 - 2013-07-26
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -1034,6 +1034,17 @@
 		};
 
 		/**
+		 * Determine if the event has equal number of touches
+		 * @name T.Gesture#hasEqualTouches
+		 * @function
+		 * @param {[Points]} points The points to evaluate
+		 * @returns {Boolean} Whether the event equal the set number
+		 */
+		this.hasEqualTouches = function(points) {
+			this.countTouches = points.length;
+			return this.countTouches === this.options.touches;
+		};
+		/**
 		 * Determine if the event's pressed button is valid
 		 * @name T.Gesture#validMouseButton
 		 * @function
@@ -1403,7 +1414,8 @@
 	var Pinch = T.Gesture.augment(function(Gesture) {
 
 		this.defaults ={
-			pinchThreshold: 8,
+			touches: 2,
+			pinchThreshold: 12,
 			preventDefault: true
 		};
 
@@ -1431,19 +1443,24 @@
 			if(this.hasMoreTouches(data.points)) {
 				this.cancel();
 				return;
-			} else if(this.countTouches === this.options.touches) {
+			} else if(this.hasEqualTouches(data.points)) {
 				if(!this.pinch.start.point2) {
 					this.pinch.start.point2 = data.points[1];
 				} else {
+					if(!data.centerPoint) {
+						data.centerPoint = new T.Point(((this.pinch.start.point1.x + this.pinch.start.point2.x)/2),((this.pinch.start.point1.y + this.pinch.start.point2.y)/2) );
+					}
 					this.pinch.current.point1 = data.points[0];
 					this.pinch.current.point2 = data.points[1];
 					this.startDistance = this.pinch.start.point2.distanceTo(this.pinch.start.point1);
+					this.lastDistance = this.currentDistance;
 					this.currentDistance = this.pinch.current.point2.distanceTo(this.pinch.current.point1);
-					this.pinch = abs(this.startDistance - this.currentDistance);
+					this.pinchLength = abs(this.startDistance - this.currentDistance);
 					this.scale = this.currentDistance / this.startDistance;
 					data.scale = this.scale;
+					data.delta = this.currentDistance - this.lastDistance;
 
-					if(!this.started && this.pinch >= this.options.pinchThreshold) {
+					if(!this.started && this.pinchLength >= this.options.pinchThreshold) {
 						this.started = true;
 						this.gestureHandler.cancelGestures(this.type);
 						this.binder.start.call(this, event, data);
@@ -1499,6 +1516,7 @@
 	var Rotate = T.Gesture.augment(function(Gesture) {
 
 		this.defaults = {
+			touches: 2,
 			rotationThreshold: 12,
 			preventDefault: true
 		};
@@ -1527,7 +1545,7 @@
 			if(this.hasMoreTouches(data.points)) {
 				this.cancel();
 				return;
-			} else if(this.countTouches === this.options.touches) {
+			} else if(this.hasEqualTouches(data.points)) {
 				if(!this.rotate.start.point2) {
 					this.rotate.start.point2 = data.points[1];
 				} else {
@@ -1538,7 +1556,7 @@
 					this.rotation = this.currentAngle - this.startAngle;
 					data.rotation = this.rotation;
 
-					if(!this.started && this.rotation >= this.options.rotationThreshold) {
+					if(!this.started && Math.abs(this.rotation) >= this.options.rotationThreshold) {
 						this.started = true;
 						this.gestureHandler.cancelGestures(this.type);
 						this.binder.start.call(this, event, data);
