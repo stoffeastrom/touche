@@ -1,4 +1,4 @@
-/*! Touché - v1.0.9 - 2013-07-26
+/*! Touché - v1.0.9 - 2013-07-30
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -1459,7 +1459,9 @@
 					this.scale = this.currentDistance / this.startDistance;
 					data.scale = this.scale;
 					data.delta = this.currentDistance - this.lastDistance;
-
+					data.centerPoint.x = (this.pinch.current.point1.x + this.pinch.current.point2.x)/2;
+					data.centerPoint.y = (this.pinch.current.point1.y + this.pinch.current.point2.y)/2;
+					
 					if(!this.started && this.pinchLength >= this.options.pinchThreshold) {
 						this.started = true;
 						this.gestureHandler.cancelGestures(this.type);
