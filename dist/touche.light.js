@@ -1,4 +1,4 @@
-/*! Touché - v1.0.9 - 2013-07-30
+/*! Touché - v1.0.10 - 2013-07-31
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -1522,7 +1522,7 @@
 
 			this.countTouches = 0;
 			if( !this.isValidMouseButton(event, this.options.which) ||
-				this.hasNotEqualTouches(data.points)) {
+				this.hasMoreTouches(data.points)) {
 				this.cancel();
 				return;
 			}
@@ -1536,23 +1536,24 @@
 		};
 
 		this.update = function(event, data) {
-			if(this.hasNotEqualTouches(data.points)) {
+			if(this.hasMoreTouches(data.points)) {
 				this.cancel();
 				return;
+			} else if(this.hasEqualTouches(data.points)) {
+				this.setSwipe(data.points[0]);
+				data.swipe = this.swipe;
+
+				if(!this.started && this.swipe.startPoint.distanceTo(this.swipe.currentPoint) >= this.options.radiusThreshold) {
+					this.gestureHandler.cancelGestures(this.type);
+					this.started = true;
+					this.binder.start.call(this, event, data);
+				} else if(this.started) {
+					this.binder.update.call(this, event, data);
+				}
+
+				this.swipe.startTime = this.swipe.currentTime; //to calculate correct velocity
 			}
 
-			this.setSwipe(data.points[0]);
-			data.swipe = this.swipe;
-
-			if(!this.started && this.swipe.startPoint.distanceTo(this.swipe.currentPoint) >= this.options.radiusThreshold) {
-				this.gestureHandler.cancelGestures(this.type);
-				this.started = true;
-				this.binder.start.call(this, event, data);
-			} else if(this.started) {
-				this.binder.update.call(this, event, data);
-			}
-
-			this.swipe.startTime = this.swipe.currentTime; //to calculate correct velocity
 			if(this.options.preventDefault) {
 				event.preventDefault();
 			}
