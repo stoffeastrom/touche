@@ -1,4 +1,4 @@
-/*! Touché - v1.0.10 - 2013-07-31
+/*! Touché - v1.0.10 - 2013-11-01
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -1311,7 +1311,7 @@
 
 		this.start = function(event, data) {
 			if( !this.isValidMouseButton(event, this.options.which) ||
-				this.hasMoreTouches(data.points)) {
+				this.hasMoreTouches(data.pagePoints)) {
 				this.cancel();
 				return;
 			}
@@ -1345,8 +1345,8 @@
 		};
 
 		this.update = function(event, data) {
-			if(this.hasMoreTouches(data.points) ||
-				!this.rect.pointInside(data.points[0], this.options.areaThreshold)) {
+			if(this.hasMoreTouches(data.pagePoints) ||
+				!this.rect.pointInside(data.pagePoints[0], this.options.areaThreshold)) {
 				this.cancel();
 			}
 			
@@ -1357,11 +1357,11 @@
 		
 		this.end = function(event, data) {
 			window.clearTimeout(this.timerId);
-			if(this.hasNotEqualTouches(data.points)) {
+			if(this.hasNotEqualTouches(data.pagePoints)) {
 				this.cancel();
 				return;
 			}
-			if(this.rect.pointInside(data.points[0], this.options.areaThreshold) &&
+			if(this.rect.pointInside(data.pagePoints[0], this.options.areaThreshold) &&
 				this.startTime + this.options.timeThreshold <= +new Date()) {
 				this.gestureHandler.cancelGestures(this.type);
 				this.binder.end.call(this, event, data);
@@ -1426,13 +1426,13 @@
 				current: {}
 			};
 
-			if(this.hasMoreTouches(data.points)) {
+			if(this.hasMoreTouches(data.pagePoints)) {
 				this.cancel();
 				return;
 			}
 
-			this.pinch.start.point1 = data.points[0];
-			this.pinch.start.point2 = data.points[1];
+			this.pinch.start.point1 = data.pagePoints[0];
+			this.pinch.start.point2 = data.pagePoints[1];
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
@@ -1440,18 +1440,18 @@
 		};
 		
 		this.update = function(event, data) {
-			if(this.hasMoreTouches(data.points)) {
+			if(this.hasMoreTouches(data.pagePoints)) {
 				this.cancel();
 				return;
-			} else if(this.hasEqualTouches(data.points)) {
+			} else if(this.hasEqualTouches(data.pagePoints)) {
 				if(!this.pinch.start.point2) {
-					this.pinch.start.point2 = data.points[1];
+					this.pinch.start.point2 = data.pagePoints[1];
 				} else {
 					if(!data.centerPoint) {
 						data.centerPoint = new T.Point(((this.pinch.start.point1.x + this.pinch.start.point2.x)/2),((this.pinch.start.point1.y + this.pinch.start.point2.y)/2) );
 					}
-					this.pinch.current.point1 = data.points[0];
-					this.pinch.current.point2 = data.points[1];
+					this.pinch.current.point1 = data.pagePoints[0];
+					this.pinch.current.point2 = data.pagePoints[1];
 					this.startDistance = this.pinch.start.point2.distanceTo(this.pinch.start.point1);
 					this.lastDistance = this.currentDistance;
 					this.currentDistance = this.pinch.current.point2.distanceTo(this.pinch.current.point1);
@@ -1530,13 +1530,13 @@
 				current: {}
 			};
 
-			if(this.hasMoreTouches(data.points)) {
+			if(this.hasMoreTouches(data.pagePoints)) {
 				this.cancel();
 				return;
 			}
 
-			this.rotate.start.point1 = data.points[0];
-			this.rotate.start.point2 = data.points[1];
+			this.rotate.start.point1 = data.pagePoints[0];
+			this.rotate.start.point2 = data.pagePoints[1];
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
@@ -1544,15 +1544,15 @@
 		};
 
 		this.update = function(event, data) {
-			if(this.hasMoreTouches(data.points)) {
+			if(this.hasMoreTouches(data.pagePoints)) {
 				this.cancel();
 				return;
-			} else if(this.hasEqualTouches(data.points)) {
+			} else if(this.hasEqualTouches(data.pagePoints)) {
 				if(!this.rotate.start.point2) {
-					this.rotate.start.point2 = data.points[1];
+					this.rotate.start.point2 = data.pagePoints[1];
 				} else {
-					this.rotate.current.point1 = data.points[0];
-					this.rotate.current.point2 = data.points[1];
+					this.rotate.current.point1 = data.pagePoints[0];
+					this.rotate.current.point2 = data.pagePoints[1];
 					this.startAngle = T.utils.getDeltaAngle(this.rotate.start.point2, this.rotate.start.point1);
 					this.currentAngle = T.utils.getDeltaAngle(this.rotate.current.point2, this.rotate.current.point1);
 					this.rotation = this.currentAngle - this.startAngle;
@@ -1639,12 +1639,12 @@ T.gestures.add('rotate', Rotate);
 
 			this.countTouches = 0;
 			if( !this.isValidMouseButton(event, this.options.which) ||
-				this.hasMoreTouches(data.points)) {
+				this.hasMoreTouches(data.pagePoints)) {
 				this.cancel();
 				return;
 			}
 
-			this.swipe.startPoint = data.points[0];
+			this.swipe.startPoint = data.pagePoints[0];
 			this.swipe.startTime = +new Date();
 
 			if(this.options.preventDefault) {
@@ -1653,11 +1653,11 @@ T.gestures.add('rotate', Rotate);
 		};
 
 		this.update = function(event, data) {
-			if(this.hasMoreTouches(data.points)) {
+			if(this.hasMoreTouches(data.pagePoints)) {
 				this.cancel();
 				return;
-			} else if(this.hasEqualTouches(data.points)) {
-				this.setSwipe(data.points[0]);
+			} else if(this.hasEqualTouches(data.pagePoints)) {
+				this.setSwipe(data.pagePoints[0]);
 				data.swipe = this.swipe;
 
 				if(!this.started && this.swipe.startPoint.distanceTo(this.swipe.currentPoint) >= this.options.radiusThreshold) {
@@ -1730,7 +1730,7 @@ T.gestures.add('rotate', Rotate);
 			this.started = true;
 			this.rect = T.utils.getRect(this.gestureHandler.element);
 			if( !this.isValidMouseButton(event, this.options.which) ||
-				this.hasMoreTouches(data.points)) {
+				this.hasMoreTouches(data.pagePoints)) {
 				this.cancel();
 				return;
 			}
@@ -1746,8 +1746,8 @@ T.gestures.add('rotate', Rotate);
 			if(!this.started) {
 				return;
 			}
-			if(this.hasMoreTouches(data.points) ||
-				!this.rect.pointInside(data.points[0], this.options.areaThreshold)) {
+			if(this.hasMoreTouches(data.pagePoints) ||
+				!this.rect.pointInside(data.pagePoints[0], this.options.areaThreshold)) {
 				this.cancel();
 				return;
 			}
@@ -1761,10 +1761,10 @@ T.gestures.add('rotate', Rotate);
 			if(!this.started) {
 				return;
 			}
-			if(this.hasNotEqualTouches(data.points)) {
+			if(this.hasNotEqualTouches(data.pagePoints)) {
 				return;
 			}
-			if(this.rect.pointInside(data.points[0], this.options.areaThreshold)) {
+			if(this.rect.pointInside(data.pagePoints[0], this.options.areaThreshold)) {
 				this.gestureHandler.cancelGestures(this.type);
 				this.binder.end.call(this, event, data);
 			}

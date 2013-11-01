@@ -3,8 +3,7 @@ function bindGestures() {
 	console.log("binding gestures...");
 
 	var doc = window.document,
-		element = doc.getElementById('container'),
-		activated = false;
+		element = doc.getElementById('container');
 
 	Touche(document.getElementById("dragtap")).tap({
 		options: {
@@ -28,25 +27,9 @@ function bindGestures() {
 		},
 		end: function(event, data) {
 			console.log("tap", data);
-			if(!activated) {
-				activated = true;
-				Touche(element).doubletap({
-					id: "myDoubleTap",
-					options: {
-						timeThreshold: 200,
-						preventDefault: false
-					},
-					end: function(event, data) {
-						console.log("double tap", data);
-					}
-				});
-			} else {
-				Touche(element).off("*", "myDoubleTap");
-				activated = false;
-			}
 		}
 	})
-	.tap({
+	/*.tap({
 		options: {
 			areaThreshold: 5,
 			touches: 2,
@@ -55,8 +38,13 @@ function bindGestures() {
 		end: function(event, data) {
 			console.log("2-finger tap", data);
 		}
+	})*/
+	.doubletap({
+		end: function(event, data) {
+			console.log("double tap", data);
+		}
 	})
-	.longtap({
+	/*.longtap({
 		options: {
 			timeThreshold: 800,
 			interval: 20,
@@ -92,7 +80,7 @@ function bindGestures() {
 		cancel: function() {
 			console.log("swipe cancelled");
 		}
-	})/*
+	})*//*
 	.rotate({
 		options: {
 			rotationThreshold: 18

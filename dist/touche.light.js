@@ -1,4 +1,4 @@
-/*! Touché - v1.0.10 - 2013-07-31
+/*! Touché - v1.0.10 - 2013-11-01
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -1205,7 +1205,7 @@
 			this.started = true;
 			this.rect = T.utils.getRect(this.gestureHandler.element);
 			if( !this.isValidMouseButton(event, this.options.which) ||
-				this.hasMoreTouches(data.points)) {
+				this.hasMoreTouches(data.pagePoints)) {
 				this.cancel();
 				return;
 			}
@@ -1221,8 +1221,8 @@
 			if(!this.started) {
 				return;
 			}
-			if(this.hasMoreTouches(data.points) ||
-				!this.rect.pointInside(data.points[0], this.options.areaThreshold)) {
+			if(this.hasMoreTouches(data.pagePoints) ||
+				!this.rect.pointInside(data.pagePoints[0], this.options.areaThreshold)) {
 				this.cancel();
 				return;
 			}
@@ -1236,10 +1236,10 @@
 			if(!this.started) {
 				return;
 			}
-			if(this.hasNotEqualTouches(data.points)) {
+			if(this.hasNotEqualTouches(data.pagePoints)) {
 				return;
 			}
-			if(this.rect.pointInside(data.points[0], this.options.areaThreshold)) {
+			if(this.rect.pointInside(data.pagePoints[0], this.options.areaThreshold)) {
 				this.gestureHandler.cancelGestures(this.type);
 				this.binder.end.call(this, event, data);
 			}
@@ -1394,7 +1394,7 @@
 
 		this.start = function(event, data) {
 			if( !this.isValidMouseButton(event, this.options.which) ||
-				this.hasMoreTouches(data.points)) {
+				this.hasMoreTouches(data.pagePoints)) {
 				this.cancel();
 				return;
 			}
@@ -1428,8 +1428,8 @@
 		};
 
 		this.update = function(event, data) {
-			if(this.hasMoreTouches(data.points) ||
-				!this.rect.pointInside(data.points[0], this.options.areaThreshold)) {
+			if(this.hasMoreTouches(data.pagePoints) ||
+				!this.rect.pointInside(data.pagePoints[0], this.options.areaThreshold)) {
 				this.cancel();
 			}
 			
@@ -1440,11 +1440,11 @@
 		
 		this.end = function(event, data) {
 			window.clearTimeout(this.timerId);
-			if(this.hasNotEqualTouches(data.points)) {
+			if(this.hasNotEqualTouches(data.pagePoints)) {
 				this.cancel();
 				return;
 			}
-			if(this.rect.pointInside(data.points[0], this.options.areaThreshold) &&
+			if(this.rect.pointInside(data.pagePoints[0], this.options.areaThreshold) &&
 				this.startTime + this.options.timeThreshold <= +new Date()) {
 				this.gestureHandler.cancelGestures(this.type);
 				this.binder.end.call(this, event, data);
@@ -1522,12 +1522,12 @@
 
 			this.countTouches = 0;
 			if( !this.isValidMouseButton(event, this.options.which) ||
-				this.hasMoreTouches(data.points)) {
+				this.hasMoreTouches(data.pagePoints)) {
 				this.cancel();
 				return;
 			}
 
-			this.swipe.startPoint = data.points[0];
+			this.swipe.startPoint = data.pagePoints[0];
 			this.swipe.startTime = +new Date();
 
 			if(this.options.preventDefault) {
@@ -1536,11 +1536,11 @@
 		};
 
 		this.update = function(event, data) {
-			if(this.hasMoreTouches(data.points)) {
+			if(this.hasMoreTouches(data.pagePoints)) {
 				this.cancel();
 				return;
-			} else if(this.hasEqualTouches(data.points)) {
-				this.setSwipe(data.points[0]);
+			} else if(this.hasEqualTouches(data.pagePoints)) {
+				this.setSwipe(data.pagePoints[0]);
 				data.swipe = this.swipe;
 
 				if(!this.started && this.swipe.startPoint.distanceTo(this.swipe.currentPoint) >= this.options.radiusThreshold) {

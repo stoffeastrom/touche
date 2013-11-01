@@ -102,7 +102,8 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-contrib-jshint");
 	grunt.loadNpmTasks("grunt-contrib-concat");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
-	grunt.loadNpmTasks('grunt-mocha');
+	grunt.loadNpmTasks("grunt-mocha");
+	grunt.loadNpmTasks("grunt-devserver");
 
 	// Documentation generation, requires "jsdoc" to be in path
 	grunt.registerTask('docs', 'Generate documentation', function() {
