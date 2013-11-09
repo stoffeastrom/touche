@@ -143,15 +143,15 @@ describe('Utils', function() {
 		it('should return correct velocity', function() {
 			expect(
 				getVelocity(new Touche.Point(0, 0), new Touche.Point(100, 0), 0, 100)
-			).to.be(1);
+			).to.be(26.67);
 
 			expect(
 				getVelocity(new Touche.Point(-100, 0), new Touche.Point(100, 0), 0, 100)
-			).to.be(2);
+			).to.be(53.34);
 
 			expect(
 				getVelocity(new Touche.Point(-100, 0), new Touche.Point(-100, -100), 0, 500)
-			).to.be(0.2);
+			).to.be(5.334);
 		});
 	});
 });

@@ -23,11 +23,29 @@
 			border: solid black 1px;
 			margin: 0 auto;
 		}
+		#movable
+		{
+			position: relative;
+			top: 0px;
+			left: 0px;
+			width: 60px;
+			height: 60px;
+		}
+		.non-active
+		{
+			background-color: #88ff88;
+		}
+		.active
+		{
+			background-color: #22ff22;
+		}
 	</style>
 </head>
 <body>
 	<div id="container">
-		<p>touch(é) me</p>
+		<div id="movable" class="non-active">
+			<p>touch(é) me</p>
+		</div>
 	</div>
 	<script src="../lib/touche.js"></script>
 	<script src="../lib/touche-tap.js"></script>

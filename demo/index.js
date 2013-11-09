@@ -3,7 +3,15 @@ function createTouche() {
 	console.log("create Gesture");
 
 	var doc = window.document,
-		element = doc.getElementById('container');
+		element = doc.getElementById('movable');
+
+	function activate() {
+		element.className = "active";
+	}
+
+	function deActivate() {
+		element.className = "non-active";
+	}
 
 	Touche(element).tap({
 		options: {
@@ -62,15 +70,24 @@ function createTouche() {
 		},
 		start: function(e, data) {
 			console.log("swipestart1", data);
+			activate();
 		},
 		update: function(e, data) {
 			console.log("swipeupdate1", data);
+			var x = data.swipe.deltaX, y = data.swipe.deltaY;
+			element.style.left = x + "px";
+			element.style.top = y + "px";
+
 		},
 		end: function(e, data) {
 			console.log("swipe1", data);
+			deActivate();
+			element.style.left = "0px";
+			element.style.top = "0px";
 		},
 		cancel: function() {
 			console.log("swipe cancelled");
+			deActivate();
 		}
 	})
 	.rotate({
@@ -85,6 +102,7 @@ function createTouche() {
 		},
 		end: function(e, data) {
 			console.log("rotate");
+			deActivate();
 		},
 		cancel: function() {
 			console.log("rotate cancelled");

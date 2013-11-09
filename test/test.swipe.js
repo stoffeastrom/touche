@@ -19,11 +19,12 @@ describe('Gesture', function () {
 			var context = this;
 			context.started = false;
 			context.updated = false;
-			context.called = false;
+			context.ended = false;
 			context.cancelled = false;
 			context.gesture = {
 				options: {
-					radiusThreshold: 8
+					radiusThreshold: 8,
+					useMomentum: false
 				},
 				start: function() {
 					context.started = true;
@@ -32,7 +33,7 @@ describe('Gesture', function () {
 					context.updated = true;
 				},
 				end: function () {
-					context.called = true;
+					context.ended = true;
 				},
 				cancel: function () {
 					context.cancelled = true;
@@ -60,7 +61,7 @@ describe('Gesture', function () {
 			});
 			expect(this.started).to.be(true);
 			expect(this.updated).to.be(true);
-			expect(this.called).to.be(true);
+			expect(this.ended).to.be(true);
 			expect(this.cancelled).to.be(false);
 			done();
 		});
@@ -84,7 +85,7 @@ describe('Gesture', function () {
 			});
 			expect(this.started).to.be(false);
 			expect(this.updated).to.be(false);
-			expect(this.called).to.be(false);
+			expect(this.ended).to.be(false);
 			expect(this.cancelled).to.be(false);
 			done();
 		});
