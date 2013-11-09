@@ -102,7 +102,6 @@ function createTouche() {
 		},
 		end: function(e, data) {
 			console.log("rotate");
-			deActivate();
 		},
 		cancel: function() {
 			console.log("rotate cancelled");
