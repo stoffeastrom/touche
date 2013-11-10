@@ -48,7 +48,8 @@ module.exports = function(grunt) {
 					'lib/core/gesture.js',
 					'lib/core/binder.js',
 					'lib/core/point.js',
-					'lib/core/rect.js'
+					'lib/core/rect.js',
+					'lib/core/request-animation-frame.js'
 				],
 				dest: 'dist/touche.core.js'
 			},
