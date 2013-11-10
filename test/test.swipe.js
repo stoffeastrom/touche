@@ -28,7 +28,8 @@ describe('Gesture', function () {
 			context.cancelled = false;
 			context.gesture = {
 				options: {
-					radiusThreshold: 8
+					radiusThreshold: 8,
+					useMomentum: false
 				},
 				start: function() {
 					context.started = true;
@@ -124,7 +125,8 @@ describe('Gesture', function () {
 			context.cancelled = false;
 			context.gesture = {
 				options: {
-					radiusThreshold: 8
+					radiusThreshold: 8,
+					useMomentum: false
 				},
 				start: function() {
 					context.started = true;
@@ -220,7 +222,8 @@ describe('Gesture', function () {
 			context.cancelled = false;
 			context.gesture = {
 				options: {
-					radiusThreshold: 8
+					radiusThreshold: 8,
+					useMomentum: false
 				},
 				start: function() {
 					context.started = true;

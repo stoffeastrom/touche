@@ -1,4 +1,4 @@
-/*! Touché - v1.0.10 - 2013-11-01
+/*! Touché - v1.0.10 - 2013-11-10
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -410,7 +410,7 @@
 		},
 
 		/**
-		 * Get the velocity using two points.
+		 * Get the velocity using two points, pixels/frame (based on 60 fps)
 		 * @name T.utils.getVelocity
 		 * @function
 		 * @param {T.Point} startPoint The starting point (startPoint.x, startPoint.y)
@@ -419,10 +419,10 @@
 		 * @param {Number} currentTime The end time
 		 * @returns {Number} The velocity
 		 */
-		getVelocity: function(startPoint, currentPoint, startTime, currentTime) {
+		getVelocity: function( startPoint, currentPoint, startTime, currentTime ) {
 			var dist = startPoint.distanceTo(currentPoint),
 				timeElapsed = currentTime - startTime;
-			return dist / timeElapsed;
+			return dist * 26.67 / timeElapsed;
 		}
 	};
 })(window.Touche, Math.atan2, Math.PI);
@@ -1116,7 +1116,7 @@
 		return Binder;
 	});
 })(window.Touche);
-(function(T, abs, sqrt, pow) {
+(function(T, sqrt) {
 	'use strict';
 
 	/**
@@ -1139,13 +1139,27 @@
 	 * @returns {Number} The distance between the points
 	 */
 	T.Point.prototype.distanceTo = function(point) {
-		var xdist = abs(this.x - point.x),
-			ydist = abs(this.y - point.y),
-			dist = sqrt(pow(xdist, 2) + pow(ydist, 2));
+		var xdist = this.x - point.x,
+			ydist = this.y - point.y,
+			dist = sqrt(xdist * xdist + ydist * ydist);
 
 		return dist;
 	};
-})(window.Touche, Math.abs, Math.sqrt, Math.pow);
+
+	/**
+	 * Normalize point's x and y values so that the absolute value is 1
+	 * @name T.Point#normalize
+	 * @function
+	 * @returns {Point} A normalized Point
+	 */
+	T.Point.prototype.normalize = function() {
+		var dist = sqrt(this.x * this.x + this.y * this.y),
+			x = this.x / dist,
+			y = this.y / dist;
+
+		return new T.Point(x, y);
+	};
+})(window.Touche, Math.sqrt);
 (function(T) {
 	'use strict';
 
@@ -1183,3 +1197,29 @@
 		return point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY;
 	};
 })(window.Touche);
+// polyfill for requestAnimationFrame if necessary
+(function() {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+    }
+ 
+    if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = function(callback) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+              timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+    }
+ 
+    if (!window.cancelAnimationFrame) {
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+    }
+}());

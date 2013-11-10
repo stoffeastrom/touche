@@ -1,4 +1,4 @@
-/*! Touché - v1.0.10 - 2013-11-01
+/*! Touché - v1.0.10 - 2013-11-10
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -410,7 +410,7 @@
 		},
 
 		/**
-		 * Get the velocity using two points.
+		 * Get the velocity using two points, pixels/frame (based on 60 fps)
 		 * @name T.utils.getVelocity
 		 * @function
 		 * @param {T.Point} startPoint The starting point (startPoint.x, startPoint.y)
@@ -419,10 +419,10 @@
 		 * @param {Number} currentTime The end time
 		 * @returns {Number} The velocity
 		 */
-		getVelocity: function(startPoint, currentPoint, startTime, currentTime) {
+		getVelocity: function( startPoint, currentPoint, startTime, currentTime ) {
 			var dist = startPoint.distanceTo(currentPoint),
 				timeElapsed = currentTime - startTime;
-			return dist / timeElapsed;
+			return dist * 26.67 / timeElapsed;
 		}
 	};
 })(window.Touche, Math.atan2, Math.PI);
@@ -1116,7 +1116,7 @@
 		return Binder;
 	});
 })(window.Touche);
-(function(T, abs, sqrt, pow) {
+(function(T, sqrt) {
 	'use strict';
 
 	/**
@@ -1139,13 +1139,27 @@
 	 * @returns {Number} The distance between the points
 	 */
 	T.Point.prototype.distanceTo = function(point) {
-		var xdist = abs(this.x - point.x),
-			ydist = abs(this.y - point.y),
-			dist = sqrt(pow(xdist, 2) + pow(ydist, 2));
+		var xdist = this.x - point.x,
+			ydist = this.y - point.y,
+			dist = sqrt(xdist * xdist + ydist * ydist);
 
 		return dist;
 	};
-})(window.Touche, Math.abs, Math.sqrt, Math.pow);
+
+	/**
+	 * Normalize point's x and y values so that the absolute value is 1
+	 * @name T.Point#normalize
+	 * @function
+	 * @returns {Point} A normalized Point
+	 */
+	T.Point.prototype.normalize = function() {
+		var dist = sqrt(this.x * this.x + this.y * this.y),
+			x = this.x / dist,
+			y = this.y / dist;
+
+		return new T.Point(x, y);
+	};
+})(window.Touche, Math.sqrt);
 (function(T) {
 	'use strict';
 
@@ -1183,6 +1197,32 @@
 		return point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY;
 	};
 })(window.Touche);
+// polyfill for requestAnimationFrame if necessary
+(function() {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+    }
+ 
+    if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = function(callback) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+              timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+    }
+ 
+    if (!window.cancelAnimationFrame) {
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+    }
+}());
 (function(T) {
 	'use strict';
 
@@ -1612,20 +1652,26 @@ T.gestures.add('rotate', Rotate);
 	 * @function
 	 */
 	var Swipe = T.Gesture.augment(function(Gesture) {
-		
+
 		this.defaults = {
 			radiusThreshold: 12,
 			preventDefault: true,
 			touches: 1,
-			which: 1
+			which: 1,
+			useMomentum: true
 		};
 
 		this.setSwipe = function(point) {
+			this.swipe.lastTime = this.swipe.currentTime;
+			this.swipe.lastPoint = this.swipe.currentPoint;
 			this.swipe.currentPoint = point;
 			this.swipe.currentTime = +new Date();
 			this.swipe.deltaX = this.swipe.currentPoint.x - this.swipe.startPoint.x;
 			this.swipe.deltaY = this.swipe.currentPoint.y - this.swipe.startPoint.y;
+			this.swipe.curDeltaX = this.swipe.currentPoint.x - this.swipe.lastPoint.x;
+			this.swipe.curDeltaY = this.swipe.currentPoint.y - this.swipe.lastPoint.y;
 			this.swipe.velocity = T.utils.getVelocity(this.swipe.startPoint, this.swipe.currentPoint, this.swipe.startTime, this.swipe.currentTime);
+			this.swipe.momentum = T.utils.getVelocity(this.swipe.lastPoint, this.swipe.currentPoint, this.swipe.lastTime, this.swipe.currentTime);
 			this.swipe.angle = T.utils.getAngle(this.swipe.startPoint, this.swipe.currentPoint);
 			this.swipe.direction = T.utils.getDirection(this.swipe.angle);
 			this.swipe.elementDistance = this.swipe.direction === 'left' || this.swipe.direction === 'right' ? this.rect.width : this.rect.height;
@@ -1635,7 +1681,9 @@ T.gestures.add('rotate', Rotate);
 
 		this.start = function(event, data) {
 			this.rect = T.utils.getRect(this.gestureHandler.element);
-			this.swipe = {};
+			this.swipe = {
+				inEndMomentum: false
+			};
 
 			this.countTouches = 0;
 			if( !this.isValidMouseButton(event, this.options.which) ||
@@ -1644,8 +1692,8 @@ T.gestures.add('rotate', Rotate);
 				return;
 			}
 
-			this.swipe.startPoint = data.pagePoints[0];
-			this.swipe.startTime = +new Date();
+			this.swipe.startPoint = this.swipe.currentPoint = data.pagePoints[0];
+			this.swipe.startTime = this.swipe.currentTime = +new Date();
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
@@ -1677,8 +1725,32 @@ T.gestures.add('rotate', Rotate);
 		};
 
 		this.end = function(event, data) {
+			var p, m, that, dataPoint, keepOn;
 			if(this.started) {
-				this.binder.end.call(this, event, data);
+				if (this.options.useMomentum) {
+					this.swipe.inEndMomentum = true;
+					p = new T.Point(this.swipe.curDeltaX, this.swipe.curDeltaY).normalize();
+					m = this.swipe.momentum;
+					that = this;
+					dataPoint = new T.Point(data.points[0].x, data.points[0].y);
+					keepOn = function() {
+						m *= 0.95;
+						if (that.swipe.inEndMomentum && m > 1) {
+							dataPoint.x += p.x * m;
+							dataPoint.y += p.y * m;
+							data.pagePoints[0] = new T.Point(dataPoint.x, dataPoint.y);
+							that.update(event, data);
+							window.requestAnimationFrame(keepOn);
+						} else {
+							that.binder.end.call(this, event, data);
+						}
+					};
+					
+					window.requestAnimationFrame(keepOn);
+				} else {
+					this.binder.end.call(this, event, data);
+				}
+				
 			}
 
 			if(this.options.preventDefault) {
