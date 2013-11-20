@@ -1,4 +1,4 @@
-/*! Touché - v1.0.10 - 2013-11-18
+/*! Touché - v1.0.10 - 2013-11-20
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {

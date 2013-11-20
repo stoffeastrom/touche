@@ -1,4 +1,4 @@
-/*! Touché - v1.0.10 - 2013-11-18
+/*! Touché - v1.0.10 - 2013-11-20
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -1659,7 +1659,8 @@ T.gestures.add('rotate', Rotate);
 			preventDefault: true,
 			touches: 1,
 			which: 1,
-			useMomentum: false
+			useMomentum: false,
+			inertia: 0.7
 		};
 
 		this.setSwipe = function(point) {
@@ -1726,7 +1727,7 @@ T.gestures.add('rotate', Rotate);
 		};
 
 		this.end = function(event, data) {
-			var p, m, that, dataPoint, keepOn;
+			var p, m, that, dataPoint, keepOn, inertia = this.options.inertia;
 			if(this.started) {
 				if (this.options.useMomentum) {
 					this.swipe.inEndMomentum = true;
@@ -1734,8 +1735,11 @@ T.gestures.add('rotate', Rotate);
 					m = this.swipe.momentum;
 					that = this;
 					dataPoint = new T.Point(data.points[0].x, data.points[0].y);
+					if(inertia >= 1) {
+						inertia = this.defaults.inertia;
+					}
 					keepOn = function() {
-						m *= 0.95;
+						m *= inertia;
 						if (that.swipe.inEndMomentum && m > 1) {
 							dataPoint.x += p.x * m;
 							dataPoint.y += p.y * m;

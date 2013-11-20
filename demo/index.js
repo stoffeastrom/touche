@@ -44,29 +44,12 @@ function bindGestures() {
 			console.log("double tap", data);
 		}
 	})
-	/*.longtap({
-		options: {
-			timeThreshold: 800,
-			interval: 20,
-			preventDefault: false
-		},
-		start: function(event, data) {
-			console.log("longtap start", data.percentage, data);
-		},
-		update: function(event, data) {
-			console.log("longtap update", data.percentage, data);
-		},
-		end: function(event, data) {
-			console.log("longtap", data.percentage, data);
-		},
-		cancel: function() {
-			console.log("longtap cancelled");
-		}
-	})
 	.swipe({
 		options: {
-			radiusThreshold: 24,
-			preventDefault: false
+			radiusThreshold: 0,
+			preventDefault: false,
+			useMomentum: true,
+			inertia: 0.95
 		},
 		start: function(event, data) {
 			console.log("swipe start", data);
@@ -80,7 +63,27 @@ function bindGestures() {
 		cancel: function() {
 			console.log("swipe cancelled");
 		}
-	})*//*
+	})
+	/*.longtap({
+		options: {
+			timeThreshold: 800,
+			interval: 20,
+			preventDefault: false
+		},	
+		start: function(event, data) {
+			console.log("longtap start", data.percentage, data);
+		},
+		update: function(event, data) {
+			console.log("longtap update", data.percentage, data);
+		},
+		end: function(event, data) {
+			console.log("longtap", data.percentage, data);
+		},
+		cancel: function() {
+			console.log("longtap cancelled");
+		}
+	})
+	*//*
 	.rotate({
 		options: {
 			rotationThreshold: 18
