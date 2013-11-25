@@ -1,125 +1,214 @@
 /*global describe, Touche, expect, it, before, beforeEach, after, afterEach*/
-describe('Gesture', function () {
-	var body = document.body;
+describe( 'Scrollbar detection', function () {
+	var body = document.body, el, origUtilsMSPointer, origUtilsTouch;
 
-	describe('Trigger taps on scrollbar', function () {
-		var el, origUtilsMSPointer, origUtilsTouch;
+	describe( 'Tap on inline styled element', function () {
+		// Inline styled elements does not have scrollbars
+		var point = new Touche.Point( 1, 1 );
 
-		before(function() {
-			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.msPointer;
-			Touche.utils.touch = false;
-			Touche.utils.msPointer = false;
+		it( 'Mouse - Tap should be started when tapping on an inline element', function ( done ) {
+			triggerMouseTap( point );
+			expect( this.started ).to.be( true );
+			done();
+		} );
 
-			el = document.createElement('div');
+		it( 'Touch - Tap should be started when tapping on an inline element', function ( done ) {
+			triggerTouchTap( [point] );
+			expect( this.started ).to.be( true );
+			done();
+		} );
+
+		it( 'Mspointer - Tap should be started when tapping on an inline element', function ( done ) {
+			triggerMSPointerTap( point );
+			expect( this.started ).to.be( true );
+			done();
+		} );
+
+		before( function () {
+			el.innerHTML = "Test";
+			el.style.position = "absolute";
+			el.style.top = "0px";
+			el.style.left = "0px";
+		} );
+
+		after( function () {
+			el.innerHTML = "";
+		} );
+	} );
+
+	describe( 'Tap on scrollbar on element with borders', function () {
+		// 189 because width including borders is 100px and the element is positioned 100px to the right and the right border width is 10px
+		var verticalScrollbarPoint = new Touche.Point( 189, 150 ),
+			horizontalScrollbarPoint = new Touche.Point( 150, 189 );
+
+		describe( 'Vertical scrollbar', function () {
+			testTapOnScrollbar( verticalScrollbarPoint );
+			testTouchTapOnScrollbar( [new Touche.Point( 150, 150 ), verticalScrollbarPoint] );
+		} );
+
+		describe( 'Horizontal scrollbar', function () {
+			testTapOnScrollbar( horizontalScrollbarPoint );
+			testTouchTapOnScrollbar( [new Touche.Point( 150, 150 ), horizontalScrollbarPoint] );
+		} );
+
+		before( function () {
+			el.style.display = "block";
+			el.style.position = "absolute";
+			el.style.top = "100px";
+			el.style.left = "100px";
+			el.style.width = "80px";
+			el.style.height = "80px";
+			el.style.border = "10px solid #000";
+			el.style.overflow = "scroll";
+		} );
+	} );
+
+	describe( 'Tap on scrollbar on element without borders', function () {
+		var verticalScrollbarPoint = new Touche.Point( 99, 50 ),
+			horizontalScrollbarPoint = new Touche.Point( 50, 99 );
+
+		describe( 'Vertical scrollbar', function () {
+			testTapOnScrollbar( verticalScrollbarPoint );
+			testTouchTapOnScrollbar( [verticalScrollbarPoint, new Touche.Point( 50, 50 )] );
+		} );
+
+		describe( 'Horizontal scrollbar', function () {
+			testTapOnScrollbar( horizontalScrollbarPoint );
+			testTouchTapOnScrollbar( [horizontalScrollbarPoint, new Touche.Point( 50, 50 )] );
+		} );
+
+		before( function () {
+			el.style.display = "block";
 			el.style.position = "absolute";
 			el.style.top = "0px";
 			el.style.left = "0px";
 			el.style.width = "100px";
 			el.style.height = "100px";
+			el.style.border = "0";
 			el.style.overflow = "scroll";
-			body.appendChild(el);
-		});
+		} );
+	} );
 
-		beforeEach(function () {
-			var context = this;
-			context.started = false;
-			context.called = false;
-			context.cancelled = false;
-			context.gesture = {
-				options: {
-					areaThreshold: 5,
-					which: [1,2]
-				},
-				start: function () {
-					context.started = true;
-				},
-				end: function () {
-					context.called = true;
-				}
-			};
-			Touche(el).tap(context.gesture);
-		});
+	describe( 'Tap on border on element without scrollbars', function () {
+		var rightBorderPoint = new Touche.Point( 99, 50 ),
+			bottomBorderPoint = new Touche.Point( 50, 99 );
 
-		describe( 'Mouse - tap on scrollbar', function () {
-			it( 'should not be started when clicking on a vertical scrollbar', function (done) {
-				Touche.simulate.gesture( el, [new Touche.Point(99,50)], null, 'mouse');
-				expect( this.started ).to.be( false );
-				expect( this.called ).to.be( false );
-				done();
-			} );
-
-			it( 'should not be started when clicking on a horizontal scrollbar', function (done) {
-				Touche.simulate.gesture( el, [new Touche.Point(50,99)], null, 'mouse');
-				expect( this.started ).to.be( false );
-				expect( this.called ).to.be( false );
-				done();
-			} );
+		describe( 'Right border', function () {
+			testTapOnBorder( rightBorderPoint );
 		} );
 
-		describe( 'Touch - tap on scrollbar', function () {
-			before( function () {
-				Touche.utils.touch = true;
-			} );
-
-			it( 'should not be started when tapping on a vertical scrollbar', function (done) {
-				Touche.simulate.gesture( el, [new Touche.Point(99,50)], null, 'touch');
-				expect( this.started ).to.be( false );
-				expect( this.called ).to.be( false );
-				done();
-			} );
-
-			it( 'should not be started when tapping on a vertical scrollbar with one finger and inside the target element with another', function (done) {
-				Touche.simulate.gesture( el, [new Touche.Point(50,50), new Touche.Point(99,50)], null, 'touch');
-				expect( this.started ).to.be( false );
-				expect( this.called ).to.be( false );
-				done();
-			} );
-
-			it( 'should not be started when tapping on a horizontal scrollbar', function (done) {
-				Touche.simulate.gesture( el, [new Touche.Point(50,99)], null, 'touch');
-				expect( this.started ).to.be( false );
-				expect( this.called ).to.be( false );
-				done();
-			} );
-
-			it( 'should not be started when tapping on a horizontal scrollbar with one finger and inside the target element with another', function (done) {
-				Touche.simulate.gesture( el, [new Touche.Point(50,99), new Touche.Point(50,50)], null, 'touch');
-				expect( this.started ).to.be( false );
-				expect( this.called ).to.be( false );
-				done();
-			} );
+		describe( 'Bottom border', function () {
+			testTapOnBorder( bottomBorderPoint );
 		} );
 
-		describe( 'MS pointer - tap on scrollbar', function () {
-			before( function () {
-				Touche.utils.msPointer = true;
-			} );
+		before( function () {
+			el.style.display = "block";
+			el.style.position = "absolute";
+			el.style.top = "0px";
+			el.style.left = "0px";
+			el.style.width = "80px";
+			el.style.height = "80px";
+			el.style.border = "10px solid #000";
+			el.style.overflow = "hidden";
+		} );
+	} );
 
-			it( 'should not be started when clicking (MSPointer) on a vertical scrollbar', function (done) {
-				Touche.simulate.gesture( el, [new Touche.Point(99,50)], null, 'MSPointer');
-				expect( this.started ).to.be( false );
-				expect( this.called ).to.be( false );
-				done();
-			} );
+	before( function () {
+		origUtilsTouch = Touche.utils.touch;
+		origUtilsMSPointer = Touche.utils.msPointer;
 
-			it( 'should not be started when clicking (MSPointer) on a horizontal scrollbar', function (done) {
-				Touche.simulate.gesture( el, [new Touche.Point(50,99)], null, 'MSPointer');
-				expect( this.started ).to.be( false );
-				expect( this.called ).to.be( false );
-				done();
-			} );
+		el = document.createElement( 'span' );
+		body.appendChild( el );
+	} );
+
+	beforeEach( function () {
+		var context = this;
+		context.started = false;
+		context.called = false;
+		context.cancelled = false;
+		context.gesture = {
+			options: {
+				areaThreshold: 5,
+				which: [1, 2]
+			},
+			start: function () {
+				context.started = true;
+			},
+			end: function () {
+				context.called = true;
+			}
+		};
+		Touche( el ).tap( context.gesture );
+	} );
+
+	afterEach( function () {
+		Touche( el ).off( 'tap' );
+		expect( Touche.cache.data.length ).to.be( 0 );
+	} );
+
+	after( function () {
+		Touche.utils.touch = origUtilsTouch;
+		Touche.utils.msPointer = origUtilsMSPointer;
+		body.removeChild( el );
+	} );
+
+	// Help functions
+	function triggerMouseTap( point ) {
+		Touche.utils.touch = false;
+		Touche.utils.msPointer = false;
+		Touche.simulate.gesture( el, [point], null, 'mouse' );
+	}
+
+	function triggerTouchTap( points ) {
+		Touche.utils.touch = true;
+		Touche.utils.msPointer = false;
+		Touche.simulate.gesture( el, points, null, 'touch' );
+	}
+
+	function triggerMSPointerTap( point ) {
+		Touche.utils.touch = false;
+		Touche.utils.msPointer = true;
+		Touche.simulate.gesture( el, [point], null, 'MSPointer' );
+	}
+
+	function testTapOnScrollbar( point ) {
+		it( 'Mouse - Tap should not be started when tapping on scrollbar', function () {
+			triggerMouseTap( point );
+			expect( this.started ).to.be( false );
 		} );
 
-		afterEach(function() {
-			Touche(el).off('tap');
-			expect(Touche.cache.data.length).to.be(0);
-		});
+		it( 'Touch - Tap should not be started when tapping on scrollbar', function () {
+			triggerTouchTap( [point] );
+			expect( this.started ).to.be( false );
+		} );
 
-		after(function() {
-			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.msPointer = origUtilsMSPointer;
-			body.removeChild(el);
-		});
-	});
-});
+		it( 'Mspointer - Tap should not be started when tapping on scrollbar', function () {
+			triggerMSPointerTap( point );
+			expect( this.started ).to.be( false );
+		} );
+	}
+
+	function testTouchTapOnScrollbar( points ) {
+		it( 'Touch - Tap should not be started when tapping on a scrollbar with one finger and inside the target element with another', function () {
+			triggerTouchTap( points );
+			expect( this.started ).to.be( false );
+		} );
+	}
+
+	function testTapOnBorder( point ) {
+		it( 'Mouse - Tap should be started when tapping on border', function () {
+			triggerMouseTap( point );
+			expect( this.started ).to.be( true );
+		} );
+
+		it( 'Touch - Tap should not be started when tapping on border', function () {
+			triggerTouchTap( [point] );
+			expect( this.started ).to.be( true );
+		} );
+
+		it( 'Mspointer - Tap should not be started when tapping on border', function () {
+			triggerMSPointerTap( point );
+			expect( this.started ).to.be( true );
+		} );
+	}
+} );
