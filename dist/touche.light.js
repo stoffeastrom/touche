@@ -1,4 +1,4 @@
-/*! Touché - v1.0.12 - 2013-11-28
+/*! Touché - v1.0.12 - 2013-12-02
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -422,6 +422,9 @@
 		getVelocity: function( startPoint, currentPoint, startTime, currentTime ) {
 			var dist = startPoint.distanceTo(currentPoint),
 				timeElapsed = currentTime - startTime;
+			if(timeElapsed <= 0) {
+				return 0;
+			}
 			return dist * 26.67 / timeElapsed;
 		}
 	};
@@ -1619,6 +1622,7 @@
 	 * @function
 	 */
 	var Swipe = T.Gesture.augment(function(Gesture) {
+		this.rAFId = -1;
 
 		this.defaults = {
 			radiusThreshold: 12,
@@ -1647,7 +1651,14 @@
 			this.swipe.percentage = this.swipe.distance / this.swipe.elementDistance * 100;
 		};
 
-		this.start = function(event, data) {
+		this.start = function ( event, data ) {
+			if ( this.rAFId !== -1 ) {
+				this.binder.end.call( this, event, data );
+				window.cancelAnimationFrame( this.rAFId );
+				this.rAFId = -1;
+				T.preventGestures(this.gestureHandler);
+				this.gestureHandler.cancelAllGestures( this );
+			}
 			this.rect = T.utils.getRect(this.gestureHandler.element);
 			this.swipe = {
 				inEndMomentum: false
@@ -1711,9 +1722,10 @@
 							dataPoint.y += p.y * m;
 							data.pagePoints[0] = new T.Point(dataPoint.x, dataPoint.y);
 							that.update(event, data);
-							window.requestAnimationFrame(keepOn);
+							that.rAFId = window.requestAnimationFrame(keepOn);
 						} else {
-							that.binder.end.call(this, event, data);
+							that.rAFId = -1;
+							that.binder.end.call(that, event, data);
 						}
 					};
 					
