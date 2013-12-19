@@ -94,6 +94,7 @@ module.exports = function(grunt) {
 				dest: 'dist/touche.light.min.js'
 			}
 		},
+		devserver: {server:{}},
 		watch: {
 			files: ['<%= jshint.all %>'],
 			tasks: ['jshint']

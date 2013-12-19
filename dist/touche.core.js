@@ -1,4 +1,4 @@
-/*! Touché - v1.0.12 - 2013-11-28
+/*! Touché - v1.0.12 - 2013-12-02
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -422,6 +422,9 @@
 		getVelocity: function( startPoint, currentPoint, startTime, currentTime ) {
 			var dist = startPoint.distanceTo(currentPoint),
 				timeElapsed = currentTime - startTime;
+			if(timeElapsed <= 0) {
+				return 0;
+			}
 			return dist * 26.67 / timeElapsed;
 		}
 	};
