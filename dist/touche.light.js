@@ -1,4 +1,4 @@
-/*! Touché - v1.0.12 - 2013-12-02
+/*! Touché - v1.0.12 - 2013-12-19
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2013 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -572,11 +572,14 @@
 		 *                    - {Number} y The y position of the tap relative the element
 		 */
 		function getTapPointInElement( pageX, pageY, element ) {
+			var bbox = element.getBoundingClientRect();
+
 			return {
-				x: pageX - element.offsetLeft,
-				y: pageY - element.offsetTop
+				x: pageX - bbox.left,
+				y: pageY - bbox.top
 			};
 		}
+
 
 		/**
 		 * Detects tapping on a scrollbar. If there are more than one touch in the
