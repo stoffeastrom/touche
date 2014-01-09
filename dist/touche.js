@@ -1,4 +1,4 @@
-/*! Touché - v1.0.12 - 2014-01-08
+/*! Touché - v1.0.12 - 2014-01-09
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2014 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -598,6 +598,10 @@
 		}, 800);
 	}
 
+	function isMouse(e, flowType) {
+		return T.utils.msPointer && e.pointerType !== undefined && e.pointerType === e.MSPOINTER_TYPE_MOUSE || flowType === 'mouse';
+	}
+
 	/**
 	 * Represents a handler for gestures, used to set up basic structure for creating gestures.
 	 * @name T.GestureHandler
@@ -777,9 +781,15 @@
 			if(this.isOtherFlowStarted(flowType) || this.isEmulatedMouseEvents(event)) {
 				return;
 			}
+
 			// We reset the flow if the flowType is mouse as a workaround to the issue that IE does not trigger mouseup when clicking on a scrollbar:
 			// http://social.msdn.microsoft.com/Forums/vstudio/en-US/3749b8a1-53ef-48fe-be81-b2df39d6154f/mouseup-event-of-vertical-scroll-bar?forum=netfxjscript
-			this.resetFlowTypes(flowType === 'mouse');
+			if (isMouse(event, flowType)) {
+				this.cancelAllGestures();
+			} else {
+				this.resetFlowTypes();
+			}
+
 			this.data[flowType].relatedTarget = event.target;
 			this.setPoints(event);
 			this.trigger('start', event, this.data[flowType]);
