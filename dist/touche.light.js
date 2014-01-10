@@ -1,4 +1,4 @@
-/*! Touché - v1.0.12 - 2014-01-09
+/*! Touché - v1.0.12 - 2014-01-10
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2014 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -784,7 +784,7 @@
 
 			// We reset the flow if the flowType is mouse as a workaround to the issue that IE does not trigger mouseup when clicking on a scrollbar:
 			// http://social.msdn.microsoft.com/Forums/vstudio/en-US/3749b8a1-53ef-48fe-be81-b2df39d6154f/mouseup-event-of-vertical-scroll-bar?forum=netfxjscript
-			if (isMouse(event, flowType)) {
+			if (isMouse(event, flowType) && !this.data[flowType].ended) {
 				this.cancelAllGestures();
 			} else {
 				this.resetFlowTypes();
