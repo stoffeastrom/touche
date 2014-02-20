@@ -1,4 +1,4 @@
-/*! Touché - v1.0.12 - 2014-01-10
+/*! Touché - v1.0.12 - 2014-02-20
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2014 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -55,7 +55,7 @@
 			gesture.off(this.elem);
 			this.gestureHandler.removeGesture(gesture);
 		}, this);
-		if(this.gestureHandler.gestures.length === 0 && T.cache.data.length === 1) { //.off() was called without binding, make sure to clean up
+		if(this.gestureHandler.gestures.length === 0) { //.off() was called without binding, make sure to clean up
 			T.cache.remove(this.elem);
 		}
 		return this;
