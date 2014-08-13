@@ -1,4 +1,4 @@
-/*! Touché - v1.0.12 - 2014-07-03
+/*! Touché - v1.0.13 - 2014-08-13
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2014 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -173,7 +173,7 @@
 		 * @returns {@Link T.Point} The transformed @Link T.Point
 		 */
 		transformPoint: function(el, point) {
-			var svg, svgPoint;
+			var svg, svgPoint, mt;
 
 			if(el && T.utils.isSVG(el)) {
 				svg = T.utils.closest(el, 'svg');
@@ -181,7 +181,12 @@
 					svgPoint = svg.createSVGPoint();
 					svgPoint.x = point.x;
 					svgPoint.y = point.y;
-					svgPoint = svgPoint.matrixTransform(el.getScreenCTM().inverse());
+					try {
+						mt = el.getScreenCTM().inverse();
+						svgPoint = svgPoint.matrixTransform( mt );
+					}
+					catch( err ) {
+					}
 					return new T.Point(svgPoint.x, svgPoint.y);
 				}
 			}
@@ -542,7 +547,7 @@
 				case "mousedown":
 				case "touchstart":
 				case "MSPointerDown":
-				case "pointerstart":
+				case "pointerdown":
 					this.onStart( event );
 					break;
 				case "mousemove":
@@ -1068,10 +1073,9 @@
 		 * @returns {Boolean} Whether the event had the allowedBtn or not, always true for touch/MSPointer
 		 */
 		this.isValidMouseButton = function(event, allowedBtn) {
-			if(T.utils.touch) {
-				return true;
-			}
-			if(T.utils.msPointer && event.pointerType !== event.MSPOINTER_TYPE_MOUSE ) {
+
+			if(T.utils.msPointer && event.pointerType !== event.MSPOINTER_TYPE_MOUSE ||
+				!T.utils.msPointer && event.type.indexOf('mouse') < 0) {
 				return true;
 			}
 			var btn = event.button,
