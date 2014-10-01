@@ -73,9 +73,9 @@ describe('Touché - user api', function() {
 
 		before(function () {
 			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.msPointer;
+			origUtilsMSPointer = Touche.utils.pointerEnabled;
 			Touche.utils.touch = false;
-			Touche.utils.msPointer = false;
+			Touche.utils.pointerEnabled = false;
 
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -138,7 +138,7 @@ describe('Touché - user api', function() {
 
 		after(function() {
 			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.msPointer = origUtilsMSPointer;
+			Touche.utils.pointerEnabled = origUtilsMSPointer;
 			Touche(el).off();
 			expect(Touche.cache.data.length).to.be(0);
 		});

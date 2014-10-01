@@ -7,9 +7,9 @@ describe('Gestures, combined', function() {
 
 		before(function() {
 			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.msPointer;
+			origUtilsMSPointer = Touche.utils.pointerEnabled;
 			Touche.utils.touch = false;
-			Touche.utils.msPointer = false;
+			Touche.utils.pointerEnabled = false;
 
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -131,7 +131,7 @@ describe('Gestures, combined', function() {
 
 		after(function() {
 			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.msPointer = origUtilsMSPointer;
+			Touche.utils.pointerEnabled = origUtilsMSPointer;
 			body.removeChild(el);
 		});
 	});
@@ -141,9 +141,9 @@ describe('Gestures, combined', function() {
 
 		before(function() {
 			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.msPointer;
+			origUtilsMSPointer = Touche.utils.pointerEnabled;
 			Touche.utils.touch = true;
-			Touche.utils.msPointer = false;
+			Touche.utils.pointerEnabled = false;
 
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -265,7 +265,7 @@ describe('Gestures, combined', function() {
 
 		after(function() {
 			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.msPointer = origUtilsMSPointer;
+			Touche.utils.pointerEnabled = origUtilsMSPointer;
 			body.removeChild(el);
 		});
 	});
@@ -275,9 +275,9 @@ describe('Gestures, combined', function() {
 
 		before(function() {
 			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.msPointer;
+			origUtilsMSPointer = Touche.utils.pointerEnabled;
 			Touche.utils.touch = false;
-			Touche.utils.msPointer = true;
+			Touche.utils.pointerEnabled = true;
 
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -399,7 +399,7 @@ describe('Gestures, combined', function() {
 		
 		after(function() {
 			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.msPointer = origUtilsMSPointer;
+			Touche.utils.pointerEnabled = origUtilsMSPointer;
 			body.removeChild(el);
 		});
 	});
