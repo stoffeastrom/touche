@@ -1,4 +1,4 @@
-/*! Touché - v1.0.13 - 2014-08-13
+/*! Touché - v1.0.14 - 2014-10-02
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2014 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -115,7 +115,8 @@
 (function(T, atan2, PI) {
 	'use strict';
 
-	var sortExpando = 9;
+	var sortExpando = 9,
+		pointerEnabled = (window.MSPointerEvent || window.PointerEvent);
 
 	/**
 	 * Namespace for common utility functions used by gesture modules.
@@ -220,7 +221,8 @@
 		* Determines if touch enabled
 		*/
 		touch: ('ontouchstart' in window),
-		msPointer: (window.navigator.msPointerEnabled),
+		pointerEnabled: pointerEnabled,
+		msPointer: pointerEnabled,
 
 		getFlowType: function(event) {
 			switch(event) {
@@ -431,7 +433,13 @@
 				return 0;
 			}
 			return dist * 26.67 / timeElapsed;
+		},
+
+		isMouse: function( e ) {
+			return T.utils.pointerEnabled && ( e.pointerType === e.MSPOINTER_TYPE_MOUSE || e.pointerType === "mouse" ) ||
+				e.type.indexOf( 'mouse') >= 0;
 		}
+
 	};
 })(window.Touche, Math.atan2, Math.PI);
 
@@ -509,7 +517,7 @@
 		};
 
 		this.on = function(element, event) {
-			if(T.utils.msPointer) {
+			if(T.utils.pointerEnabled) {
 				if(element.style && element.style.msTouchAction) {
 					this.msTouchAction = element.style.msTouchAction;
 				} else if (!element.style) {
@@ -522,7 +530,7 @@
 
 		this.off = function(element, event) {
 			element.removeEventListener(event, this, false);
-			if(T.utils.msPointer) {
+			if(T.utils.pointerEnabled) {
 				if(element.style) {
 					element.style.msTouchAction = this.msTouchAction;
 				}
@@ -601,10 +609,6 @@
 		timerId = setTimeout(function() {
 			lastTouchPoints.length = 0;
 		}, 800);
-	}
-
-	function isMouse(e, flowType) {
-		return T.utils.msPointer && e.pointerType !== undefined && e.pointerType === e.MSPOINTER_TYPE_MOUSE || flowType === 'mouse';
 	}
 
 	/**
@@ -789,7 +793,7 @@
 
 			// We reset the flow if the flowType is mouse as a workaround to the issue that IE does not trigger mouseup when clicking on a scrollbar:
 			// http://social.msdn.microsoft.com/Forums/vstudio/en-US/3749b8a1-53ef-48fe-be81-b2df39d6154f/mouseup-event-of-vertical-scroll-bar?forum=netfxjscript
-			if (isMouse(event, flowType) && !this.data[flowType].ended) {
+			if (T.utils.isMouse(event) && !this.data[flowType].ended) {
 				this.cancelAllGestures();
 			} else {
 				this.resetFlowTypes();
@@ -1074,8 +1078,7 @@
 		 */
 		this.isValidMouseButton = function(event, allowedBtn) {
 
-			if(T.utils.msPointer && event.pointerType !== event.MSPOINTER_TYPE_MOUSE ||
-				!T.utils.msPointer && event.type.indexOf('mouse') < 0) {
+			if(!T.utils.isMouse( event ) ) {
 				return true;
 			}
 			var btn = event.button,
