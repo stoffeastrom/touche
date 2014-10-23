@@ -1,4 +1,4 @@
-/*! Touché - v1.0.14 - 2014-10-02
+/*! Touché - v1.0.15 - 2014-10-23
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2014 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -733,7 +733,7 @@
 				len = flowTypes.length,
 				i;
 			for(i = 0; i < len; ++i) {
-				if(type !== flowTypes[i] && this.data[flowTypes[i]].started) {
+				if(type !== flowTypes[i] && this.data[flowTypes[i]].started && !this.data[flowTypes[i]].ended) {
 					return true;
 				}
 			}

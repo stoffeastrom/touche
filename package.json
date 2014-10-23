@@ -1,6 +1,6 @@
 {
   "name": "touche",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Gestures library for desktop and touch devices",
   "author": {
     "name": "Christoffer Åström"
