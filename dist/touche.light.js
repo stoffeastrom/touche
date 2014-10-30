@@ -768,6 +768,10 @@
 				return false;
 			}
 
+			if(lastTouchPoints.length === 0) {
+				return false;
+			}
+
 			lastPoint = lastTouchPoints[0];
 
 			if(point.distanceTo(lastPoint) < 25) {
