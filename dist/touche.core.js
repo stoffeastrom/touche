@@ -1,4 +1,4 @@
-/*! Touché - v1.0.16 - 2014-10-27
+/*! Touché - v1.0.17 - 2014-10-30
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2014 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -765,10 +765,6 @@
 				point = new T.Point(event.pageX, event.pageY);
 
 			if(flowType !== "mouse") {
-				return false;
-			}
-
-			if(lastTouchPoints.length !== 1) {
 				return false;
 			}
 
