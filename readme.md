@@ -2,6 +2,8 @@
 
 This is a little lightweight gesture library supporting desktop and touch devices.
 
+N.B Since version 1.1 Touché no longer adds touch-action: none; to elements being bound. It's up to the developer to set an appropiate touch-action.
+
 The api looks like this:
 ```js
 Touche(element).tap({
