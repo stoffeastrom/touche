@@ -1,15 +1,13 @@
 /*global describe, Touche, expect, it, before, beforeEach, after, afterEach*/
 describe('Gesture', function () {
-	var body = document.body;
+	var body = document.body,
+		resetSupportedEvents,
+		el;
 
 	describe('#LongTap - Mouse', function () {
-		var el, origUtilsTouch, origUtilsMSPointer;
 
 		before(function() {
-			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.pointerEnabled;
-			Touche.utils.touch = false;
-			Touche.utils.pointerEnabled = false;
+			resetSupportedEvents = Touche.simulate.setSupportedEvents();
 
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -85,20 +83,15 @@ describe('Gesture', function () {
 		});
 
 		after(function() {
-			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.pointerEnabled = origUtilsMSPointer;
+			resetSupportedEvents();
 			body.removeChild(el);
 		});
 	});
 
 	describe('#LongTap - Touch', function () {
-		var el, origUtilsTouch, origUtilsMSPointer;
 
 		before(function() {
-			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.pointerEnabled;
-			Touche.utils.touch = true;
-			Touche.utils.pointerEnabled = false;
+			resetSupportedEvents = Touche.simulate.setSupportedEvents({ touch: true });
 
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -193,20 +186,15 @@ describe('Gesture', function () {
 		});
 
 		after(function() {
-			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.pointerEnabled = origUtilsMSPointer;
+			resetSupportedEvents();
 			body.removeChild(el);
 		});
 	});
 
 	describe('#LongTap - MSPointer', function () {
-		var el, origUtilsTouch, origUtilsMSPointer;
 
 		before(function() {
-			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.pointerEnabled;
-			Touche.utils.touch = false;
-			Touche.utils.pointerEnabled = true;
+			resetSupportedEvents = Touche.simulate.setSupportedEvents({ pointer: true });
 
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -282,8 +270,7 @@ describe('Gesture', function () {
 		});
 
 		after(function() {
-			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.pointerEnabled = origUtilsMSPointer;
+			resetSupportedEvents();
 			body.removeChild(el);
 		});
 	});

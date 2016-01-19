@@ -102,6 +102,43 @@
 				event = createEvent(prefix + suffix, touchList, points, pointerId, button, pointerType);
 				T.simulate._dispatchEvent(target, event);
 			});
+		},
+		_unbindSuperHandler: function () {
+			var events = T.utils.getEvents();
+			events.start.forEach(function (event) {
+				T._superHandler.off(T._superHandler.element, event);
+			});
+		},
+		_bindSuperHandler: function () {
+			T._superHandler.activate();
+		},
+		/**
+		 * Controll which type of events Touche should listen for in a unit test situation,
+		 * overrides the standard feature detection.
+		 * Defaults to Mouse Events if nothing else is specified.
+		 *
+		 * @param events Which events to support
+		 * @param events.touch True if Touch Events are supported
+		 * @param events.pointer True if Pointer events are supported
+		 * @returns {Function} Function to restore the supported events to their previous values
+		 */
+		setSupportedEvents: function (events) {
+			var origTouch = T.utils.touch,
+				origPointer = T.utils.pointerEnabled;
+
+			// Unbind the superHandler events before setting which events to support
+			this._unbindSuperHandler();
+
+			T.utils.touch = events && events.touch;
+			T.utils.pointerEnabled = events && events.pointer;
+
+			// Bind the superHandler again now that the supported events have been updated
+			this._bindSuperHandler();
+
+			return function restoreSupportedEvents () {
+				T.utils.touch = origTouch;
+				T.utils.pointerEnabled = origPointer;
+			};
 		}
 	};
 })();

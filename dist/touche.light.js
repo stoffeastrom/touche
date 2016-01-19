@@ -1,6 +1,6 @@
-/*! Touché - v1.1.1 - 2015-10-05
+/*! Touché - v1.1.2 - 2016-01-15
 * https://github.com/stoffeastrom/touche/
-* Copyright (c) 2015 Christoffer Åström, Andrée Hansson; Licensed MIT */
+* Copyright (c) 2016 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
 	'use strict';
 	fnProto.augment = function (classFn) {
@@ -295,11 +295,29 @@
 		* MSPointerDown, MSPointerMove, MSPointerUp
 		*/
 		getEvents: function () {
+			if ( this.pointerEnabled ) {
+				return {
+					start: ['MSPointerDown', 'pointerdown'],
+					update: ['MSPointerMove', 'pointermove'],
+					end: ['MSPointerUp', 'pointerup'],
+					cancel: ['MSPointerCancel', 'pointercancel']
+				};
+			}
+
+			if ( this.touch ) {
+				return {
+					start: ['mousedown', 'touchstart'],
+					update: ['mousemove', 'touchmove'],
+					end: ['mouseup', 'touchend'],
+					cancel: ['touchcancel']
+				};
+			}
+
 			return {
-				start: ['mousedown', 'touchstart', 'MSPointerDown', 'pointerdown'],
-				update: ['mousemove', 'touchmove', 'MSPointerMove', 'pointermove'],
-				end: ['mouseup', 'touchend', 'MSPointerUp', 'pointerup'],
-				cancel: ['touchcancel', 'MSPointerCancel', 'pointercancel']
+				start: ['mousedown'],
+				update: ['mousemove'],
+				end: ['mouseup'],
+				cancel: []
 			};
 		},
 
