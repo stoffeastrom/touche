@@ -1,16 +1,14 @@
 /*global describe, Touche, expect, it, before, beforeEach, after, afterEach*/
 describe('Gesture', function () {
-	var body = document.body;
+	var body = document.body,
+		resetSupportedEvents,
+		el;
 
 	describe('#2FingerTap - Touch', function () {
-		var el, origUtilsTouch, origUtilsMSPointer;
 
 		before(function() {
-			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.pointerEnabled;
-			Touche.utils.touch  = true;
-			Touche.utils.pointerEnabled = false;
-			
+			resetSupportedEvents = Touche.simulate.setSupportedEvents({ touch: true });
+
 			el = document.createElement('div');
 			el.style.position = "absolute";
 			el.style.top = "0px";
@@ -83,21 +81,16 @@ describe('Gesture', function () {
 		});
 
 		after(function() {
-			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.pointerEnabled = origUtilsMSPointer;
+			resetSupportedEvents();
 			body.removeChild(el);
 		});
 	});
 
 	describe('#2FingerTap - MSPointer', function () {
-		var el, origUtilsTouch, origUtilsMSPointer;
 
 		before(function() {
-			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.pointerEnabled;
-			Touche.utils.touch  = false;
-			Touche.utils.pointerEnabled = true;
-			
+			resetSupportedEvents = Touche.simulate.setSupportedEvents({ pointer: true });
+
 			el = document.createElement('div');
 			el.style.position = "absolute";
 			el.style.top = "0px";
@@ -162,8 +155,7 @@ describe('Gesture', function () {
 		});
 
 		after(function() {
-			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.pointerEnabled = origUtilsMSPointer;
+			resetSupportedEvents();
 			body.removeChild(el);
 		});
 	});

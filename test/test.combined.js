@@ -1,15 +1,13 @@
 /*global describe, before, beforeEach, after, Touche, expect, it, afterEach */
 describe('Gestures, combined', function() {
-	var body = document.body;
+	var body = document.body,
+		resetSupportedEvents,
+		el;
 
 	describe('#Tap, #Longtap, #Doubletap, bound on same element - Mouse', function () {
-		var el, origUtilsMSPointer, origUtilsTouch;
 
 		before(function() {
-			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.pointerEnabled;
-			Touche.utils.touch = false;
-			Touche.utils.pointerEnabled = false;
+			resetSupportedEvents = Touche.simulate.setSupportedEvents();
 
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -130,20 +128,15 @@ describe('Gestures, combined', function() {
 		});
 
 		after(function() {
-			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.pointerEnabled = origUtilsMSPointer;
+			resetSupportedEvents();
 			body.removeChild(el);
 		});
 	});
 
 	describe('#Tap, #Longtap, #Doubletap, bound on same element - Touch', function () {
-		var el, origUtilsMSPointer, origUtilsTouch;
 
 		before(function() {
-			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.pointerEnabled;
-			Touche.utils.touch = true;
-			Touche.utils.pointerEnabled = false;
+			resetSupportedEvents = Touche.simulate.setSupportedEvents({ touch: true });
 
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -264,20 +257,15 @@ describe('Gestures, combined', function() {
 		});
 
 		after(function() {
-			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.pointerEnabled = origUtilsMSPointer;
+			resetSupportedEvents();
 			body.removeChild(el);
 		});
 	});
 
 	describe('#Tap, #Longtap, #Doubletap, bound on same element - MSPointer', function () {
-		var el, origUtilsMSPointer, origUtilsTouch;
 
 		before(function() {
-			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.pointerEnabled;
-			Touche.utils.touch = false;
-			Touche.utils.pointerEnabled = true;
+			resetSupportedEvents = Touche.simulate.setSupportedEvents({ pointer: true });
 
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -396,10 +384,9 @@ describe('Gestures, combined', function() {
 			Touche(el).off();
 			expect(Touche.cache.data.length).to.be(0);
 		});
-		
+
 		after(function() {
-			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.pointerEnabled = origUtilsMSPointer;
+			resetSupportedEvents();
 			body.removeChild(el);
 		});
 	});

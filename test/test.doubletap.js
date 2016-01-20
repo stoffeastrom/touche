@@ -1,15 +1,12 @@
 /*global describe, Touche, expect, it, before, beforeEach, after, afterEach*/
 describe('Gesture', function () {
-	var body = document.body;
+	var body = document.body,
+		resetSupportedEvents,
+		el;
 
 	describe('#DoubleTap - Mouse', function () {
-		var el, origUtilsMSPointer, origUtilsTouch;
-
 		before(function() {
-			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.pointerEnabled;
-			Touche.utils.touch  = false;
-			Touche.utils.pointerEnabled = false;
+			resetSupportedEvents = Touche.simulate.setSupportedEvents();
 
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -58,20 +55,15 @@ describe('Gesture', function () {
 		});
 
 		after(function() {
-			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.pointerEnabled = origUtilsMSPointer;
+			resetSupportedEvents();
 			body.removeChild(el);
 		});
 	});
 
 	describe('#DoubleTap - Touch', function () {
-		var el, origUtilsMSPointer, origUtilsTouch;
 
 		before(function() {
-			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.pointerEnabled;
-			Touche.utils.touch  = true;
-			Touche.utils.pointerEnabled = false;
+			resetSupportedEvents = Touche.simulate.setSupportedEvents({ touch: true });
 
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -120,20 +112,15 @@ describe('Gesture', function () {
 		});
 
 		after(function() {
-			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.pointerEnabled = origUtilsMSPointer;
+			resetSupportedEvents();
 			body.removeChild(el);
 		});
 	});
 
 	describe('#DoubleTap - MSPointer', function () {
-		var el, origUtilsMSPointer, origUtilsTouch;
 
 		before(function() {
-			origUtilsTouch = Touche.utils.touch;
-			origUtilsMSPointer = Touche.utils.pointerEnabled;
-			Touche.utils.touch  = false;
-			Touche.utils.pointerEnabled = true;
+			resetSupportedEvents = Touche.simulate.setSupportedEvents({ pointer: true });
 
 			el = document.createElement('div');
 			el.style.position = "absolute";
@@ -180,16 +167,14 @@ describe('Gesture', function () {
 			Touche(el).off('doubletap');
 			expect(Touche.cache.data.length).to.be(0);
 		});
-		
+
 		after(function() {
-			Touche.utils.touch = origUtilsTouch;
-			Touche.utils.pointerEnabled = origUtilsMSPointer;
+			resetSupportedEvents();
 			body.removeChild(el);
 		});
 	});
 
 	describe('#DoubleTap - Options', function () {
-		var el;
 
 		before(function() {
 			el = document.createElement('div');
