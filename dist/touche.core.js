@@ -110,34 +110,6 @@
 			}
 		}
 	};
-
-	T.WebkitHack = function() {
-		var shouldPreventDefault = false;
-		var handler = {
-			handleEvent: function(evt) {
-				if (evt.defaultPrevented) {
-					return;
-				}
-				if (shouldPreventDefault) {
-					evt.preventDefault();
-				}
-			}
-		};
-		T.WebkitHack.prevent = function() {
-			if (!T.utils.touch) {
-				return;
-			}
-			shouldPreventDefault = true;
-		};
-		T.WebkitHack.resetPrevent = function() {
-			if (!T.utils.touch) {
-				return;
-			}
-			shouldPreventDefault = false;
-		};
-		window.addEventListener('touchmove', handler, { passive: false, capture: false });
-	};
-	T.WebkitHack();
 })();
 
 (function(T, atan2, PI) {
@@ -1019,7 +991,37 @@
 		}
 	};
 
-
+	/**
+	 * Namespace for WebkitHack.
+	 * @namespace T.WebkitHack
+	 */
+	T.WebkitHack = function() {
+		var shouldPreventDefault = false;
+		var handler = {
+			handleEvent: function(evt) {
+				if (evt.defaultPrevented) {
+					return;
+				}
+				if (shouldPreventDefault) {
+					evt.preventDefault();
+				}
+			}
+		};
+		T.WebkitHack.prevent = function() {
+			if (!T.utils.touch) {
+				return;
+			}
+			shouldPreventDefault = true;
+		};
+		T.WebkitHack.resetPrevent = function() {
+			if (!T.utils.touch) {
+				return;
+			}
+			shouldPreventDefault = false;
+		};
+		window.addEventListener('touchmove', handler, { passive: false, capture: false });
+	};
+	T.WebkitHack();
 })(window.Touche, window.document);
 
 (function(T) {
