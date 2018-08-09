@@ -166,6 +166,7 @@ server/
 
 # node modules
 node_modules/
+package-lock.json
 
 # sublime workspace
 *.sublime-workspace
