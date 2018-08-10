@@ -1,6 +1,6 @@
-/*! Touché - v1.1.3 - 2017-02-28
+/*! Touché - v1.1.4 - 2018-08-09
 * https://github.com/stoffeastrom/touche/
-* Copyright (c) 2017 Christoffer Åström, Andrée Hansson; Licensed MIT */
+* Copyright (c) 2018 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
 	'use strict';
 	fnProto.augment = function (classFn) {
@@ -41,7 +41,7 @@
 		T.prototype[type].call(this, binder);
 		return this;
 	};
-	
+
 	T.prototype.off = function(type, id) {
 		this.gestureHandler.gestures.filter(function(gesture) {
 			return (type && type !== '*' && id) ?
@@ -110,13 +110,13 @@
 			}
 		}
 	};
-
 })();
+
 (function(T, atan2, PI) {
 	'use strict';
 
 	var sortExpando = 9,
-		pointerEnabled = (window.MSPointerEvent || window.PointerEvent);
+  pointerEnabled = ( window.MSPointerEvent && window.navigator.msPointerEnabled ) || ( window.PointerEvent && window.navigator.pointerEnabled );
 
 	/**
 	 * Namespace for common utility functions used by gesture modules.
@@ -943,6 +943,7 @@
 				handler.end(event);
 			});
 			this._handlers.length = 0;
+			T.WebkitHack.resetPrevent();
 		};
 
 		this.onCancel = function(event) {
@@ -990,8 +991,39 @@
 		}
 	};
 
-
+	/**
+	 * Namespace for WebkitHack.
+	 * @namespace T.WebkitHack
+	 */
+	T.WebkitHack = function() {
+		var shouldPreventDefault = false;
+		var handler = {
+			handleEvent: function(evt) {
+				if (evt.defaultPrevented) {
+					return;
+				}
+				if (shouldPreventDefault) {
+					evt.preventDefault();
+				}
+			}
+		};
+		T.WebkitHack.prevent = function() {
+			if (!T.utils.touch) {
+				return;
+			}
+			shouldPreventDefault = true;
+		};
+		T.WebkitHack.resetPrevent = function() {
+			if (!T.utils.touch) {
+				return;
+			}
+			shouldPreventDefault = false;
+		};
+		window.addEventListener('touchmove', handler, { passive: false, capture: false });
+	};
+	T.WebkitHack();
 })(window.Touche, window.document);
+
 (function(T) {
 	'use strict';
 
@@ -1315,6 +1347,7 @@
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 			}
 		};
 
@@ -1335,6 +1368,7 @@
 	T.gestures.add('doubletap', Doubletap);
 
 })(window.Touche);
+
 (function(T) {
 	'use strict';
 
@@ -1409,6 +1443,7 @@
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 				this.preventDefaultForMSPointer(true);
 			}
 		};
@@ -1421,6 +1456,7 @@
 			
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 			}
 		};
 		
@@ -1440,6 +1476,7 @@
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 				this.preventDefaultForMSPointer(false);
 			}
 		};
@@ -1505,6 +1542,7 @@
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 			}
 		};
 		
@@ -1543,6 +1581,7 @@
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 			}
 		};
 
@@ -1553,6 +1592,7 @@
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 			}
 		};
 
@@ -1575,6 +1615,7 @@
 	T.gestures.add('pinch', Pinch);
 
 })(window.Touche, Math.abs);
+
 (function(T) {
 	'use strict';
 
@@ -1609,6 +1650,7 @@
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 			}
 		};
 
@@ -1639,6 +1681,7 @@
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 			}
 		};
 
@@ -1649,6 +1692,7 @@
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 			}
 		};
 
@@ -1671,6 +1715,7 @@
 T.gestures.add('rotate', Rotate);
 
 })(window.Touche);
+
 (function(T, abs) {
 	'use strict';
 
@@ -1736,6 +1781,7 @@ T.gestures.add('rotate', Rotate);
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 			}
 		};
 
@@ -1766,6 +1812,7 @@ T.gestures.add('rotate', Rotate);
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 			}
 		};
 
@@ -1804,6 +1851,7 @@ T.gestures.add('rotate', Rotate);
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 			}
 		};
 
@@ -1868,6 +1916,7 @@ T.gestures.add('rotate', Rotate);
 			
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 			}
 		};
 
@@ -1883,6 +1932,7 @@ T.gestures.add('rotate', Rotate);
 
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 			}
 		};
 
@@ -1899,6 +1949,7 @@ T.gestures.add('rotate', Rotate);
 			}
 			if(this.options.preventDefault) {
 				event.preventDefault();
+				T.WebkitHack.prevent();
 			}
 		};
 
