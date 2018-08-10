@@ -1,8 +1,9 @@
 {
-  "name": "touche",
-  "version": "1.1.4",
+  "name": "touchejs",
+  "version": "1.1.5",
   "license": "MIT",
   "description": "Gestures library for desktop and touch devices",
+  "main": "dist/touche.umd.js",
   "author": {
     "name": "Christoffer Åström"
   },
@@ -17,11 +18,11 @@
     "grunt-contrib-jshint": "0.7.2",
     "grunt-contrib-uglify": "0.2.7",
     "grunt-devserver": "0.6.0",
-    "grunt-mocha": "1.0.0"
+    "grunt-umd": "^3.0.0"
   },
   "scripts": {
     "dev": "grunt",
     "test": "grunt mocha",
-    "build": "grunt jshint mocha concat uglify"
+    "build": "npm run dev"
   }
 }

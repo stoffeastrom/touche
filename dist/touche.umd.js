@@ -1,3 +1,20 @@
+(function (root, factory) {
+  if (root === undefined && window !== undefined) root = window;
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module unless amdModuleId is set
+    define([], function () {
+      return (root['Touche'] = factory());
+    });
+  } else if (typeof module === 'object' && module.exports) {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory();
+  } else {
+    root['Touche'] = factory();
+  }
+}(this, function () {
+
 /*! Touché - v1.1.5 - 2018-08-10
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2018 Christoffer Åström, Andrée Hansson; Licensed MIT */
@@ -1282,3 +1299,696 @@
         };
     }
 }());
+
+(function(T) {
+	'use strict';
+
+	/**
+	 * Bind a doubletap event, used for basic interaction. Supports an area threshold for easier interaction
+	 * on mobile devices.
+	 * @name T.gestures.doubletap
+	 * @function
+	 */
+	var Doubletap = T.Gesture.augment(function(Gesture) {
+		this.defaults = {
+			areaThreshold: 5,
+			timeThreshold: 400,
+			touches: 1,
+			precedence: 4,
+			preventDefault: true,
+			which: 1
+		};
+
+		this.on = function(elem) {
+			this.count = 0;
+			T(elem).on('tap', {
+				options: {
+					areaThreshold: this.options.areaThreshold,
+					preventDefault: this.options.preventDefault,
+					touches: this.options.touches,
+					which: this.options.which
+				},
+				id: this.id,
+				end: this.end
+			});
+		};
+
+		this.off = function(elem) {
+			T(elem).off('tap', this.id);
+		};
+
+		this.end = function(event, data) {
+			if(!this.isValidMouseButton(event, this.options.which)) {
+				this.cancel();
+				return;
+			}
+
+			var instance = this;
+			++instance.count;
+			if(instance.count === 1) {
+				instance.startTime = +new Date();
+				instance.gestureHandler.pause(null, this);
+				instance.timerId = setTimeout(function() {
+					instance.gestureHandler.play(true);
+					instance.count = 0;
+				}, instance.options.timeThreshold + 5);
+			} else if(instance.count === 2) {
+				window.clearTimeout(instance.timerId);
+				instance.endTime = +new Date();
+				if((instance.startTime + instance.options.timeThreshold) >= instance.endTime) {
+					instance.gestureHandler.play();
+					instance.binder.end.call(instance, event, data);
+				}
+				instance.count = 0;
+			}
+
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+			}
+		};
+
+		this.cancel = function() {
+			this.cancelled = true;
+			window.clearTimeout(this.timerId);
+		};
+
+		function Doubletap() {
+			Gesture.apply(this, arguments);
+		}
+		return Doubletap;
+	});
+
+	/*
+	* Add the Doubletap gesture to Touché
+	*/
+	T.gestures.add('doubletap', Doubletap);
+
+})(window.Touche);
+
+(function(T) {
+	'use strict';
+
+	/**
+	 * Longtap gesture, Supports an area threshold for easier interaction
+	 * on mobile devices. Triggers `start`, `update` and `end` events.
+	 * @name T.gestures.longtap
+	 * @function
+	 */
+	var Longtap = T.Gesture.augment(function(Gesture) {
+
+		this.defaults = {
+			radiusThreshold: 12,
+			timeThreshold: 800,
+			precedence: 5,
+			preventDefault: true,
+			touches: 1,
+			interval: 25,
+			which: 1
+		};
+
+		this.preventDefaultForMSPointer = function(on) {
+			if(!T.utils.pointerEnabled) {
+				return;
+			}
+
+			var doc = window.document,
+				events = ['MSHoldVisual', 'MSGestureHold', 'contextmenu'],
+				prevent = function(e) {
+					e.preventDefault();
+				};
+
+			events.forEach(function(event) {
+				doc[on ? 'addEventListener' : 'removeEventListener'](event, prevent, false);
+			});
+		};
+
+		this.pause = function() {
+			this.paused = true;
+			window.clearTimeout(this.timerId);
+		};
+
+		this.start = function(event, data) {
+			if( !this.isValidMouseButton(event, this.options.which) ||
+				this.hasMoreTouches(data.pagePoints)) {
+				this.cancel();
+				return;
+			}
+			this.rect = T.utils.getRect(this.gestureHandler.element);
+			this.count = 0;
+			this.intervalSteps = this.options.timeThreshold / this.options.interval;
+			this.startTime = +new Date();
+			this.startPoint = data.pagePoints[0];
+
+			var instance = this;
+			window.clearTimeout(instance.timerId);
+			instance.timerId = window.setInterval(function(){
+				++instance.count;
+				data.percentage = instance.count/instance.intervalSteps * 100;
+								
+				if(instance.count === 1) {
+					instance.started = true;
+					instance.binder.start.call(instance, event, data);
+				} else {
+					instance.binder.update.call(instance, event, data);
+				}
+
+				if(instance.count >= instance.intervalSteps) {
+					window.clearTimeout(instance.timerId);
+				}
+			}, this.options.interval);
+
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+				this.preventDefaultForMSPointer(true);
+			}
+		};
+
+		this.update = function(event, data) {
+			if(this.hasMoreTouches(data.pagePoints) ||
+				this.startPoint.distanceTo(data.pagePoints[0]) > this.options.radiusThreshold) {
+				this.cancel();
+			}
+			
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+			}
+		};
+		
+		this.end = function(event, data) {
+			window.clearTimeout(this.timerId);
+			if(this.hasNotEqualTouches(data.pagePoints)) {
+				this.cancel();
+				return;
+			}
+			if(this.startPoint.distanceTo(data.pagePoints[0]) <= this.options.radiusThreshold &&
+				this.startTime + this.options.timeThreshold <= +new Date()) {
+				this.gestureHandler.cancelGestures(this.type);
+				this.binder.end.call(this, event, data);
+			} else {
+				this.cancel();
+			}
+
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+				this.preventDefaultForMSPointer(false);
+			}
+		};
+
+		this.cancel = function() {
+			window.clearTimeout(this.timerId);
+			if(this.cancelled) {
+				return;
+			}
+			this.cancelled = true;
+			if(this.started) {
+				this.binder.cancel.call(this);
+			}
+			if(this.options.preventDefault) {
+				this.preventDefaultForMSPointer(false);
+			}
+		};
+
+		function Longtap() {
+			Gesture.apply(this, arguments);
+		}
+		return Longtap;
+	});
+
+	/*
+	* Add the Longtap gesture to Touché
+	*/
+	T.gestures.add('longtap', Longtap);
+
+})(window.Touche);
+
+(function(T, abs) {
+	'use strict';
+
+	/**
+	 * Pinch gesture. Supports a pinch threshold that is used to measure when the gesture starts.
+	 * Triggers `start`, `update` and `end` events.
+	 * @name T.gestures.pinch
+	 * @function
+	 */
+	var Pinch = T.Gesture.augment(function(Gesture) {
+
+		this.defaults ={
+			touches: 2,
+			pinchThreshold: 12,
+			preventDefault: true
+		};
+
+		this.start = function(event, data) {
+			this.rect = T.utils.getRect(this.gestureHandler.element);
+			this.pinch = {
+				start: {},
+				current: {}
+			};
+
+			if(this.hasMoreTouches(data.pagePoints)) {
+				this.cancel();
+				return;
+			}
+
+			this.pinch.start.point1 = data.pagePoints[0];
+			this.pinch.start.point2 = data.pagePoints[1];
+
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+			}
+		};
+		
+		this.update = function(event, data) {
+			if(this.hasMoreTouches(data.pagePoints)) {
+				this.cancel();
+				return;
+			} else if(this.hasEqualTouches(data.pagePoints)) {
+				if(!this.pinch.start.point2) {
+					this.pinch.start.point2 = data.pagePoints[1];
+				} else {
+					if(!data.centerPoint) {
+						data.centerPoint = new T.Point(((this.pinch.start.point1.x + this.pinch.start.point2.x)/2),((this.pinch.start.point1.y + this.pinch.start.point2.y)/2) );
+					}
+					this.pinch.current.point1 = data.pagePoints[0];
+					this.pinch.current.point2 = data.pagePoints[1];
+					this.startDistance = this.pinch.start.point2.distanceTo(this.pinch.start.point1);
+					this.lastDistance = this.currentDistance;
+					this.currentDistance = this.pinch.current.point2.distanceTo(this.pinch.current.point1);
+					this.pinchLength = abs(this.startDistance - this.currentDistance);
+					this.scale = this.currentDistance / this.startDistance;
+					data.scale = this.scale;
+					data.delta = this.currentDistance - this.lastDistance;
+					data.centerPoint.x = (this.pinch.current.point1.x + this.pinch.current.point2.x)/2;
+					data.centerPoint.y = (this.pinch.current.point1.y + this.pinch.current.point2.y)/2;
+					
+					if(!this.started && this.pinchLength >= this.options.pinchThreshold) {
+						this.started = true;
+						this.gestureHandler.cancelGestures(this.type);
+						this.binder.start.call(this, event, data);
+					} else if(this.started) {
+						this.binder.update.call(this, event, data);
+					}
+				}
+			}
+
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+			}
+		};
+
+		this.end = function(event, data) {
+			if(this.started) {
+				this.binder.end.call(this, event, data);
+			}
+
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+			}
+		};
+
+		this.cancel = function() {
+			if(this.cancelled) {
+				return;
+			}
+			this.cancelled = true;
+			if(this.started) {
+				this.binder.cancel.call(this.bindingObj);
+			}
+		};
+
+		function Pinch() {
+			Gesture.apply(this, arguments);
+		}
+		return Pinch;
+	});
+
+	T.gestures.add('pinch', Pinch);
+
+})(window.Touche, Math.abs);
+
+(function(T) {
+	'use strict';
+
+	/**
+	 * Rotate gesture. Supports a rotation threshold that is used to measure when the gesture starts.
+	 * Triggers `start`, `update` and `end` events.
+	 * @name T.gestures.rotate
+	 * @function
+	 */
+	var Rotate = T.Gesture.augment(function(Gesture) {
+
+		this.defaults = {
+			touches: 2,
+			rotationThreshold: 12,
+			preventDefault: true
+		};
+		
+		this.start = function(event, data) {
+			this.rect = T.utils.getRect(this.gestureHandler.element);
+			this.rotate = {
+				start: {},
+				current: {}
+			};
+
+			if(this.hasMoreTouches(data.pagePoints)) {
+				this.cancel();
+				return;
+			}
+
+			this.rotate.start.point1 = data.pagePoints[0];
+			this.rotate.start.point2 = data.pagePoints[1];
+
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+			}
+		};
+
+		this.update = function(event, data) {
+			if(this.hasMoreTouches(data.pagePoints)) {
+				this.cancel();
+				return;
+			} else if(this.hasEqualTouches(data.pagePoints)) {
+				if(!this.rotate.start.point2) {
+					this.rotate.start.point2 = data.pagePoints[1];
+				} else {
+					this.rotate.current.point1 = data.pagePoints[0];
+					this.rotate.current.point2 = data.pagePoints[1];
+					this.startAngle = T.utils.getDeltaAngle(this.rotate.start.point2, this.rotate.start.point1);
+					this.currentAngle = T.utils.getDeltaAngle(this.rotate.current.point2, this.rotate.current.point1);
+					this.rotation = this.currentAngle - this.startAngle;
+					data.rotation = this.rotation;
+
+					if(!this.started && Math.abs(this.rotation) >= this.options.rotationThreshold) {
+						this.started = true;
+						this.gestureHandler.cancelGestures(this.type);
+						this.binder.start.call(this, event, data);
+					} else if(this.started) {
+						this.binder.update.call(this, event, data);
+					}
+				}
+			}
+
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+			}
+		};
+
+		this.end = function(event, data) {
+			if(this.started) {
+				this.binder.end.call(this, event, data);
+			}
+
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+			}
+		};
+
+		this.cancel = function() {
+			if(this.cancelled) {
+				return;
+			}
+			this.cancelled = true;
+			if(this.started) {
+				this.bindingObj.cancel.call(this.bindingObj);
+			}
+		};
+
+		function Rotate() {
+			Gesture.apply(this, arguments);
+		}
+		return Rotate;
+	});
+
+T.gestures.add('rotate', Rotate);
+
+})(window.Touche);
+
+(function(T, abs) {
+	'use strict';
+
+	/**
+	 * Swipe gesture. Supports a radius threshold that is used to measure when the gesture starts.
+	 * Triggers `start`, `update` and `end` events.
+	 * @name T.gestures.swipe
+	 * @function
+	 */
+	var Swipe = T.Gesture.augment(function(Gesture) {
+		this.rAFId = -1;
+
+		this.defaults = {
+			radiusThreshold: 12,
+			precedence: 25,
+			preventDefault: true,
+			touches: 1,
+			which: 1,
+			useMomentum: false,
+			inertia: 0.89
+		};
+
+		this.setSwipe = function(point) {
+			this.swipe.lastTime = this.swipe.currentTime;
+			this.swipe.lastPoint = this.swipe.currentPoint;
+			this.swipe.currentPoint = point;
+			this.swipe.currentTime = +new Date();
+			this.swipe.deltaX = this.swipe.currentPoint.x - this.swipe.startPoint.x;
+			this.swipe.deltaY = this.swipe.currentPoint.y - this.swipe.startPoint.y;
+			this.swipe.curDeltaX = this.swipe.currentPoint.x - this.swipe.lastPoint.x;
+			this.swipe.curDeltaY = this.swipe.currentPoint.y - this.swipe.lastPoint.y;
+			this.swipe.velocity = T.utils.getVelocity(this.swipe.startPoint, this.swipe.currentPoint, this.swipe.startTime, this.swipe.currentTime);
+			this.swipe.momentum = T.utils.getVelocity(this.swipe.lastPoint, this.swipe.currentPoint, this.swipe.lastTime, this.swipe.currentTime);
+			this.swipe.angle = T.utils.getAngle(this.swipe.startPoint, this.swipe.currentPoint);
+			this.swipe.direction = T.utils.getDirection(this.swipe.angle);
+			this.swipe.elementDistance = this.swipe.direction === 'left' || this.swipe.direction === 'right' ? this.rect.width : this.rect.height;
+			this.swipe.distance = this.swipe.direction === 'left' || this.swipe.direction === 'right' ? abs(this.swipe.deltaX) : abs(this.swipe.deltaY);
+			this.swipe.percentage = this.swipe.distance / this.swipe.elementDistance * 100;
+		};
+
+		this.start = function ( event, data ) {
+			if ( this.rAFId !== -1 ) {
+				this.binder.end.call( this, event, data );
+				window.cancelAnimationFrame( this.rAFId );
+				this.rAFId = -1;
+				T.preventGestures(this.gestureHandler);
+				this.gestureHandler.cancelAllGestures( this );
+			}
+			this.rect = T.utils.getRect(this.gestureHandler.element);
+			this.swipe = {
+				inEndMomentum: false
+			};
+
+			this.countTouches = 0;
+			if( !this.isValidMouseButton(event, this.options.which) ||
+				this.hasMoreTouches(data.pagePoints)) {
+				this.cancel();
+				return;
+			}
+
+			this.swipe.startPoint = this.swipe.currentPoint = data.pagePoints[0];
+			this.swipe.startTime = this.swipe.currentTime = +new Date();
+
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+			}
+		};
+
+		this.update = function(event, data) {
+
+			if(!this.swipe){ //if swipe is not initialized - this means start has not been run.
+				this.start(event,data);
+			}
+
+			if(!this.isValidMouseButton(event, this.options.which) ||
+				this.hasMoreTouches(data.pagePoints)) {
+				this.cancel();
+				return;
+			} else if(this.hasEqualTouches(data.pagePoints)) {
+				this.setSwipe(data.pagePoints[0]);
+				data.swipe = this.swipe;
+
+				if(!this.started && this.swipe.startPoint.distanceTo(this.swipe.currentPoint) >= this.options.radiusThreshold) {
+					this.gestureHandler.cancelGestures(this.type);
+					this.started = true;
+					this.binder.start.call(this, event, data);
+				} else if(this.started) {
+					this.binder.update.call(this, event, data);
+				}
+
+				this.swipe.startTime = this.swipe.currentTime; //to calculate correct velocity
+			}
+
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+			}
+		};
+
+		this.end = function(event, data) {
+			var p, m, that, dataPoint, keepOn, inertia = this.options.inertia;
+			if(this.started) {
+				if (this.options.useMomentum) {
+					this.swipe.inEndMomentum = true;
+					p = new T.Point(this.swipe.curDeltaX, this.swipe.curDeltaY).normalize();
+					m = this.swipe.momentum;
+					that = this;
+					dataPoint = new T.Point(data.pagePoints[0].x, data.pagePoints[0].y);
+					if(inertia >= 1) {
+						inertia = this.defaults.inertia;
+					}
+					keepOn = function() {
+						m *= inertia;
+						if (that.swipe.inEndMomentum && m > 1) {
+							dataPoint.x += p.x * m;
+							dataPoint.y += p.y * m;
+							data.pagePoints[0] = new T.Point(dataPoint.x, dataPoint.y);
+							that.update(event, data);
+							that.rAFId = window.requestAnimationFrame(keepOn);
+						} else {
+							that.rAFId = -1;
+							that.binder.end.call(that, event, data);
+						}
+					};
+					
+					this.rAFId = window.requestAnimationFrame(keepOn);
+				} else {
+					this.binder.end.call(this, event, data);
+				}
+				
+			}
+
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+			}
+		};
+
+		this.cancel = function() {
+			if(this.rAFId !== -1) {
+				this.binder.end.call(this, event);
+				window.cancelAnimationFrame(this.rAFId);
+				this.rAFId = -1;
+				T.preventGestures(this.gestureHandler);
+				this.gestureHandler.cancelAllGestures(this);
+			}
+			if(this.cancelled) {
+				return;
+			}
+			this.cancelled = true;
+			if(this.started) {
+				this.binder.cancel.call(this);
+			}
+		};
+
+		function Swipe() {
+			Gesture.apply(this, arguments);
+		}
+		return Swipe;
+	});
+
+	/*
+	* Add the Swipe gesture to Touché
+	*/
+	T.gestures.add('swipe', Swipe);
+
+})(window.Touche, Math.abs);
+
+(function(T) {
+	'use strict';
+
+	/**
+	 * Tap gesture
+	 * @name T.gestures.tap
+	 * @function
+	 */
+	var Tap = T.Gesture.augment(function(Gesture) {
+
+		this.defaults =  {
+			areaThreshold: 5,
+			precedence: 6,
+			preventDefault: true,
+			touches: 1,
+			which: 1
+		};
+
+		this.start = function(event, data) {
+			this.started = true;
+			this.rect = T.utils.getRect(this.gestureHandler.element);
+			if( !this.isValidMouseButton(event, this.options.which) ||
+				this.hasMoreTouches(data.pagePoints)) {
+				this.cancel();
+				return;
+			}
+
+			this.binder.start.call(this, event, data);
+			
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+			}
+		};
+
+		this.update = function(event, data) {
+			if(!this.started) {
+				return;
+			}
+			if(this.hasMoreTouches(data.pagePoints) ||
+				!this.rect.pointInside(data.pagePoints[0], this.options.areaThreshold)) {
+				this.cancel();
+				return;
+			}
+
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+			}
+		};
+
+		this.end = function(event, data) {
+			if(!this.started) {
+				return;
+			}
+			if(this.hasNotEqualTouches(data.pagePoints)) {
+				return;
+			}
+			if(this.rect.pointInside(data.pagePoints[0], this.options.areaThreshold)) {
+				this.gestureHandler.cancelGestures(this.type);
+				this.binder.end.call(this, event, data);
+			}
+			if(this.options.preventDefault) {
+				event.preventDefault();
+				T.WebkitHack.prevent();
+			}
+		};
+
+		this.cancel = function(event, data) {
+			this.cancelled = true;
+			this.binder.cancel.call(this, event, data);
+		};
+
+		function Tap() {
+			Gesture.apply(this, arguments);
+		}
+
+		return Tap;
+	});
+
+	/*
+	* Add the Tap gesture to Touché
+	*/
+	T.gestures.add('tap', Tap);
+
+})(window.Touche);
+
+return Touche;
+
+}));

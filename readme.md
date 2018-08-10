@@ -150,14 +150,8 @@ Touché is using grunt to build (concatenate + minify) and running tests. Below 
 
 ```
 $ cd touche
-$ npm uninstall -g grunt
-$ npm install -g grunt-cli
-$ npm install -g phantomjs
-$ npm install grunt
-$ npm install grunt-contrib-jshint
-$ npm install grunt-contrib-concat
-$ npm install grunt-contrib-uglify
-$ npm install grunt-mocha
+$ npm install
+$ npm install --no-save grunt-mocha@1.0.0
 ```
 
 After installing, you can run a few different tasks using grunt:

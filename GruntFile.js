@@ -1,17 +1,18 @@
 /*global require, module*/
 var cp = require('child_process');
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
+	grunt.loadNpmTasks('grunt-umd');
 	// Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		meta: {
 			banner: '/*! Touché - v<%= pkg.version %> - ' +
-					'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-					'* https://github.com/stoffeastrom/touche/\n' +
-					'* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
-					'Christoffer Åström, Andrée Hansson; Licensed MIT */' + '\n'
+				'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
+				'* https://github.com/stoffeastrom/touche/\n' +
+				'* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
+				'Christoffer Åström, Andrée Hansson; Licensed MIT */' + '\n'
 		},
 		jshint: {
 			all: [
@@ -94,7 +95,20 @@ module.exports = function(grunt) {
 				dest: 'dist/touche.light.min.js'
 			}
 		},
-		devserver: {server:{}},
+		umd: {
+			all: {
+				options: {
+					banner: '<%= meta.banner %>',
+					src: [
+						'dist/touche.js'
+					],
+					dest: 'dist/touche.umd.js',
+					objectToExport: 'Touche',
+					globalAlias: 'Touche',
+				}
+			}
+		},
+		devserver: { server: {} },
 		watch: {
 			files: ['<%= jshint.all %>'],
 			tasks: ['jshint']
@@ -108,15 +122,15 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-devserver");
 
 	// Documentation generation, requires "jsdoc" to be in path
-	grunt.registerTask('docs', 'Generate documentation', function() {
+	grunt.registerTask('docs', 'Generate documentation', function () {
 		var done = this.async();
 		grunt.log.writeln('Generating documentation to docs/...');
 		cp.exec('jsdoc -d docs -r lib/', done);
 	});
-	
-	grunt.registerTask("test", "mocha");
+
+	grunt.registerTask("test", ["jshint", "mocha"]);
 
 
 	// Default task.
-	grunt.registerTask("default", ["jshint", "test", "concat", "uglify"]);
+	grunt.registerTask("default", ["test", "concat", "uglify", "umd"]);
 };
