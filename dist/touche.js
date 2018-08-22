@@ -1,4 +1,4 @@
-/*! Touché - v1.1.5 - 2018-08-10
+/*! Touché - v1.1.5 - 2018-08-22
 * https://github.com/stoffeastrom/touche/
 * Copyright (c) 2018 Christoffer Åström, Andrée Hansson; Licensed MIT */
 (function (fnProto) {
@@ -157,7 +157,7 @@
 			if(isEq(parent.tagName, tagToMatch)) {
 				return parent;
 			}
-			while(parent) {
+			while (parent && parent.parentNode) {
 				parent = parent.parentNode;
 				if(isEq(parent.tagName, tagToMatch)) {
 					return parent;
