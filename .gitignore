@@ -170,3 +170,4 @@ package-lock.json
 
 # sublime workspace
 *.sublime-workspace
+dist
