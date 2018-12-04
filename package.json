@@ -24,7 +24,7 @@
     "dev": "grunt",
     "test": "grunt mocha",
     "build": "npm run dev"
-  }
+  },
   "files": [
     "/dist"
   ]
