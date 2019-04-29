@@ -104,7 +104,7 @@ module.exports = function (grunt) {
 					],
 					dest: 'dist/touche.umd.js',
 					amdModuleId: 'touchejs',
-					objectToExport: 'Touche',
+					objectToExport: 'window.Touche',
 					globalAlias: 'Touche',
 				}
 			}
